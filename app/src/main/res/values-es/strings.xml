@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wattson</string>
+    
+    <!-- Authentication -->
+    <string name="auth_title">Wattson</string>
+    <string name="auth_subtitle">Elija dispositivos que sean realmente duraderos y reparables</string>
+    <string name="sign_in">Iniciar sesión</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="sign_in_with_google">Iniciar sesión con Google</string>
+    <string name="sign_in_with_apple">Iniciar sesión con Apple</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="forgot_password">¿Olvidó su contraseña?</string>
+    <string name="continue_button">Continuar</string>
+    <string name="back">Atrás</string>
+    <string name="terms_and_conditions">Al iniciar sesión, acepta nuestros Términos y Condiciones de Uso y nuestra Política de Privacidad. Wattson garantiza la seguridad de sus facturas y datos personales de acuerdo con el RGPD.</string>
+    
+    <!-- Bottom Navigation -->
+    <string name="nav_history">Historial</string>
+    <string name="nav_repair">Reparación</string>
+    <string name="nav_documents">Documentos</string>
+    <string name="nav_account">Cuenta</string>
+    
+    <!-- History Screen -->
+    <string name="history_title">Historial</string>
+    <string name="search_placeholder">Buscar</string>
+    <string name="scan_button">Escanear</string>
+    <string name="repairability_index">Índice de reparabilidad</string>
+    
+    <!-- Scan Screen -->
+    <string name="scan_title">Escanear</string>
+    <string name="scan_instruction">Coloque el código de barras en el marco</string>
+    <string name="camera_permission_required">Se requiere permiso de cámara</string>
+    <string name="camera_permission_rationale">Wattson necesita acceder a la cámara para escanear los códigos de barras de los productos.</string>
+    <string name="grant_permission">Permitir cámara</string>
+    <string name="open_settings">Abrir ajustes</string>
+    
+    <!-- Product Detail -->
+    <string name="product_details">Detalles del producto</string>
+    <string name="score">Puntuación</string>
+    <string name="energy_performance">Eficiencia energética</string>
+    <string name="autonomy_resistance">Autonomía y resistencia</string>
+    <string name="endurance">Resistencia</string>
+    <string name="drop_resistance">Resistencia a caídas</string>
+    <string name="repairability">Reparabilidad</string>
+    <string name="class_label">Clase</string>
+    <string name="index_label">Índice</string>
+    <string name="user_reviews">Opiniones de usuarios</string>
+    <string name="wattson_user_rating">Valoración de usuarios de Wattson</string>
+    <string name="remove_favorite">Eliminar de favoritos</string>
+    <string name="add_favorite">Añadir a favoritos</string>
+    <string name="score_prefix">Puntuación:</string>
+    <string name="energy_kwh_year">%d kWh/año</string>
+    <string name="endurance_label">Resistencia:</string>
+    <string name="class_prefix">Clase: %s</string>
+    <string name="index_prefix">Índice: %s/10</string>
+    <string name="not_rated_yet">Aún no calificado</string>
+    <string name="hours_suffix">%dh00</string>
+    
+    <!-- Documents Screen -->
+    <string name="documents_title">Documentos</string>
+    <string name="add_document">Añadir</string>
+    <string name="all_documents">Todos</string>
+    <string name="documents_count">%d documentos</string>
+    <string name="devices_count">%d dispositivos</string>
+    <string name="active_warranties">%d garantías activas</string>
+    <string name="warranty_legal">Garantía legal</string>
+    <string name="warranty_manufacturer">Garantía del fabricante</string>
+    <string name="warranty_extended">Extensión de garantía</string>
+    <string name="warranty_commercial">Garantía comercial</string>
+    <string name="uploading">Subiendo…</string>
+    <string name="delete_document_title">¿Eliminar documento?</string>
+    <string name="delete_document">Eliminar documento</string>
+    <string name="delete_document_confirmation">¿Está seguro de que desea eliminar \"%s\"? Esta acción est irreversible.</string>
+    <string name="delete_document_confirmation_detail">El documento \"%s\" se eliminará permanentemente. Esta acción es irreversible.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="download">Descargar</string>
+    <string name="options">Opciones</string>
+    <string name="type_invoice">Factura</string>
+    <string name="type_warranty">Garantía</string>
+    <string name="type_manual">Manual</string>
+    <string name="type_other">Otro</string>
+    <string name="document_preview">Vista previa del documento</string>
+    
+    <string name="no_documents">Sin documentos</string>
+    <string name="no_documents_description">Añada sus facturas y garantías para encontrarlas fácilmente</string>
+    <string name="no_results">Sin resultados</string>
+    <string name="no_results_description">Ningún documento coincide con \"%s\"</string>
+    <string name="search_hint">Buscar</string>
+    <string name="add_document_fab">Añadir documento</string>
+    <string name="devices_label">Dispositivos</string>
+    <string name="documents_label">Documentos</string>
+    <string name="active_warranties_label">Garantías activas</string>
+    <string name="expand">Expandir</string>
+    <string name="collapse">Contraer</string>
+    
+    <!-- Account Screen -->
+    <string name="account_title">Cuenta</string>
+    <string name="preferences">Preferencias</string>
+    <string name="economy">Económico</string>
+    <string name="ecology">Ecología</string>
+    <string name="repairability_pref">Reparabilidad</string>
+    <string name="first_choice">1ª elección</string>
+    <string name="second_choice">2ª elección</string>
+    <string name="third_choice">3ª elección</string>
+    <string name="preferences_explanation">El orden de sus preferencias ajusta el algoritmo de puntuación de Wattson. Sus criterios prioritarios tendrán más peso en la calificación final de los productos escaneados.</string>
+    <string name="premium_member">Miembro Premium</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="logout_title">¿Cerrar sesión?</string>
+    <string name="logout_confirmation">¿Está seguro de que desea cerrar sesión en su cuenta de Wattson?</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="premium_success">¡Felicidades! Ahora eres Premium</string>
+    <string name="error_prefix">Error: %s</string>
+    <string name="processing">Procesando…</string>
+    
+    <!-- Premium Screen -->
+    <string name="premium_title">Premium</string>
+    <string name="premium_subtitle">Cámbiate a Premium para disfrutar de todas las ventajas</string>
+    <string name="go_premium_title">Pásate a Premium</string>
+    <string name="go_premium_subtitle">Desbloquea todas las funciones de Wattson</string>
+    <string name="select">Seleccionar</string>
+    <string name="current_plan">Plan actual</string>
+    <string name="popular">Popular</string>
+    <string name="per_month">/mes</string>
+    <string name="terms_subscription">Al suscribirte, aceptas nuestras condiciones de suscripción. Puedes cancelar en cualquier momento.</string>
+    <string name="unlimited_documents">Documentos ilimitados</string>
+    <string name="advanced_repair_advice">Consejos avanzados de reparabilidad</string>
+    <string name="unlimited_history">Historial ilimitado</string>
+    <string name="priority_support">Soporte prioritario</string>
+    <string name="warranty_alerts">Alertas de garantía</string>
+    <string name="data_export">Exportación de datos</string>
+    
+    <!-- Repair Screen -->
+    <string name="repair_title">Reparación</string>
+    <string name="repair_subtitle">Diagnostique y repare sus dispositivos con la ayuda de nuestro asistente de IA</string>
+    <string name="new_repair">Nueva reparación</string>
+    <string name="active_repairs">Reparaciones en curso</string>
+    <string name="completed_repairs">Reparaciones finalizadas</string>
+    <string name="repair_tips">Consejos de mantenimiento</string>
+    <string name="no_active_repairs">No hay reparaciones en curso</string>
+    <string name="empty_repair_instruction">Escanee un producto para iniciar un diagnóstico asistido por IA</string>
+    <string name="start_repair_dialog_title">Nueva reparación</string>
+    <string name="start_repair_dialog_message">Para iniciar un diagnóstico asistido por IA, primero escanee el código de barras de su producto.</string>
+    <string name="scan_product">Escanear un producto</string>
+    <string name="symptoms_label">Síntomas: %s</string>
+    <string name="status_open">Abierto</string>
+    <string name="status_diagnosing">Diagnóstico</string>
+    <string name="status_waiting_parts">Esperando piezas</string>
+    <string name="status_in_repair">En reparación</string>
+    <string name="status_completed">Finalizado</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="close">Cerrar</string>
+    
+    <!-- Product Categories -->
+    <string name="cat_electronics">Electrónica</string>
+    <string name="cat_appliances">Electrodomésticos</string>
+    <string name="cat_gaming">Gaming</string>
+    <string name="cat_climatisation">Climatización</string>
+    <string name="cat_it">Informática</string>
+    <string name="cat_telephony">Telefonía</string>
+    <string name="cat_audio_video">Audio/Vídeo</string>
+    <string name="cat_other">Otro</string>
+    
+    <!-- Error Messages -->
+    <string name="error_generic">Ha ocurrido un error</string>
+    <string name="error_network">Error de conexión de red</string>
+    <string name="error_invalid_email">Correo electrónico no válido</string>
+    <string name="error_invalid_password">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <string name="retry">Reintentar</string>
+</resources>

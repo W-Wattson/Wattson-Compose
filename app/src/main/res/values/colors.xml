@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Wattson Brand Colors -->
+    <color name="wattson_primary">#16B4BD</color>
+    <color name="wattson_primary_dark">#0E8A91</color>
+    <color name="wattson_primary_light">#4DC9D0</color>
+    <color name="wattson_secondary">#191A23</color>
+    <color name="wattson_surface">#FAFAFA</color>
+    <color name="wattson_white">#FFFFFF</color>
+    <color name="wattson_neutral">#F3F3F3</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="info">#2196F3</color>
+    
+    <!-- Energy Class Colors -->
+    <color name="energy_a">#00A651</color>
+    <color name="energy_b">#50B848</color>
+    <color name="energy_c">#BED630</color>
+    <color name="energy_d">#FFF200</color>
+    <color name="energy_e">#F7941D</color>
+    <color name="energy_f">#F15A22</color>
+    <color name="energy_g">#ED1C24</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#191A23</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_hint">#999999</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_secondary">#FFFFFF</color>
+</resources>
