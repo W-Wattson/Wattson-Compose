@@ -14,19 +14,52 @@
     <string name="confirm_password">Confirmar contraseña</string>
     <string name="forgot_password">¿Olvidó su contraseña?</string>
     <string name="continue_button">Continuar</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_subtitle">Accede a tu espacio Wattson</string>
+    <string name="register_title">Crear Cuenta</string>
+    <string name="register_subtitle">Únete a Wattson para gestionar tus electrodomésticos</string>
     <string name="back">Atrás</string>
-    <string name="terms_and_conditions">Al iniciar sesión, acepta nuestros Términos y Condiciones de Uso y nuestra Política de Privacidad. Wattson garantiza la seguridad de sus facturas y datos personales de acuerdo con el RGPD.</string>
+    <string name="remember_me">Recordarme</string>
+    <string name="no_account">¿Aún no tienes cuenta? </string>
+    <string name="already_have_account">¿Ya tienes cuenta? </string>
+    <string name="password_requirements_title">La contraseña debe contener:</string>
+    <string name="req_length">8+ caracteres</string>
+    <string name="req_uppercase">1 mayúscula</string>
+    <string name="req_digit">1 número</string>
+    <string name="req_special">1 especial</string>
+    <string name="or_divider">o</string>
+    <string name="google">Google</string>
+    <string name="apple">Apple</string>
+    <string name="clear">Limpiar</string>
+    <string name="terms_and_conditions">Al iniciar sesión, acepta nuestros %1$s y nuestra %2$s. Wattson garantiza la seguridad de sus facturas y datos personales de acuerdo con el %3$s.</string>
+    <string name="terms_label">Términos y Condiciones de Uso</string>
+    <string name="privacy_policy_label">Política de Privacidad</string>
+    <string name="gdpr_label">RGPD</string>
     
     <!-- Bottom Navigation -->
     <string name="nav_history">Historial</string>
+    <string name="nav_history_desc">Historial de escaneos</string>
     <string name="nav_repair">Reparación</string>
+    <string name="nav_repair_desc">Asistencia de reparación</string>
     <string name="nav_documents">Documentos</string>
+    <string name="nav_documents_desc">Documentos y garantías</string>
     <string name="nav_account">Cuenta</string>
+    <string name="nav_account_desc">Mi cuenta</string>
     
     <!-- History Screen -->
+    <string name="history_subtitle">Tus productos escaneados</string>
+    <string name="results_count_singular">%d resultado</string>
+    <string name="results_count_plural">%d resultados</string>
     <string name="history_title">Historial</string>
     <string name="search_placeholder">Buscar</string>
     <string name="scan_button">Escanear</string>
+    <string name="flash_on">Activar flash</string>
+    <string name="flash_off">Desactivar flash</string>
+    <string name="place_barcode">Coloque el código de barras en el marco</string>
+    <string name="searching_product">Buscando producto...</string>
+    <string name="camera_access_required">Acceso a la cámara requerido</string>
+    <string name="camera_access_description">Para escanear códigos de barras de productos, Wattson necesita acceder a su cámara.</string>
+    <string name="allow_access">Permitir acceso</string>
     <string name="repairability_index">Índice de reparabilidad</string>
     
     <!-- Scan Screen -->
@@ -36,10 +69,16 @@
     <string name="camera_permission_rationale">Wattson necesita acceder a la cámara para escanear los códigos de barras de los productos.</string>
     <string name="grant_permission">Permitir cámara</string>
     <string name="open_settings">Abrir ajustes</string>
+    <string name="retry">Reintentar</string>
     
     <!-- Product Detail -->
     <string name="product_details">Detalles del producto</string>
-    <string name="score">Puntuación</string>
+    <string name="excellent">Excelente</string>
+    <string name="good">Bueno</string>
+    <string name="fair">Regular</string>
+    <string name="poor">Deficiente</string>
+    <string name="very_poor">Muy deficiente</string>
+    <string name="score_label">Puntuación</string>
     <string name="energy_performance">Eficiencia energética</string>
     <string name="autonomy_resistance">Autonomía y resistencia</string>
     <string name="endurance">Resistencia</string>
@@ -75,6 +114,12 @@
     <string name="delete_document">Eliminar documento</string>
     <string name="delete_document_confirmation">¿Está seguro de que desea eliminar \"%s\"? Esta acción est irreversible.</string>
     <string name="delete_document_confirmation_detail">El documento \"%s\" se eliminará permanentemente. Esta acción es irreversible.</string>
+    <string name="documents_subtitle">Gestione sus recibos y garantías</string>
+    <string name="document_added_success">%s añadido con éxito</string>
+    <string name="document_deleted_success">%s eliminado</string>
+    <string name="quota_exceeded">Límite de documentos alcanzado. ¡Pásate a Premium!</string>
+    <string name="expand">Expandir</string>
+    <string name="collapse">Contraer</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Eliminar</string>
     <string name="download">Descargar</string>
@@ -94,8 +139,6 @@
     <string name="devices_label">Dispositivos</string>
     <string name="documents_label">Documentos</string>
     <string name="active_warranties_label">Garantías activas</string>
-    <string name="expand">Expandir</string>
-    <string name="collapse">Contraer</string>
     
     <!-- Account Screen -->
     <string name="account_title">Cuenta</string>
@@ -106,7 +149,8 @@
     <string name="first_choice">1ª elección</string>
     <string name="second_choice">2ª elección</string>
     <string name="third_choice">3ª elección</string>
-    <string name="preferences_explanation">El orden de sus preferencias ajusta el algoritmo de puntuación de Wattson. Sus criterios prioritarios tendrán más peso en la calificación final de los productos escaneados.</string>
+    <string name="documents_suffix">documentos</string>
+    <string name="preferences_explanation">El orden de sus preferencias ajusta el algoritmo de Wattson Score. Sus criterios prioritarios tendrán más peso en la calificación final de los productos escaneados.</string>
     <string name="premium_member">Miembro Premium</string>
     <string name="sign_out">Cerrar sesión</string>
     <string name="logout_title">¿Cerrar sesión?</string>
@@ -136,6 +180,7 @@
     <!-- Repair Screen -->
     <string name="repair_title">Reparación</string>
     <string name="repair_subtitle">Diagnostique y repare sus dispositivos con la ayuda de nuestro asistente de IA</string>
+    <string name="repair_case_created">Caso de reparación creado</string>
     <string name="new_repair">Nueva reparación</string>
     <string name="active_repairs">Reparaciones en curso</string>
     <string name="completed_repairs">Reparaciones finalizadas</string>
@@ -169,6 +214,6 @@
     <string name="error_network">Error de conexión de red</string>
     <string name="error_invalid_email">Correo electrónico no válido</string>
     <string name="error_invalid_password">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="error">Error</string>
     <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
-    <string name="retry">Reintentar</string>
 </resources>

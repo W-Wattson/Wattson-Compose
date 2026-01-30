@@ -9,10 +9,8 @@ import androidx.compose.ui.unit.sp
 import com.wattson.R
 
 /**
- * Wattson Typography System
- * Based on the brand guidelines from SFD v2.0
- * 
- * Font: Roboto (as specified in the SFD)
+ * Wattson typography system using the Roboto family and mobile-friendly sizes.
+ *
  * Mobile sizes:
  * - H1: 28sp Bold
  * - H2: 22sp Bold
@@ -45,7 +43,7 @@ val WattsonTypography = Typography(
         letterSpacing = 0.sp
     ),
 
-    // Headline styles - H1, H2, H3 as per SFD
+    // Headline styles - H1, H2, H3
     headlineLarge = TextStyle(
         fontFamily = RobotoFontFamily,
         fontWeight = FontWeight.Bold,
@@ -102,7 +100,7 @@ val WattsonTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = RobotoFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp, // Body Mobile as per SFD
+        fontSize = 14.sp, // Body mobile size
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),

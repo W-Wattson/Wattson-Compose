@@ -65,8 +65,7 @@ sealed interface AppResult<out T> {
 }
 
 /**
- * Application error types
- * Follows the SFD requirement for consistent error handling
+ * Application error types used for consistent error handling.
  */
 sealed interface AppError {
     val message: String

@@ -96,6 +96,7 @@ fun RepairScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // Handle one-shot events
     LaunchedEffect(Unit) {
@@ -104,7 +105,7 @@ fun RepairScreen(
                 is RepairEvent.NavigateToScan -> onNavigateToScan()
                 is RepairEvent.NavigateToCaseDetail -> onNavigateToCaseDetail(event.caseId)
                 is RepairEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                is RepairEvent.CaseCreated -> snackbarHostState.showSnackbar("Cas de réparation créé")
+                is RepairEvent.CaseCreated -> snackbarHostState.showSnackbar(context.getString(R.string.repair_case_created))
             }
         }
     }

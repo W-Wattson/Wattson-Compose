@@ -16,7 +16,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,22 +49,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wattson.R
-import com.wattson.domain.model.AuthProvider
+import com.wattson.ui.components.TermsAndConditionsText
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonOAuthButton
 import com.wattson.ui.components.WattsonPageTitle
@@ -136,8 +131,8 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         WattsonPageTitle(
-                            title = "Se connecter",
-                            subtitle = "Accédez à votre espace Wattson"
+                            title = stringResource(id = R.string.login_title),
+                            subtitle = stringResource(id = R.string.login_subtitle)
                         )
                         
                         Spacer(modifier = Modifier.height(32.dp))
@@ -146,7 +141,7 @@ fun LoginScreen(
                         WattsonTextField(
                             value = uiState.email,
                             onValueChange = onEmailChange,
-                            label = "Email",
+                            label = stringResource(id = R.string.email),
                             placeholder = "test@wattson.com",
                             isError = uiState.emailError != null,
                             errorMessage = uiState.emailError,
@@ -161,7 +156,7 @@ fun LoginScreen(
                         WattsonPasswordField(
                             value = uiState.password,
                             onValueChange = onPasswordChange,
-                            label = "Mot de passe",
+                            label = stringResource(id = R.string.password),
                             placeholder = "Password123!",
                             isError = uiState.passwordError != null,
                             errorMessage = uiState.passwordError,
@@ -190,14 +185,14 @@ fun LoginScreen(
                                     )
                                 )
                                 Text(
-                                    text = "Se souvenir de moi",
+                                    text = stringResource(id = R.string.remember_me),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             
                             Text(
-                                text = "Mot de passe oublié ?",
+                                text = stringResource(id = R.string.forgot_password),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.Medium
                                 ),
@@ -210,7 +205,7 @@ fun LoginScreen(
                         
                         // Login button
                         WattsonButton(
-                            text = "Continuer",
+                            text = stringResource(id = R.string.continue_button),
                             onClick = onLogin,
                             isLoading = uiState.isLoading,
                             enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank(),
@@ -230,7 +225,7 @@ fun LoginScreen(
                                 color = MaterialTheme.colorScheme.outlineVariant
                             )
                             Text(
-                                text = "ou",
+                                text = stringResource(id = R.string.or_divider),
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -250,15 +245,16 @@ fun LoginScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             WattsonOAuthButton(
-                                text = "Google",
+                                text = stringResource(id = R.string.google),
                                 icon = painterResource(id = R.drawable.ic_google),
                                 onClick = onLoginWithGoogle,
                                 modifier = Modifier.weight(1f)
                             )
                             
                             WattsonOAuthButton(
-                                text = "Apple",
+                                text = stringResource(id = R.string.apple),
                                 icon = painterResource(id = R.drawable.ic_apple),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 onClick = onLoginWithApple,
                                 modifier = Modifier.weight(1f)
                             )
@@ -267,13 +263,13 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.height(24.dp))
                         
                         // Legal text
-                        LoginLegalText()
+                        TermsAndConditionsText()
                         
                         Spacer(modifier = Modifier.height(32.dp))
                         
                         // Back button
                         WattsonButton(
-                            text = "Retour",
+                            text = stringResource(id = R.string.back),
                             onClick = onNavigateBack,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -286,12 +282,12 @@ fun LoginScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "Pas encore de compte ? ",
+                                text = stringResource(id = R.string.no_account),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "S'inscrire",
+                                text = stringResource(id = R.string.sign_up),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
@@ -472,46 +468,6 @@ private fun FloatingGlowOverlay() {
             radius = size.width * 0.5f
         )
     }
-}
-
-@Composable
-private fun LoginLegalText(modifier: Modifier = Modifier) {
-    Text(
-        text = buildAnnotatedString {
-            append("En vous connectant, vous acceptez nos ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Conditions Générales d'Utilisation")
-            }
-            append(" et notre ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Politique de Confidentialité")
-            }
-            append(". Wattson garantit la sécurité de vos factures et données personnelles conformément au ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("RGPD")
-            }
-            append(".")
-        },
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
-        modifier = modifier.padding(horizontal = 8.dp)
-    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
