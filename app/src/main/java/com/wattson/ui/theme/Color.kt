@@ -3,9 +3,8 @@ package com.wattson.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Wattson Color Palette
- * Based on the brand guidelines from SFD v2.0
- * 
+ * Wattson color palette following brand guidelines.
+ *
  * Primary: #16B4BD (Teal) - CTAs, links, accents
  * Secondary: #191A23 (Dark) - Texts, titles
  * Neutral: #F3F3F3 (Light Gray) - Backgrounds, alternance

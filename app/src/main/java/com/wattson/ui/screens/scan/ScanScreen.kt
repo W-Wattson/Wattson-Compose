@@ -53,12 +53,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview as ComposePreview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.wattson.R
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonOutlinedButton
 import com.wattson.ui.theme.WattsonColors
@@ -255,7 +257,7 @@ private fun CameraPreviewContent(
         ) {
             Icon(
                 imageVector = if (isTorchEnabled) Icons.Filled.FlashOn else Icons.Filled.FlashOff,
-                contentDescription = if (isTorchEnabled) "Désactiver le flash" else "Activer le flash",
+                contentDescription = if (isTorchEnabled) stringResource(R.string.flash_off) else stringResource(R.string.flash_on),
                 tint = Color.White
             )
         }
@@ -299,7 +301,7 @@ private fun ScanFrameOverlay(
         // Instructions text
         if (!isProcessing) {
             Text(
-                text = "Placez le code-barres dans le cadre",
+                text = stringResource(R.string.place_barcode),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
@@ -331,7 +333,7 @@ private fun ProcessingOverlay(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Recherche du produit...",
+            text = stringResource(R.string.searching_product),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White
         )
@@ -362,7 +364,7 @@ private fun PermissionDeniedContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Accès à la caméra requis",
+            text = stringResource(R.string.camera_access_required),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold
             ),
@@ -373,7 +375,7 @@ private fun PermissionDeniedContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Pour scanner les codes-barres des produits, Wattson a besoin d'accéder à votre caméra.",
+            text = stringResource(R.string.camera_access_description),
             style = MaterialTheme.typography.bodyMedium,
             color = WattsonColors.OnSurfaceVariant,
             textAlign = TextAlign.Center
@@ -382,7 +384,7 @@ private fun PermissionDeniedContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         WattsonButton(
-            text = "Autoriser l'accès",
+            text = stringResource(R.string.allow_access),
             onClick = onRequestPermission,
             modifier = Modifier.fillMaxWidth()
         )
@@ -390,7 +392,7 @@ private fun PermissionDeniedContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         WattsonOutlinedButton(
-            text = "Ouvrir les paramètres",
+            text = stringResource(R.string.open_settings),
             onClick = onOpenSettings,
             leadingIcon = Icons.Filled.Settings,
             modifier = Modifier.fillMaxWidth()
@@ -425,7 +427,7 @@ private fun ErrorBanner(
             Spacer(modifier = Modifier.height(12.dp))
 
             WattsonButton(
-                text = "Réessayer",
+                text = stringResource(R.string.retry),
                 onClick = onRetry,
                 modifier = Modifier.fillMaxWidth()
             )

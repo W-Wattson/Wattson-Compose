@@ -185,7 +185,8 @@ fun WattsonOAuthButton(
     icon: Painter,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    tint: Color = Color.Unspecified
 ) {
     OutlinedButton(
         onClick = { if (!isLoading) onClick() },
@@ -218,7 +219,7 @@ fun WattsonOAuthButton(
                     painter = icon,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = Color.Unspecified
+                    tint = tint
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -261,8 +262,7 @@ fun WattsonTextButton(
 }
 
 /**
- * Floating Action Button for Scan
- * As shown in SFD maquette - prominent scan CTA
+ * Floating Action Button used to trigger scanning.
  */
 @Composable
 fun WattsonScanFab(

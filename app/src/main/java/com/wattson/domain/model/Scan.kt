@@ -3,8 +3,7 @@ package com.wattson.domain.model
 import java.time.Instant
 
 /**
- * Represents a product scan in the user's history
- * Based on the 'scans' collection from SFD MongoDB schema
+ * Represents a product scan in the user's history.
  */
 data class Scan(
     val id: String,

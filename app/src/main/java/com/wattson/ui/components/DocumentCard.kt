@@ -57,8 +57,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
- * Document card for Conciergerie/Documents screen
- * Based on SFD maquette "Page Documents (Conciergerie) [Mobile]"
+ * Card component displaying a document thumbnail, metadata, and quick actions for the documents list.
  */
 @Composable
 fun DocumentCard(
@@ -172,8 +171,7 @@ fun DocumentCard(
 }
 
 /**
- * Document type tag (Facture, Garantie, etc.)
- * As shown in SFD maquettes
+ * Document type tag (Facture, Garantie, etc.) used to visually label document category.
  */
 @Composable
 fun DocumentTypeTag(
@@ -255,8 +253,7 @@ fun DocumentThumbnail(
 }
 
 /**
- * Document year accordion header
- * As shown in SFD Conciergerie maquettes
+ * Document year accordion header used in the documents list.
  */
 @Composable
 fun DocumentYearHeader(
