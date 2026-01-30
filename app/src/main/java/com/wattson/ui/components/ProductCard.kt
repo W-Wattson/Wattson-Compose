@@ -51,9 +51,7 @@ import com.wattson.ui.theme.WattsonPreviewTheme
 import java.time.Instant
 
 /**
- * Product card for History list
- * Displays brand, model, repairability index, and energy class
- * Based on SFD maquette "Page Historique [Mobile]"
+ * Card used in the history list that shows product brand/model with repairability and energy indicators.
  */
 @Composable
 fun ProductCard(

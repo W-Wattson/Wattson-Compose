@@ -3,8 +3,7 @@ package com.wattson.domain.model
 import java.time.Instant
 
 /**
- * Represents a Wattson user account
- * Based on the 'users' collection from SFD MongoDB schema
+ * Represents a Wattson user account with subscription and preference data.
  */
 data class User(
     val id: String,
@@ -28,11 +27,11 @@ enum class AuthProvider {
 }
 
 /**
- * User subscription types as defined in SFD section 3.2
+ * User subscription tiers and their document limits.
  * - FREE: 5 documents max
  * - PREMIUM: 15 documents max (5.99€/month)
  * - PREMIUM_UNLIMITED: Unlimited documents (24.99€/month)
- * - ENTERPRISE: Custom limits (devis)
+ * - ENTERPRISE: Custom limits (quote-based)
  */
 enum class SubscriptionType {
     FREE,

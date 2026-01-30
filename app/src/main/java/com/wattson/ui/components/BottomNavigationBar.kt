@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,43 +58,44 @@ import com.wattson.ui.theme.WattsonPreviewTheme
  */
 data class NavItem(
     val route: WattsonRoute,
-    val label: String,
+    val labelResId: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val contentDescription: String
+    val contentDescriptionResId: Int
 )
 
 /**
- * Bottom navigation items as defined in SFD maquettes
+ * Bottom navigation items used across the main tabs.
  */
-val bottomNavItems = listOf(
+@Composable
+fun getBottomNavItems() = listOf(
     NavItem(
         route = WattsonRoute.History,
-        label = "Historique",
+        labelResId = R.string.nav_history,
         selectedIcon = Icons.Filled.History,
         unselectedIcon = Icons.Outlined.History,
-        contentDescription = "Historique des scans"
+        contentDescriptionResId = R.string.nav_history_desc
     ),
     NavItem(
         route = WattsonRoute.Repair,
-        label = "Réparation",
+        labelResId = R.string.nav_repair,
         selectedIcon = Icons.Filled.Build,
         unselectedIcon = Icons.Outlined.Build,
-        contentDescription = "Assistance réparation"
+        contentDescriptionResId = R.string.nav_repair_desc
     ),
     NavItem(
         route = WattsonRoute.Documents,
-        label = "Document",
+        labelResId = R.string.nav_documents,
         selectedIcon = Icons.Filled.Description,
         unselectedIcon = Icons.Outlined.Description,
-        contentDescription = "Documents et garanties"
+        contentDescriptionResId = R.string.nav_documents_desc
     ),
     NavItem(
         route = WattsonRoute.Account,
-        label = "Compte",
+        labelResId = R.string.nav_account,
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person,
-        contentDescription = "Mon compte"
+        contentDescriptionResId = R.string.nav_account_desc
     )
 )
 
@@ -136,8 +138,7 @@ fun BottomNavigationBar(
 }
 
 /**
- * Custom bottom navigation bar with Wattson styling
- * Follows the design from SFD maquettes with teal accent
+ * Custom bottom navigation bar with Wattson styling and teal accent.
  */
 @Composable
 fun WattsonBottomNavigationBar(
@@ -152,6 +153,7 @@ fun WattsonBottomNavigationBar(
         shadowElevation = 16.dp,
         tonalElevation = 8.dp
     ) {
+        val navItems = getBottomNavItems()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -160,7 +162,7 @@ fun WattsonBottomNavigationBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            bottomNavItems.forEach { item ->
+            navItems.forEach { item ->
                 val isSelected = currentRoute == item.route
                 
                 BottomNavItem(
@@ -236,8 +238,8 @@ private fun BottomNavItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                    contentDescription = item.contentDescription,
+                    imageVector = item.selectedIcon,
+                    contentDescription = stringResource(id = item.contentDescriptionResId),
                     tint = iconColor,
                     modifier = Modifier.size(22.dp)
                 )
@@ -245,7 +247,7 @@ private fun BottomNavItem(
         } else {
             Icon(
                 imageVector = item.unselectedIcon,
-                contentDescription = item.contentDescription,
+                contentDescription = stringResource(id = item.contentDescriptionResId),
                 tint = iconColor,
                 modifier = Modifier
                     .padding(vertical = 3.dp)
@@ -256,7 +258,7 @@ private fun BottomNavItem(
         Spacer(modifier = Modifier.height(4.dp))
         
         Text(
-            text = item.label,
+            text = stringResource(id = item.labelResId),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = textColor
@@ -265,8 +267,7 @@ private fun BottomNavItem(
 }
 
 /**
- * Wattson logo for the center of the bottom bar
- * As shown in the SFD maquettes
+ * Wattson logo displayed at the center of the bottom bar.
  */
 @Composable
 fun WattsonLogoNavItem(

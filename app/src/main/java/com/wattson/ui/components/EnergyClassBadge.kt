@@ -31,8 +31,7 @@ import com.wattson.ui.theme.WattsonPreviewTheme
 import com.wattson.ui.theme.getEnergyClassColor
 
 /**
- * Energy class badge showing A-G rating
- * As displayed in the SFD maquettes (History screen, Product detail)
+ * Energy class badge showing A-G rating for products.
  */
 @Composable
 fun EnergyClassBadge(
@@ -225,8 +224,7 @@ fun RepairabilityBadge(
 }
 
 /**
- * Global score badge (circular gauge style)
- * As shown in SFD Product Detail maquette
+ * Global score badge displayed as a circular gauge.
  */
 @Composable
 fun GlobalScoreBadge(

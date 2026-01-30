@@ -375,8 +375,16 @@ private fun GlobalScoreGauge(
                 ),
                 color = scoreColor
             )
+            val scoreLabel = when (score.letter) {
+                "A" -> stringResource(R.string.excellent)
+                "B" -> stringResource(R.string.good)
+                "C" -> stringResource(R.string.fair)
+                "D" -> stringResource(R.string.poor)
+                "E" -> stringResource(R.string.very_poor)
+                else -> score.label
+            }
             Text(
-                text = score.label,
+                text = scoreLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = WattsonColors.OnSurfaceVariant
             )
@@ -652,7 +660,7 @@ private fun ErrorState(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Erreur",
+            text = stringResource(R.string.error),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold
             ),

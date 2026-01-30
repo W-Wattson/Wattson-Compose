@@ -84,6 +84,7 @@ fun DocumentsScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // File picker launcher
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -104,17 +105,17 @@ fun DocumentsScreen(
                     filePickerLauncher.launch("*/*")
                 }
                 is DocumentsEvent.ShowUploadSuccess -> {
-                    snackbarHostState.showSnackbar("${event.fileName} ajouté avec succès")
+                    snackbarHostState.showSnackbar(context.getString(R.string.document_added_success, event.fileName))
                 }
                 is DocumentsEvent.ShowUploadError -> {
-                    snackbarHostState.showSnackbar("Erreur: ${event.message}")
+                    snackbarHostState.showSnackbar("${context.getString(R.string.error)}: ${event.message}")
                 }
                 is DocumentsEvent.ShowDeleteSuccess -> {
-                    snackbarHostState.showSnackbar("${event.documentName} supprimé")
+                    snackbarHostState.showSnackbar(context.getString(R.string.document_deleted_success, event.documentName))
                 }
                 is DocumentsEvent.NavigateToPremium -> onNavigateToPremium()
                 is DocumentsEvent.ShowQuotaExceeded -> {
-                    snackbarHostState.showSnackbar("Limite de documents atteinte. Passez à Premium!")
+                    snackbarHostState.showSnackbar(context.getString(R.string.quota_exceeded))
                 }
             }
         }
@@ -241,7 +242,7 @@ private fun DocumentsHeader(
     ) {
         WattsonPageTitle(
             title = stringResource(R.string.documents_title),
-            subtitle = "Gérez vos factures et garanties"
+            subtitle = stringResource(R.string.documents_subtitle)
         )
 
         Spacer(modifier = Modifier.height(16.dp))

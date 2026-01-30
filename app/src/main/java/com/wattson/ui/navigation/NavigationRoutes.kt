@@ -3,9 +3,8 @@ package com.wattson.ui.navigation
 import kotlinx.serialization.Serializable
 
 /**
- * Type-safe navigation routes for Wattson app
- * Based on the mobile screen hierarchy from SFD section 6.1
- * 
+ * Type-safe navigation routes for the Wattson app across auth, main tabs, and detail screens.
+ *
  * Hierarchy:
  * - Level 0: Auth (Login/Register)
  * - Level 1: Main tabs (History, Repair, Scan, Documents, Account)
@@ -89,8 +88,7 @@ sealed interface WattsonRoute {
 }
 
 /**
- * Bottom navigation items
- * Based on the tab bar from SFD maquettes
+ * Bottom navigation items for the main tab bar.
  */
 enum class BottomNavItem(
     val route: WattsonRoute,

@@ -142,7 +142,7 @@ private fun HistoryHeader(
     ) {
         WattsonPageTitle(
             title = stringResource(R.string.history_title),
-            subtitle = "Vos produits scannés"
+            subtitle = stringResource(R.string.history_subtitle)
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -158,8 +158,13 @@ private fun HistoryHeader(
         // Results count
         if (searchQuery.isNotBlank()) {
             Spacer(modifier = Modifier.height(8.dp))
+            val resultsText = if (resultCount <= 1) {
+                stringResource(R.string.results_count_singular, resultCount)
+            } else {
+                stringResource(R.string.results_count_plural, resultCount)
+            }
             Text(
-                text = "$resultCount résultat${if (resultCount != 1) "s" else ""}",
+                text = resultsText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

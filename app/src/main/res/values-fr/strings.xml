@@ -14,19 +14,52 @@
     <string name="confirm_password">Confirmer le mot de passe</string>
     <string name="forgot_password">Mot de passe oublié ?</string>
     <string name="continue_button">Continuer</string>
+    <string name="login_title">Se connecter</string>
+    <string name="login_subtitle">Accédez à votre espace Wattson</string>
+    <string name="register_title">Créer un compte</string>
+    <string name="register_subtitle">Rejoignez Wattson pour gérer vos appareils</string>
     <string name="back">Retour</string>
-    <string name="terms_and_conditions">En vous connectant, vous acceptez nos Conditions Générales d\'Utilisation et notre Politique de Confidentialité. Wattson garantit la sécurité de vos factures et données personnelles conformément au RGPD.</string>
+    <string name="remember_me">Se souvenir de moi</string>
+    <string name="no_account">Pas encore de compte ? </string>
+    <string name="already_have_account">Déjà un compte ? </string>
+    <string name="password_requirements_title">Le mot de passe doit contenir :</string>
+    <string name="req_length">8+ caractères</string>
+    <string name="req_uppercase">1 majuscule</string>
+    <string name="req_digit">1 chiffre</string>
+    <string name="req_special">1 spécial</string>
+    <string name="or_divider">ou</string>
+    <string name="google">Google</string>
+    <string name="apple">Apple</string>
+    <string name="clear">Effacer</string>
+    <string name="terms_and_conditions">En vous connectant, vous acceptez nos %1$s et notre %2$s. Wattson garantit la sécurité de vos factures et données personnelles conformément au %3$s.</string>
+    <string name="terms_label">Conditions Générales d\'Utilisation</string>
+    <string name="privacy_policy_label">Politique de Confidentialité</string>
+    <string name="gdpr_label">RGPD</string>
     
     <!-- Bottom Navigation -->
     <string name="nav_history">Historique</string>
+    <string name="nav_history_desc">Historique des scans</string>
     <string name="nav_repair">Réparation</string>
+    <string name="nav_repair_desc">Assistance réparation</string>
     <string name="nav_documents">Document</string>
+    <string name="nav_documents_desc">Documents et garanties</string>
     <string name="nav_account">Compte</string>
+    <string name="nav_account_desc">Mon compte</string>
     
     <!-- History Screen -->
+    <string name="history_subtitle">Vos produits scannés</string>
+    <string name="results_count_singular">%d résultat</string>
+    <string name="results_count_plural">%d résultats</string>
     <string name="history_title">Historique</string>
     <string name="search_placeholder">Rechercher</string>
     <string name="scan_button">Scannez</string>
+    <string name="flash_on">Activer le flash</string>
+    <string name="flash_off">Désactiver le flash</string>
+    <string name="place_barcode">Placez le code-barres dans le cadre</string>
+    <string name="searching_product">Recherche du produit...</string>
+    <string name="camera_access_required">Accès à la caméra requis</string>
+    <string name="camera_access_description">Pour scanner les codes-barres des produits, Wattson a besoin d\'accéder à votre caméra.</string>
+    <string name="allow_access">Autoriser l\'accès</string>
     <string name="repairability_index">Indice de réparabilité</string>
     
     <!-- Scan Screen -->
@@ -36,10 +69,16 @@
     <string name="camera_permission_rationale">Wattson a besoin d\'accéder à la caméra pour scanner les codes-barres des produits.</string>
     <string name="grant_permission">Autoriser la caméra</string>
     <string name="open_settings">Ouvrir les paramètres</string>
+    <string name="retry">Réessayer</string>
     
     <!-- Product Detail -->
     <string name="product_details">Détails du produit</string>
-    <string name="score">Score</string>
+    <string name="excellent">Excellent</string>
+    <string name="good">Bon</string>
+    <string name="fair">Moyen</string>
+    <string name="poor">Passable</string>
+    <string name="very_poor">Médiocre</string>
+    <string name="score_label">Score</string>
     <string name="energy_performance">Performance Énergétique</string>
     <string name="autonomy_resistance">Autonomie &amp; Résistance</string>
     <string name="endurance">Endurance</string>
@@ -75,6 +114,12 @@
     <string name="delete_document">Supprimer le document</string>
     <string name="delete_document_confirmation">Êtes-vous sûr de vouloir supprimer \"%s\" ? Cette action est irréversible.</string>
     <string name="delete_document_confirmation_detail">Le document \"%s\" sera définitivement supprimé. Cette action est irréversible.</string>
+    <string name="documents_subtitle">Gérez vos factures et garanties</string>
+    <string name="document_added_success">%s ajouté avec succès</string>
+    <string name="document_deleted_success">%s supprimé</string>
+    <string name="quota_exceeded">Limite de documents atteinte. Passez à Premium !</string>
+    <string name="expand">Développer</string>
+    <string name="collapse">Réduire</string>
     <string name="cancel">Annuler</string>
     <string name="delete">Supprimer</string>
     <string name="download">Télécharger</string>
@@ -94,8 +139,6 @@
     <string name="devices_label">Appareils</string>
     <string name="documents_label">Documents</string>
     <string name="active_warranties_label">Garanties actives</string>
-    <string name="expand">Développer</string>
-    <string name="collapse">Réduire</string>
     
     <!-- Account Screen -->
     <string name="account_title">Compte</string>
@@ -106,6 +149,7 @@
     <string name="first_choice">1er choix</string>
     <string name="second_choice">2ème choix</string>
     <string name="third_choice">3ème choix</string>
+    <string name="documents_suffix">documents</string>
     <string name="preferences_explanation">L\'ordre de vos préférences ajuste l\'algorithme du Score Wattson. Vos critères prioritaires auront plus de poids dans la note finale des produits scannés.</string>
     <string name="premium_member">Membre premium</string>
     <string name="sign_out">Déconnexion</string>
@@ -136,6 +180,7 @@
     <!-- Repair Screen -->
     <string name="repair_title">Réparation</string>
     <string name="repair_subtitle">Diagnostiquez et réparez vos appareils avec l\'aide de notre assistant IA</string>
+    <string name="repair_case_created">Cas de réparation créé</string>
     <string name="new_repair">Nouvelle réparation</string>
     <string name="active_repairs">Réparations en cours</string>
     <string name="completed_repairs">Réparations terminées</string>
@@ -169,6 +214,6 @@
     <string name="error_network">Erreur de connexion réseau</string>
     <string name="error_invalid_email">Email invalide</string>
     <string name="error_invalid_password">Le mot de passe doit contenir au moins 8 caractères</string>
+    <string name="error">Erreur</string>
     <string name="error_passwords_dont_match">Les mots de passe ne correspondent pas</string>
-    <string name="retry">Réessayer</string>
 </resources>

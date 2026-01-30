@@ -46,18 +46,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wattson.R
-import com.wattson.domain.model.AuthProvider
+import com.wattson.ui.components.TermsAndConditionsText
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonOAuthButton
 import com.wattson.ui.components.WattsonPageTitle
@@ -131,8 +128,8 @@ fun RegisterScreen(
                         
                         // Title and subtitle
                         WattsonPageTitle(
-                            title = "S'inscrire",
-                            subtitle = "Rejoignez la communauté Wattson"
+                            title = stringResource(id = R.string.register_title),
+                            subtitle = stringResource(id = R.string.register_subtitle)
                         )
                         
                         Spacer(modifier = Modifier.height(32.dp))
@@ -141,8 +138,8 @@ fun RegisterScreen(
                         WattsonTextField(
                             value = uiState.email,
                             onValueChange = onEmailChange,
-                            label = "Email",
-                            placeholder = "Entrez votre email",
+                            label = stringResource(id = R.string.email),
+                            placeholder = "test@wattson.com",
                             isError = uiState.emailError != null,
                             errorMessage = uiState.emailError,
                             keyboardType = KeyboardType.Email,
@@ -156,8 +153,8 @@ fun RegisterScreen(
                         WattsonPasswordField(
                             value = uiState.password,
                             onValueChange = onPasswordChange,
-                            label = "Password",
-                            placeholder = "Créez un mot de passe",
+                            label = stringResource(id = R.string.password),
+                            placeholder = stringResource(id = R.string.password),
                             isError = uiState.passwordError != null,
                             errorMessage = uiState.passwordError,
                             imeAction = ImeAction.Next,
@@ -170,8 +167,8 @@ fun RegisterScreen(
                         WattsonPasswordField(
                             value = uiState.confirmPassword,
                             onValueChange = onConfirmPasswordChange,
-                            label = "Confirm Password",
-                            placeholder = "Confirmez votre mot de passe",
+                            label = stringResource(id = R.string.confirm_password),
+                            placeholder = stringResource(id = R.string.confirm_password),
                             isError = uiState.confirmPasswordError != null,
                             errorMessage = uiState.confirmPasswordError,
                             imeAction = ImeAction.Done,
@@ -191,7 +188,7 @@ fun RegisterScreen(
                         
                         // Register button
                         WattsonButton(
-                            text = "Continuer",
+                            text = stringResource(id = R.string.continue_button),
                             onClick = onRegister,
                             isLoading = uiState.isLoading,
                             enabled = isFormValid(uiState),
@@ -211,7 +208,7 @@ fun RegisterScreen(
                                 color = MaterialTheme.colorScheme.outlineVariant
                             )
                             Text(
-                                text = "ou",
+                                text = stringResource(id = R.string.or_divider),
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -231,15 +228,16 @@ fun RegisterScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             WattsonOAuthButton(
-                                text = "Google",
+                                text = stringResource(id = R.string.google),
                                 icon = painterResource(id = R.drawable.ic_google),
                                 onClick = onLoginWithGoogle,
                                 modifier = Modifier.weight(1f)
                             )
                             
                             WattsonOAuthButton(
-                                text = "Apple",
+                                text = stringResource(id = R.string.apple),
                                 icon = painterResource(id = R.drawable.ic_apple),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 onClick = onLoginWithApple,
                                 modifier = Modifier.weight(1f)
                             )
@@ -248,13 +246,13 @@ fun RegisterScreen(
                         Spacer(modifier = Modifier.height(24.dp))
                         
                         // Legal text
-                        RegisterLegalText()
+                        TermsAndConditionsText()
                         
                         Spacer(modifier = Modifier.height(32.dp))
                         
                         // Back button
                         WattsonButton(
-                            text = "Retour",
+                            text = stringResource(id = R.string.back),
                             onClick = onNavigateBack,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -267,12 +265,12 @@ fun RegisterScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "Déjà un compte ? ",
+                                text = stringResource(id = R.string.already_have_account),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Se connecter",
+                                text = stringResource(id = R.string.sign_in),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
@@ -307,7 +305,7 @@ private fun PasswordRequirementsHint(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "Le mot de passe doit contenir :",
+            text = stringResource(id = R.string.password_requirements_title),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -317,11 +315,11 @@ private fun PasswordRequirementsHint(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PasswordRequirementChip(
-                text = "8+ caractères",
+                text = stringResource(id = R.string.req_length),
                 isMet = hasMinLength
             )
             PasswordRequirementChip(
-                text = "1 majuscule",
+                text = stringResource(id = R.string.req_uppercase),
                 isMet = hasUppercase
             )
         }
@@ -331,11 +329,11 @@ private fun PasswordRequirementsHint(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PasswordRequirementChip(
-                text = "1 chiffre",
+                text = stringResource(id = R.string.req_digit),
                 isMet = hasDigit
             )
             PasswordRequirementChip(
-                text = "1 spécial",
+                text = stringResource(id = R.string.req_special),
                 isMet = hasSpecial
             )
         }
@@ -418,46 +416,6 @@ private fun RegisterLogo(modifier: Modifier = Modifier) {
             modifier = Modifier.offset(x = (-4).dp)
         )
     }
-}
-
-@Composable
-private fun RegisterLegalText(modifier: Modifier = Modifier) {
-    Text(
-        text = buildAnnotatedString {
-            append("En vous connectant, vous acceptez nos ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Conditions Générales d'Utilisation")
-            }
-            append(" et notre ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Politique de Confidentialité")
-            }
-            append(". Wattson garantit la sécurité de vos factures et données personnelles conformément au ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("RGPD")
-            }
-            append(".")
-        },
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
-        modifier = modifier.padding(horizontal = 8.dp)
-    )
 }
 
 @Composable
