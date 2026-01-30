@@ -3,8 +3,7 @@ package com.wattson.domain.model
 import java.time.Instant
 
 /**
- * Represents a product in the Wattson system
- * Based on the 'products' and 'product_metrics' collections from SFD MongoDB schema
+ * Represents a product in the Wattson system, including optional metrics and imagery.
  */
 data class Product(
     val id: String,
@@ -22,7 +21,7 @@ data class Product(
 )
 
 /**
- * Product categories as displayed in the SFD
+ * Product categories supported by the app.
  */
 enum class ProductCategory {
     ELECTRONIQUE,

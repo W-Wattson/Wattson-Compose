@@ -46,21 +46,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wattson.R
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonOAuthButton
+import com.wattson.ui.components.TermsAndConditionsText
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonTheme
 import kotlinx.coroutines.delay
@@ -169,14 +166,14 @@ fun AuthScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         WattsonButton(
-                            text = "Se connecter",
+                            text = stringResource(id = R.string.sign_in),
                             onClick = onNavigateToLogin,
                             isLoading = uiState.isLoading,
                             modifier = Modifier.fillMaxWidth()
                         )
                         
                         WattsonButton(
-                            text = "S'inscrire",
+                            text = stringResource(id = R.string.sign_up),
                             onClick = onNavigateToRegister,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -205,7 +202,7 @@ fun AuthScreen(
                                 color = MaterialTheme.colorScheme.outlineVariant
                             )
                             Text(
-                                text = "ou",
+                                text = stringResource(id = R.string.or_divider),
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -225,15 +222,16 @@ fun AuthScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             WattsonOAuthButton(
-                                text = "Google",
+                                text = stringResource(id = R.string.google),
                                 icon = painterResource(id = R.drawable.ic_google),
                                 onClick = onLoginWithGoogle,
                                 modifier = Modifier.weight(1f)
                             )
                             
                             WattsonOAuthButton(
-                                text = "Apple",
+                                text = stringResource(id = R.string.apple),
                                 icon = painterResource(id = R.drawable.ic_apple),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 onClick = onLoginWithApple,
                                 modifier = Modifier.weight(1f)
                             )
@@ -248,7 +246,7 @@ fun AuthScreen(
                     visible = showLegal,
                     enter = fadeIn(animationSpec = tween(500))
                 ) {
-                    LegalDisclaimer()
+                    TermsAndConditionsText()
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -297,46 +295,6 @@ private fun WattsonLogo(modifier: Modifier = Modifier) {
 /**
  * Legal disclaimer text with GDPR compliance mention.
  */
-@Composable
-private fun LegalDisclaimer(modifier: Modifier = Modifier) {
-    Text(
-        text = buildAnnotatedString {
-            append("En vous connectant, vous acceptez nos ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Conditions Générales d'Utilisation")
-            }
-            append(" et notre ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("Politique de Confidentialité")
-            }
-            append(". Wattson garantit la sécurité de vos factures et données personnelles conformément au ")
-            withStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-            ) {
-                append("RGPD")
-            }
-            append(".")
-        },
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
-        modifier = modifier.padding(horizontal = 16.dp)
-    )
-}
-
 @Composable
 private fun FloatingGlowBackground() {
     val infiniteTransition = rememberInfiniteTransition(label = "glowTransition")

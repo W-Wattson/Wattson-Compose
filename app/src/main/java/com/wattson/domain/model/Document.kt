@@ -4,8 +4,7 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * Represents a document stored in the user's Conciergerie
- * Based on 'tickets' and 'warranties' collections from SFD MongoDB schema
+ * Represents a document stored in the user's Conciergerie, including metadata, OCR data, and soft-delete state.
  */
 data class Document(
     val id: String,
@@ -26,7 +25,7 @@ data class Document(
 }
 
 /**
- * Document types as shown in the SFD maquettes
+ * Document types handled by the app.
  */
 enum class DocumentType {
     FACTURE,  // Invoice/Receipt
@@ -91,8 +90,7 @@ enum class ReminderType {
 }
 
 /**
- * OCR extracted data from receipt/invoice images
- * Based on 'tickets.ocr' schema in SFD
+ * OCR data extracted from receipt or invoice images.
  */
 data class OcrData(
     val rawText: String,
@@ -122,7 +120,7 @@ data class DocumentsByYear(
 )
 
 /**
- * File type constraints as defined in SFD section 3.1
+ * File type constraints enforced during document uploads.
  */
 object DocumentConstraints {
     val ALLOWED_MIME_TYPES = listOf(

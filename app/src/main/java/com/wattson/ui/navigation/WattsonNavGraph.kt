@@ -39,9 +39,8 @@ import com.wattson.ui.screens.scan.ScanScreen
 private const val TRANSITION_DURATION = 300
 
 /**
- * Main navigation host for the Wattson application
- * Implements the navigation hierarchy from SFD section 6.1
- * 
+ * Main navigation host for the Wattson application.
+ *
  * @param navController The navigation controller
  * @param startDestination The starting route (Auth or History based on login state)
  * @param innerPadding Padding from scaffold

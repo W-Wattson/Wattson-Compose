@@ -238,7 +238,7 @@ private fun ProfileSection(
             if (documentLimit != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "$documentCount / $documentLimit documents",
+                    text = "$documentCount / $documentLimit ${stringResource(R.string.documents_suffix)}",
                     style = MaterialTheme.typography.labelMedium,
                     color = if (documentCount >= documentLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
@@ -282,7 +282,7 @@ private fun PreferencesSection(
 
         // Explanation text
         Text(
-            text = "L'ordre de vos préférences ajuste l'algorithme du Score Wattson. Vos critères prioritaires auront plus de poids dans la note finale des produits scannés.",
+            text = stringResource(R.string.preferences_explanation),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -298,16 +298,16 @@ private fun PreferenceCard(
     modifier: Modifier = Modifier
 ) {
     val (icon, label, color) = when (preferenceType) {
-        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, "Écologie", WattsonColors.EnergyClassA)
-        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, "Économique", WattsonColors.Info)
-        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, "Réparabilité", WattsonColors.Warning)
+        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, stringResource(R.string.ecology), WattsonColors.EnergyClassA)
+        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, stringResource(R.string.economy), WattsonColors.Info)
+        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, stringResource(R.string.repairability_pref), WattsonColors.Warning)
     }
 
     val rankLabel = when (rank) {
-        1 -> "1er choix"
-        2 -> "2ème choix"
-        3 -> "3ème choix"
-        else -> "${rank}ème choix"
+        1 -> stringResource(R.string.first_choice)
+        2 -> stringResource(R.string.second_choice)
+        3 -> stringResource(R.string.third_choice)
+        else -> stringResource(R.string.third_choice) // Fallback
     }
 
     Card(
