@@ -761,6 +761,7 @@ private fun getCategoryLabel(category: ProductCategory): String {
     return when (category) {
         ProductCategory.ELECTRONIQUE -> "Électronique"
         ProductCategory.ELECTROMENAGER -> "Électroménager"
+        ProductCategory.ECLAIRAGE -> "Éclairage"
         ProductCategory.GAMING -> "Gaming"
         ProductCategory.CLIMATISATION -> "Climatisation"
         ProductCategory.INFORMATIQUE -> "Informatique"

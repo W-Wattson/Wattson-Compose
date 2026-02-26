@@ -3,19 +3,15 @@ package com.wattson.ui.screens.product
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wattson.domain.model.CarbonScore
 import com.wattson.domain.model.DurabilityScore
-import com.wattson.domain.model.EnergyClass
 import com.wattson.domain.model.EnergyScore
 import com.wattson.domain.model.GlobalScore
-import com.wattson.domain.model.MetricSource
 import com.wattson.domain.model.Product
 import com.wattson.domain.model.ProductCategory
-import com.wattson.domain.model.ProductCharacteristics
 import com.wattson.domain.model.ProductMetrics
 import com.wattson.domain.model.ProductScores
 import com.wattson.domain.model.RepairabilityScore
-import com.wattson.domain.model.ResistanceClass
+import com.wattson.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,11 +65,9 @@ sealed interface ProductDetailIntent {
  */
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
-    // TODO: Inject use cases when implemented
-    // private val getProductByIdUseCase: GetProductByIdUseCase,
-    // private val getProductMetricsUseCase: GetProductMetricsUseCase,
-    // private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    savedStateHandle: SavedStateHandle,
+    private val productRepository: com.wattson.data.repository.ProductRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val productId: String = savedStateHandle.get<String>("productId") ?: ""
@@ -109,27 +103,57 @@ class ProductDetailViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                // TODO: Replace with actual use cases
-                // val product = getProductByIdUseCase(productId)
-                // val metrics = getProductMetricsUseCase(product.gtin)
-                
-                kotlinx.coroutines.delay(500)
-                
-                // Mock data for development
-                val (product, metrics) = getMockProductData()
-                val globalScore = calculateGlobalScore(metrics)
+                android.util.Log.d("ProductDetailViewModel", "Loading product: $productId")
 
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        product = product,
-                        metrics = metrics,
-                        globalScore = globalScore,
-                        userRating = 7.5
-                    )
+                // Determine loading strategy based on identifier format
+                val result = when {
+                    // Scan history lookup: "scan:{scanId}" — load from stored snapshot
+                    productId.startsWith("scan:") -> {
+                        val scanId = productId.removePrefix("scan:")
+                        val userId = authRepository.getCurrentUserId()
+                        productRepository.getProductFromScan(userId, scanId)
+                    }
+                    // EPREL direct lookup: "eprel:lightsources/2640403"
+                    productId.startsWith("eprel:") -> {
+                        val eprelPath = productId.removePrefix("eprel:")
+                        val parts = eprelPath.split("/", limit = 2)
+                        if (parts.size == 2) {
+                            productRepository.getProductByEprelId(parts[0], parts[1])
+                        } else {
+                            Result.failure(Exception("Invalid EPREL identifier: $productId"))
+                        }
+                    }
+                    // Looks like an EAN/GTIN
+                    productId.length in 8..13 && productId.all { it.isDigit() } -> {
+                        productRepository.getProductByEan(productId)
+                    }
+                    // Try as internal ID
+                    else -> {
+                        productRepository.getProductById(productId)
+                    }
                 }
-                
+
+                result.fold(
+                    onSuccess = { product ->
+                        android.util.Log.d("ProductDetailViewModel", "Product loaded: ${product.name}")
+                        updateUiWithProduct(product)
+                    },
+                    onFailure = { error ->
+                        android.util.Log.e("ProductDetailViewModel", "Failed to load product from catalog", error)
+                        // Fallback: try to find product data from scan history snapshot
+                        val snapshotProduct = loadFromScanHistory(productId)
+                        if (snapshotProduct != null) {
+                            android.util.Log.d("ProductDetailViewModel", "Using scan snapshot: ${snapshotProduct.name}")
+                            updateUiWithProduct(snapshotProduct)
+                        } else {
+                            val fallbackProduct = createFallbackProduct(productId)
+                            updateUiWithProduct(fallbackProduct)
+                        }
+                    }
+                )
+
             } catch (e: Exception) {
+                android.util.Log.e("ProductDetailViewModel", "Exception loading product", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -138,6 +162,119 @@ class ProductDetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun updateUiWithProduct(product: Product) {
+        val metrics = createMetricsFromProduct(product)
+        val globalScore = calculateGlobalScore(metrics)
+
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                product = product,
+                metrics = metrics,
+                globalScore = globalScore,
+                userRating = null
+            )
+        }
+    }
+
+    /**
+     * Tries to load product data from scan history snapshot.
+     * This is used when the product is not in the catalog but was scanned before.
+     */
+    private suspend fun loadFromScanHistory(ean: String): Product? {
+        return try {
+            val userId = authRepository.getCurrentUserId()
+            val historyResult = productRepository.getScanHistory(userId, 0, 50)
+            historyResult.getOrNull()
+                ?.firstOrNull { it.gtin == ean }
+                ?.let { scan ->
+                    Product(
+                        id = ean,
+                        gtin = ean,
+                        name = scan.snapshotData.productName,
+                        brand = scan.snapshotData.brand,
+                        model = scan.snapshotData.model,
+                        category = scan.snapshotData.category,
+                        commercialName = scan.snapshotData.commercialName,
+                        energyLabel = scan.snapshotData.energyClass,
+                        kwhPerYear = scan.snapshotData.kwhPerYear,
+                        energyEfficiencyIndex = scan.snapshotData.energyEfficiencyIndex,
+                        powerStandbyMode = scan.snapshotData.powerStandbyMode,
+                        powerOffMode = scan.snapshotData.powerOffMode,
+                        noiseDecibels = scan.snapshotData.noiseDecibels,
+                        noiseClass = scan.snapshotData.noiseClass,
+                        wetGripClass = scan.snapshotData.wetGripClass,
+                        repairabilityIndex = scan.snapshotData.repairabilityIndex,
+                        eprelProductGroup = scan.snapshotData.eprelProductGroup,
+                        eprelDetails = scan.snapshotData.eprelDetails,
+                        implementingAct = scan.snapshotData.implementingAct,
+                        onMarketStartYear = scan.snapshotData.onMarketStartYear,
+                        productFicheUrl = scan.snapshotData.productFicheUrl,
+                        sourceName = scan.snapshotData.sourceName,
+                        sourceUrl = scan.snapshotData.sourceUrl
+                    )
+                }
+        } catch (e: Exception) {
+            android.util.Log.w("ProductDetailViewModel", "Failed to load from scan history", e)
+            null
+        }
+    }
+
+    private fun createFallbackProduct(ean: String): Product {
+        return Product(
+            id = ean,
+            gtin = ean,
+            name = "Produit scanné",
+            brand = "Marque inconnue",
+            model = null,
+            category = ProductCategory.OTHER,
+            energyLabel = null
+        )
+    }
+
+    private fun createMetricsFromProduct(product: Product): ProductMetrics {
+        // Count non-null environmental fields for completeness
+        val totalFields = 10
+        val filledFields = listOfNotNull(
+            product.energyLabel,
+            product.kwhPerYear,
+            product.energyEfficiencyIndex,
+            product.noiseDecibels,
+            product.wetGripClass,
+            product.repairabilityIndex,
+            product.implementingAct,
+            product.onMarketStartYear,
+            product.sourceName,
+            product.productFicheUrl
+        ).size
+
+        return ProductMetrics(
+            version = 1,
+            completeness = filledFields.toDouble() / totalFields,
+            scores = ProductScores(
+                energy = product.energyLabel?.let {
+                    EnergyScore(value = it.name, kwhPerYear = product.kwhPerYear)
+                },
+                carbon = null,
+                durability = product.characteristics?.enduranceHours?.let {
+                    DurabilityScore(value = it / 10.0)
+                },
+                repairability = product.repairabilityIndex?.let {
+                    val repClass = when {
+                        it >= 8.0 -> "A"
+                        it >= 6.0 -> "B"
+                        it >= 4.0 -> "C"
+                        it >= 2.0 -> "D"
+                        else -> "E"
+                    }
+                    RepairabilityScore(value = it, repairabilityClass = repClass)
+                }
+            ),
+            sources = emptyList(),
+            fetchedAt = Instant.now()
+        )
     }
 
     private fun refreshProduct() {
@@ -207,40 +344,4 @@ class ProductDetailViewModel @Inject constructor(
         return GlobalScore(numericValue = average * 10, letter = letter, label = label)
     }
 
-    // Mock data for development
-    private fun getMockProductData(): Pair<Product, ProductMetrics> {
-        val product = Product(
-            id = productId,
-            gtin = "3760000000001",
-            name = "iPhone 13 Pro",
-            brand = "Apple",
-            model = "A3517",
-            category = ProductCategory.ELECTRONIQUE,
-            energyLabel = EnergyClass.E,
-            repairabilityIndex = 2.85,
-            characteristics = ProductCharacteristics(
-                enduranceHours = 40,
-                dropResistanceClass = ResistanceClass.B
-            ),
-            imageUrl = null,
-            updatedAt = Instant.now()
-        )
-
-        val metrics = ProductMetrics(
-            version = 1,
-            completeness = 0.85,
-            scores = ProductScores(
-                energy = EnergyScore(value = "E", kwhPerYear = 25),
-                carbon = CarbonScore(value = 5.5, kgLifetime = 75.0),
-                durability = DurabilityScore(value = 6.0),
-                repairability = RepairabilityScore(value = 2.85, repairabilityClass = "D")
-            ),
-            sources = listOf(
-                MetricSource(type = "ADEME", fetchedAt = Instant.now())
-            ),
-            fetchedAt = Instant.now()
-        )
-
-        return product to metrics
-    }
 }
