@@ -40,6 +40,7 @@ import com.wattson.ui.screens.history.HistoryScreen
 import com.wattson.ui.screens.premium.PremiumScreen
 import com.wattson.ui.screens.product.ProductDetailScreen
 import com.wattson.ui.screens.repair.RepairScreen
+import com.wattson.ui.screens.repair.chat.RepairChatScreen
 import com.wattson.ui.screens.scan.ScanScreen
 
 private const val TRANSITION_DURATION = 300
@@ -237,12 +238,8 @@ fun WattsonNavHost(
                 return@composable
             }
             RepairScreen(
-                onNavigateToScan = { 
-                    navController.navigate(WattsonRoute.Scan) 
-                },
-                onNavigateToCaseDetail = { caseId ->
-                    // TODO: Navigate to case detail when implemented
-                    // navController.navigate(WattsonRoute.RepairCaseDetail(caseId))
+                onNavigateToChat = { conversationId ->
+                    navController.navigate(WattsonRoute.RepairChat(conversationId))
                 }
             )
         }
@@ -371,6 +368,22 @@ fun WattsonNavHost(
             val documentDetail: WattsonRoute.DocumentDetail = backStackEntry.toRoute()
             DocumentDetailScreen(
                 documentId = documentDetail.documentId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<WattsonRoute.RepairChat> { backStackEntry ->
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
+            val repairChat: WattsonRoute.RepairChat = backStackEntry.toRoute()
+            RepairChatScreen(
+                conversationId = repairChat.conversationId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -1,10 +1,13 @@
 package com.wattson.ui.screens.repair;
 
+import com.wattson.data.repository.AuthRepository;
+import com.wattson.data.repository.RepairChatRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.annotation.processing.Generated;
+import javax.inject.Provider;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -22,20 +25,29 @@ import javax.annotation.processing.Generated;
     "deprecation"
 })
 public final class RepairViewModel_Factory implements Factory<RepairViewModel> {
+  private final Provider<RepairChatRepository> repairChatRepositoryProvider;
+
+  private final Provider<AuthRepository> authRepositoryProvider;
+
+  public RepairViewModel_Factory(Provider<RepairChatRepository> repairChatRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    this.repairChatRepositoryProvider = repairChatRepositoryProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
+  }
+
   @Override
   public RepairViewModel get() {
-    return newInstance();
+    return newInstance(repairChatRepositoryProvider.get(), authRepositoryProvider.get());
   }
 
-  public static RepairViewModel_Factory create() {
-    return InstanceHolder.INSTANCE;
+  public static RepairViewModel_Factory create(
+      Provider<RepairChatRepository> repairChatRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    return new RepairViewModel_Factory(repairChatRepositoryProvider, authRepositoryProvider);
   }
 
-  public static RepairViewModel newInstance() {
-    return new RepairViewModel();
-  }
-
-  private static final class InstanceHolder {
-    private static final RepairViewModel_Factory INSTANCE = new RepairViewModel_Factory();
+  public static RepairViewModel newInstance(RepairChatRepository repairChatRepository,
+      AuthRepository authRepository) {
+    return new RepairViewModel(repairChatRepository, authRepository);
   }
 }

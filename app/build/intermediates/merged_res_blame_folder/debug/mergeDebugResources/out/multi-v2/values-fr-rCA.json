@@ -1,27 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.wattson.app-mergeDebugResources-72:/values-fr-rCA/values-fr-rCA.xml",
+            "outputFile": "com.wattson.app-mergeDebugResources-76:/values-fr-rCA/values-fr-rCA.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\3ce5ad2d93937f4468f497e3775381f5\\transformed\\core-1.15.0\\res\\values-fr-rCA\\values-fr-rCA.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,153,255,354,456,560,664,778",
-                        "endColumns": "97,101,98,101,103,103,113,100",
-                        "endOffsets": "148,250,349,451,555,659,773,874"
-                    },
-                    "to": {
-                        "startLines": "29,30,31,32,33,34,35,127",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "2855,2953,3055,3154,3256,3360,3464,13933",
-                        "endColumns": "97,101,98,101,103,103,113,100",
-                        "endOffsets": "2948,3050,3149,3251,3355,3459,3573,14029"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\27f68aacda7267a5496e585588a96ddb\\transformed\\appcompat-1.6.1\\res\\values-fr-rCA\\values-fr-rCA.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\e32ab009c1b8191917efff4df26902b1\\transformed\\appcompat-1.6.1\\res\\values-fr-rCA\\values-fr-rCA.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,41 +21,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\f3afb71872e2e7ce672302931fb976ae\\transformed\\play-services-basement-18.4.0\\res\\values-fr-rCA\\values.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\2c31a960c4924a7d3665fd7027502771\\transformed\\core-1.15.0\\res\\values-fr-rCA\\values-fr-rCA.xml",
                     "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "199",
-                        "endColumns": "156",
-                        "endOffsets": "355"
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,153,255,354,456,560,664,778",
+                        "endColumns": "97,101,98,101,103,103,113,100",
+                        "endOffsets": "148,250,349,451,555,659,773,874"
                     },
                     "to": {
-                        "startLines": "46",
-                        "startColumns": "4",
-                        "startOffsets": "4828",
-                        "endColumns": "160",
-                        "endOffsets": "4984"
+                        "startLines": "29,30,31,32,33,34,35,127",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "2855,2953,3055,3154,3256,3360,3464,13933",
+                        "endColumns": "97,101,98,101,103,103,113,100",
+                        "endOffsets": "2948,3050,3149,3251,3355,3459,3573,14029"
                     }
                 },
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\23fbe91be73e79cf61da5926199a9885\\transformed\\ui-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "105,204,292,390,496,583,663,757,849,936,1017,1102,1178,1253,1331,1405,1484,1553",
-                        "endColumns": "98,87,97,105,86,79,93,91,86,80,84,75,74,77,73,78,68,121",
-                        "endOffsets": "199,287,385,491,578,658,752,844,931,1012,1097,1173,1248,1326,1400,1479,1548,1670"
-                    },
-                    "to": {
-                        "startLines": "36,37,56,57,58,59,60,118,119,120,121,123,124,125,126,128,129,130",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "3578,3677,6180,6278,6384,6471,6551,13198,13290,13377,13458,13630,13706,13781,13859,14034,14113,14182",
-                        "endColumns": "98,87,97,105,86,79,93,91,86,80,84,75,74,77,73,78,68,121",
-                        "endOffsets": "3672,3760,6273,6379,6466,6546,6640,13285,13372,13453,13538,13701,13776,13854,13928,14108,14177,14299"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\4c4d76e12be3b279d36b6821a3be35fa\\transformed\\foundation-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\b2bc40a5907758f0e3de7b8a0eede0b3\\transformed\\foundation-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
@@ -89,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\e2648fb9ccb7870d8a3f6fa24d97b813\\transformed\\material3-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\629b18574f52f46821bed01dbeb6578a\\transformed\\material3-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -106,7 +72,41 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\5135bea4e9e3a568778621a9e66b28cc\\transformed\\play-services-base-18.5.0\\res\\values-fr-rCA\\values.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\5cb5d02e59878289bfb4c61935de8e31\\transformed\\play-services-basement-18.4.0\\res\\values-fr-rCA\\values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "199",
+                        "endColumns": "156",
+                        "endOffsets": "355"
+                    },
+                    "to": {
+                        "startLines": "46",
+                        "startColumns": "4",
+                        "startOffsets": "4828",
+                        "endColumns": "160",
+                        "endOffsets": "4984"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\a7a39d4b7ab046871dc256cf19f5490f\\transformed\\ui-release\\res\\values-fr-rCA\\values-fr-rCA.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,204,292,390,496,583,663,757,849,936,1017,1102,1178,1253,1331,1405,1484,1553",
+                        "endColumns": "98,87,97,105,86,79,93,91,86,80,84,75,74,77,73,78,68,121",
+                        "endOffsets": "199,287,385,491,578,658,752,844,931,1012,1097,1173,1248,1326,1400,1479,1548,1670"
+                    },
+                    "to": {
+                        "startLines": "36,37,56,57,58,59,60,118,119,120,121,123,124,125,126,128,129,130",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "3578,3677,6180,6278,6384,6471,6551,13198,13290,13377,13458,13630,13706,13781,13859,14034,14113,14182",
+                        "endColumns": "98,87,97,105,86,79,93,91,86,80,84,75,74,77,73,78,68,121",
+                        "endOffsets": "3672,3760,6273,6379,6466,6546,6640,13285,13372,13453,13538,13701,13776,13854,13928,14108,14177,14299"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\257d58f05c2fbfaf8605993849450d8a\\transformed\\play-services-base-18.5.0\\res\\values-fr-rCA\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

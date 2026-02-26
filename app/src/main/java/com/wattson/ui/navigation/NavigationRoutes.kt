@@ -85,6 +85,13 @@ sealed interface WattsonRoute {
      */
     @Serializable
     data class DocumentDetail(val documentId: String) : WattsonRoute
+
+    /**
+     * Repair chat screen - Conversation with AI repair assistant
+     * @param conversationId The conversation ID
+     */
+    @Serializable
+    data class RepairChat(val conversationId: String) : WattsonRoute
 }
 
 /**

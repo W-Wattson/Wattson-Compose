@@ -179,24 +179,17 @@
     
     <!-- Repair Screen -->
     <string name="repair_title">Repair</string>
-    <string name="repair_subtitle">Diagnose and repair your devices with our AI assistant</string>
-    <string name="repair_case_created">Repair case created</string>
-    <string name="new_repair">New repair</string>
-    <string name="active_repairs">Active repairs</string>
-    <string name="completed_repairs">Completed repairs</string>
-    <string name="repair_tips">Maintenance tips</string>
-    <string name="no_active_repairs">No active repairs</string>
-    <string name="empty_repair_instruction">Scan a product to start an AI-assisted diagnostic</string>
-    <string name="start_repair_dialog_title">New repair</string>
-    <string name="start_repair_dialog_message">To start an AI-assisted diagnostic, first scan your product\'s barcode.</string>
-    <string name="scan_product">Scan a product</string>
-    <string name="symptoms_label">Symptoms: %s</string>
-    <string name="status_open">Open</string>
-    <string name="status_diagnosing">Diagnosing</string>
-    <string name="status_waiting_parts">Waiting for parts</string>
-    <string name="status_in_repair">In repair</string>
-    <string name="status_completed">Completed</string>
-    <string name="status_cancelled">Cancelled</string>
+    <string name="repair_subtitle">Chat with our AI assistant to diagnose your devices</string>
+    <string name="repair_new_conversation">New conversation</string>
+    <string name="repair_no_conversations">No conversations</string>
+    <string name="repair_empty_instruction">Start a conversation with our AI assistant to get help repairing your devices</string>
+    <string name="repair_start_conversation">Start a conversation</string>
+    <string name="repair_delete_conversation">Delete</string>
+    <string name="repair_assistant_title">Repair Assistant</string>
+    <string name="repair_input_placeholder">Describe your problem…</string>
+    <string name="repair_send">Send</string>
+    <string name="repair_typing">Responding…</string>
+    <string name="repair_welcome_message">Hello! I\'m your repair assistant. Describe the problem with your device and I\'ll help you diagnose and fix it.</string>
     <string name="close">Close</string>
     
     <!-- Product Categories -->
