@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,14 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
+
+// Load local.properties for custom config (api.base.url, etc.)
+val localPropsFile = rootProject.file("local.properties")
+val localProperties = Properties()
+if (localPropsFile.exists()) {
+    localPropsFile.inputStream().use { stream -> localProperties.load(stream) }
+}
+val apiBaseUrl: String = localProperties.getProperty("api.base.url", "http://10.0.2.2:8080/")
 
 android {
     namespace = "com.wattson"
@@ -22,9 +32,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // API base URL from local.properties - defaults to emulator localhost
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -32,6 +49,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
         }
     }
 
@@ -46,6 +64,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -94,6 +113,9 @@ dependencies {
 
     // DataStore
     implementation(libs.datastore.preferences)
+
+    // Security (Encrypted SharedPreferences)
+    implementation(libs.security.crypto)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

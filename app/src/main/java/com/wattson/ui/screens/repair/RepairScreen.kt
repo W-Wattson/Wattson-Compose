@@ -785,6 +785,11 @@ private fun getCategoryInfo(category: ProductCategory): CategoryInfo {
             label = stringResource(R.string.cat_audio_video),
             color = Color(0xFFE91E63)
         )
+        ProductCategory.ECLAIRAGE -> CategoryInfo(
+            icon = Icons.Default.Build,
+            label = stringResource(R.string.cat_lighting),
+            color = Color(0xFFFFC107)
+        )
         ProductCategory.OTHER -> CategoryInfo(
             icon = Icons.Default.Build,
             label = stringResource(R.string.cat_other),

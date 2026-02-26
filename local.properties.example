@@ -1,0 +1,14 @@
+# Wattson Mobile Local Configuration
+# Copy this file to local.properties (which is gitignored)
+# and adjust values as needed
+
+# Android SDK location (required - set to your SDK path)
+sdk.dir=/path/to/Android/Sdk
+
+# API Base URL Configuration
+# For Android Emulator: 10.0.2.2 maps to host machine's localhost
+# For physical device: use your computer's IP address on the network
+api.base.url=http://10.0.2.2:8080/
+
+# Example for physical device on same network:
+# api.base.url=http://192.168.1.100:8080/

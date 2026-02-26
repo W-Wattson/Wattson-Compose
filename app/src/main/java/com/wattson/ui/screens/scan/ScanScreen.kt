@@ -21,24 +21,36 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +58,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -154,6 +168,37 @@ fun ScanScreen(
                 ) {
                     ProcessingOverlay()
                 }
+
+                // EPREL search button (bottom-left)
+                if (!uiState.isProcessing) {
+                    Surface(
+                        onClick = { onIntent(ScanIntent.ShowEprelDialog) },
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(20.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        shadowElevation = 6.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.eprel_search),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -170,6 +215,16 @@ fun ScanScreen(
                 message = uiState.errorMessage ?: "",
                 onDismiss = { onIntent(ScanIntent.DismissError) },
                 onRetry = { onIntent(ScanIntent.RetryLastScan) }
+            )
+        }
+
+        // EPREL search bottom sheet
+        if (uiState.showEprelDialog) {
+            EprelSearchBottomSheet(
+                onDismiss = { onIntent(ScanIntent.DismissEprelDialog) },
+                onSearch = { category, id ->
+                    onIntent(ScanIntent.SearchByEprelId(category, id))
+                }
             )
         }
     }
@@ -220,15 +275,18 @@ private fun CameraPreviewContent(
                             it.setSurfaceProvider(previewView.surfaceProvider)
                         }
 
+                    val barcodeAnalyzer = BarcodeAnalyzer(
+                        onBarcodeDetected = { barcode, format ->
+                            onBarcodeDetected(barcode, format)
+                        },
+                        onError = { /* Ignore errors silently */ }
+                    )
+
                     val imageAnalysis = ImageAnalysis.Builder()
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also { analysis ->
-                            analysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                                // TODO: Implement barcode analysis with ML Kit
-                                // For now, just close the image
-                                imageProxy.close()
-                            }
+                            analysis.setAnalyzer(cameraExecutor, barcodeAnalyzer)
                         }
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -429,6 +487,139 @@ private fun ErrorBanner(
             WattsonButton(
                 text = stringResource(R.string.retry),
                 onClick = onRetry,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+// ===== EPREL SEARCH BOTTOM SHEET =====
+
+/**
+ * EPREL categories available for search.
+ */
+private data class EprelCategory(
+    val apiName: String,
+    val displayName: String
+)
+
+private val EPREL_CATEGORIES = listOf(
+    EprelCategory("lightsources", "Sources lumineuses"),
+    EprelCategory("electronicdisplays", "Écrans / TV"),
+    EprelCategory("washingmachines2019", "Lave-linge"),
+    EprelCategory("washerdryers", "Lave-linge séchant"),
+    EprelCategory("dishwashers2019", "Lave-vaisselle"),
+    EprelCategory("refrigeratingappliances2019", "Réfrigérateurs"),
+    EprelCategory("tumbledryers", "Sèche-linge"),
+    EprelCategory("ovens", "Fours"),
+    EprelCategory("rangehoods", "Hottes aspirantes"),
+    EprelCategory("airconditioners", "Climatiseurs"),
+    EprelCategory("tyres", "Pneus"),
+    EprelCategory("spaceheaters", "Chauffage"),
+    EprelCategory("waterheaters", "Chauffe-eau"),
+    EprelCategory("electronicdisplays20232766", "Écrans (2023)"),
+    EprelCategory("smartphonestablets20231669", "Smartphones / Tablettes")
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EprelSearchBottomSheet(
+    onDismiss: () -> Unit,
+    onSearch: (category: String, registrationNumber: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var selectedCategory by remember { mutableStateOf(EPREL_CATEGORIES[0]) }
+    var registrationNumber by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Title
+            Text(
+                text = stringResource(R.string.eprel_search_title),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                text = stringResource(R.string.eprel_search_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // Category dropdown
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = it }
+            ) {
+                OutlinedTextField(
+                    value = selectedCategory.displayName,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.eprel_category)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    EPREL_CATEGORIES.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category.displayName) },
+                            onClick = {
+                                selectedCategory = category
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Registration number input
+            OutlinedTextField(
+                value = registrationNumber,
+                onValueChange = { registrationNumber = it.filter { c -> c.isLetterOrDigit() } },
+                label = { Text(stringResource(R.string.eprel_registration_number)) },
+                placeholder = { Text("ex: 2640403") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        if (registrationNumber.isNotBlank()) {
+                            onSearch(selectedCategory.apiName, registrationNumber)
+                        }
+                    }
+                ),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Search button
+            WattsonButton(
+                text = stringResource(R.string.eprel_search_button),
+                onClick = {
+                    if (registrationNumber.isNotBlank()) {
+                        onSearch(selectedCategory.apiName, registrationNumber)
+                    }
+                },
+                enabled = registrationNumber.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             )
         }

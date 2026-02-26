@@ -206,7 +206,7 @@ private fun HistoryList(
             ) {
                 ProductCard(
                     entry = entry,
-                    onClick = { onProductClick(entry.scan.gtin) },
+                    onClick = { onProductClick("scan:${entry.scan.id}") },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
