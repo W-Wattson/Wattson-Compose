@@ -1,10 +1,13 @@
 package com.wattson.ui.screens.documents;
 
+import com.wattson.data.repository.AuthRepository;
+import com.wattson.data.repository.DocumentRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.annotation.processing.Generated;
+import javax.inject.Provider;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -22,20 +25,29 @@ import javax.annotation.processing.Generated;
     "deprecation"
 })
 public final class DocumentsViewModel_Factory implements Factory<DocumentsViewModel> {
+  private final Provider<DocumentRepository> documentRepositoryProvider;
+
+  private final Provider<AuthRepository> authRepositoryProvider;
+
+  public DocumentsViewModel_Factory(Provider<DocumentRepository> documentRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    this.documentRepositoryProvider = documentRepositoryProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
+  }
+
   @Override
   public DocumentsViewModel get() {
-    return newInstance();
+    return newInstance(documentRepositoryProvider.get(), authRepositoryProvider.get());
   }
 
-  public static DocumentsViewModel_Factory create() {
-    return InstanceHolder.INSTANCE;
+  public static DocumentsViewModel_Factory create(
+      Provider<DocumentRepository> documentRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    return new DocumentsViewModel_Factory(documentRepositoryProvider, authRepositoryProvider);
   }
 
-  public static DocumentsViewModel newInstance() {
-    return new DocumentsViewModel();
-  }
-
-  private static final class InstanceHolder {
-    private static final DocumentsViewModel_Factory INSTANCE = new DocumentsViewModel_Factory();
+  public static DocumentsViewModel newInstance(DocumentRepository documentRepository,
+      AuthRepository authRepository) {
+    return new DocumentsViewModel(documentRepository, authRepository);
   }
 }
