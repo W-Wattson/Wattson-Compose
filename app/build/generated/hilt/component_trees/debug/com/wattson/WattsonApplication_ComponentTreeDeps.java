@@ -19,6 +19,7 @@ import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_andro
 import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_components_SingletonComponent;
 import hilt_aggregated_deps._com_wattson_MainActivity_GeneratedInjector;
 import hilt_aggregated_deps._com_wattson_WattsonApplication_GeneratedInjector;
+import hilt_aggregated_deps._com_wattson_di_DatabaseModule;
 import hilt_aggregated_deps._com_wattson_di_NetworkModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_account_AccountViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_account_AccountViewModel_HiltModules_KeyModule;
@@ -36,6 +37,8 @@ import hilt_aggregated_deps._com_wattson_ui_screens_product_ProductDetailViewMod
 import hilt_aggregated_deps._com_wattson_ui_screens_product_ProductDetailViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_repair_RepairViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_repair_RepairViewModel_HiltModules_KeyModule;
+import hilt_aggregated_deps._com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_BindsModule;
+import hilt_aggregated_deps._com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_scan_ScanViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_wattson_ui_screens_scan_ScanViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._dagger_hilt_android_flags_FragmentGetContextFix_FragmentGetContextFixEntryPoint;
@@ -80,6 +83,7 @@ import hilt_aggregated_deps._dagger_hilt_android_internal_modules_HiltWrapper_Ac
     aggregatedDeps = {
         _com_wattson_MainActivity_GeneratedInjector.class,
         _com_wattson_WattsonApplication_GeneratedInjector.class,
+        _com_wattson_di_DatabaseModule.class,
         _com_wattson_di_NetworkModule.class,
         _com_wattson_ui_screens_account_AccountViewModel_HiltModules_BindsModule.class,
         _com_wattson_ui_screens_account_AccountViewModel_HiltModules_KeyModule.class,
@@ -97,6 +101,8 @@ import hilt_aggregated_deps._dagger_hilt_android_internal_modules_HiltWrapper_Ac
         _com_wattson_ui_screens_product_ProductDetailViewModel_HiltModules_KeyModule.class,
         _com_wattson_ui_screens_repair_RepairViewModel_HiltModules_BindsModule.class,
         _com_wattson_ui_screens_repair_RepairViewModel_HiltModules_KeyModule.class,
+        _com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_BindsModule.class,
+        _com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_KeyModule.class,
         _com_wattson_ui_screens_scan_ScanViewModel_HiltModules_BindsModule.class,
         _com_wattson_ui_screens_scan_ScanViewModel_HiltModules_KeyModule.class,
         _dagger_hilt_android_flags_FragmentGetContextFix_FragmentGetContextFixEntryPoint.class,

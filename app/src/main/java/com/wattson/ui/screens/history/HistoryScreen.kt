@@ -241,7 +241,7 @@ private fun EmptyHistoryState(
         Spacer(modifier = Modifier.height(24.dp))
         
         com.wattson.ui.components.WattsonButton(
-            text = stringResource(R.string.scan_product),
+            text = stringResource(R.string.scan_button),
             onClick = onScanClick,
             modifier = Modifier.padding(horizontal = 32.dp)
         )

@@ -18,6 +18,7 @@ mlkitBarcodeScanning = "17.3.0"
 datastore = "1.1.1"
 coroutines = "1.9.0"
 securityCrypto = "1.1.0-alpha06"
+room = "2.6.1"
 
 [libraries]
 # AndroidX Core
@@ -70,6 +71,11 @@ security-crypto = { group = "androidx.security", name = "security-crypto", versi
 
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# Room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 # Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }

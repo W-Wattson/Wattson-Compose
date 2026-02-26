@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.wattson.app-mergeDebugResources-72:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.wattson.app-mergeDebugResources-76:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\27f68aacda7267a5496e585588a96ddb\\transformed\\appcompat-1.6.1\\res\\values-night-v8\\values-night-v8.xml",
+                    "source": "C:\\Users\\victo\\.gradle\\caches\\8.13\\transforms\\e32ab009c1b8191917efff4df26902b1\\transformed\\appcompat-1.6.1\\res\\values-night-v8\\values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
