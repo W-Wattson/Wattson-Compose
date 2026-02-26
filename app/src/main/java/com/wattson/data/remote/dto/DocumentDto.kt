@@ -30,7 +30,7 @@ data class DocumentResponse(
             id = id,
             userId = userId,
             type = mapDocumentType(documentType),
-            productName = ocrData?.merchantName ?: filename ?: "Unknown Document",
+            productName = ocrData?.merchantName ?: filename ?: "Document sans nom",
             productCategory = ProductCategory.OTHER,
             gtin = ocrData?.extractedGtin,
             fileUrl = "", // URL obtained separately via download endpoint
@@ -43,7 +43,10 @@ data class DocumentResponse(
                 currency = ocrData?.currency ?: "EUR"
             ),
             ocrData = ocrData?.toDomain(),
-            uploadedAt = uploadInstant
+            uploadedAt = uploadInstant,
+            filename = filename,
+            mimeType = mimeType,
+            fileSize = fileSize
         )
     }
 

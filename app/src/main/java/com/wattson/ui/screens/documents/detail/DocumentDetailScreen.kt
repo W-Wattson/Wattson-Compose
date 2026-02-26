@@ -76,6 +76,7 @@ import com.wattson.domain.model.DocumentType
 import com.wattson.domain.model.ProductCategory
 import com.wattson.domain.model.WarrantyType
 import com.wattson.ui.theme.WattsonTheme
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -98,27 +99,52 @@ fun DocumentDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
+    val openErrorMsg = stringResource(R.string.doc_detail_open_error)
+    val shareErrorMsg = stringResource(R.string.doc_detail_share_error)
+    val deletedMsg = stringResource(R.string.doc_detail_deleted)
+    val downloadStartedMsg = stringResource(R.string.doc_detail_download_started)
+    val shareChooserTitle = stringResource(R.string.doc_detail_share_chooser)
+
     // Handle one-shot events
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is DocumentDetailEvent.NavigateBack -> onNavigateBack()
                 is DocumentDetailEvent.OpenDocument -> {
-                    // TODO: Open document with intent
-                    snackbarHostState.showSnackbar("Ouverture du document...")
+                    try {
+                        val intent = android.content.Intent(
+                            android.content.Intent.ACTION_VIEW,
+                            android.net.Uri.parse(event.url)
+                        ).apply {
+                            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        snackbarHostState.showSnackbar(openErrorMsg)
+                    }
                 }
                 is DocumentDetailEvent.ShareDocument -> {
-                    // TODO: Share document
-                    snackbarHostState.showSnackbar("Partage du document...")
+                    try {
+                        val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(android.content.Intent.EXTRA_TEXT, event.url)
+                        }
+                        context.startActivity(
+                            android.content.Intent.createChooser(shareIntent, shareChooserTitle)
+                        )
+                    } catch (e: Exception) {
+                        snackbarHostState.showSnackbar(shareErrorMsg)
+                    }
                 }
                 is DocumentDetailEvent.ShowError -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
                 is DocumentDetailEvent.DocumentDeleted -> {
-                    snackbarHostState.showSnackbar("Document supprimé")
+                    snackbarHostState.showSnackbar(deletedMsg)
                 }
                 is DocumentDetailEvent.DownloadStarted -> {
-                    snackbarHostState.showSnackbar("Téléchargement démarré")
+                    snackbarHostState.showSnackbar(downloadStartedMsg)
                 }
             }
         }
@@ -129,7 +155,7 @@ fun DocumentDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Détails du document",
+                        text = stringResource(R.string.doc_detail_title),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -137,7 +163,7 @@ fun DocumentDetailScreen(
                     IconButton(onClick = { viewModel.onIntent(DocumentDetailIntent.NavigateBack) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Retour"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 },
@@ -145,13 +171,13 @@ fun DocumentDetailScreen(
                     IconButton(onClick = { viewModel.onIntent(DocumentDetailIntent.ShareDocument) }) {
                         Icon(
                             imageVector = Icons.Default.Share,
-                            contentDescription = "Partager"
+                            contentDescription = stringResource(R.string.doc_detail_share)
                         )
                     }
                     IconButton(onClick = { viewModel.onIntent(DocumentDetailIntent.RequestDelete) }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer",
+                            contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -276,7 +302,7 @@ private fun DocumentPreviewCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Preview placeholder
+            // Preview placeholder with real file info
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,14 +322,34 @@ private fun DocumentPreviewCard(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = getFileExtension(document.fileUrl).uppercase(),
+                        text = document.fileExtension,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    if (document.fileSizeFormatted.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = document.fileSizeFormatted,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Filename
+            if (document.filename != null) {
+                Text(
+                    text = document.filename,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             // Action buttons
             Row(
@@ -313,14 +359,14 @@ private fun DocumentPreviewCard(
                 ActionButton(
                     onClick = onOpen,
                     icon = Icons.Default.OpenInNew,
-                    text = "Ouvrir",
+                    text = stringResource(R.string.doc_detail_open),
                     modifier = Modifier.weight(1f)
                 )
-                
+
                 ActionButton(
                     onClick = onDownload,
                     icon = Icons.Default.Download,
-                    text = "Télécharger",
+                    text = stringResource(R.string.download),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -364,26 +410,28 @@ private fun ActionButton(
 
 @Composable
 private fun ProductInfoCard(document: Document) {
-    InfoCard(title = "Produit") {
+    InfoCard(title = stringResource(R.string.doc_detail_product)) {
         InfoRow(
             icon = Icons.Default.ShoppingBag,
-            label = "Nom",
+            label = stringResource(R.string.doc_detail_name),
             value = document.productName
         )
 
         if (document.gtin != null) {
             InfoRow(
                 icon = Icons.Default.Description,
-                label = "Code EAN",
+                label = stringResource(R.string.gtin_label),
                 value = document.gtin
             )
         }
 
-        InfoRow(
-            icon = Icons.Default.Description,
-            label = "Catégorie",
-            value = getCategoryLabel(document.productCategory)
-        )
+        if (document.metadata.merchant != null) {
+            InfoRow(
+                icon = Icons.Default.Store,
+                label = stringResource(R.string.doc_detail_merchant),
+                value = document.metadata.merchant
+            )
+        }
     }
 }
 
@@ -442,9 +490,9 @@ private fun WarrantyStatusCard(
                 Column {
                     Text(
                         text = when {
-                            !isActive -> "Garantie expirée"
-                            daysRemaining != null && daysRemaining <= 30 -> "Expire bientôt"
-                            else -> "Garantie active"
+                            !isActive -> stringResource(R.string.doc_detail_warranty_expired)
+                            daysRemaining != null && daysRemaining <= 30 -> stringResource(R.string.doc_detail_warranty_expiring)
+                            else -> stringResource(R.string.doc_detail_warranty_active)
                         },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -453,7 +501,7 @@ private fun WarrantyStatusCard(
 
                     if (daysRemaining != null && isActive) {
                         Text(
-                            text = "$daysRemaining jours restants",
+                            text = stringResource(R.string.doc_detail_warranty_days, daysRemaining),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -487,21 +535,21 @@ private fun WarrantyStatusCard(
             // Warranty details
             if (warrantyType != null) {
                 DetailRow(
-                    label = "Type",
+                    label = stringResource(R.string.doc_detail_type),
                     value = getWarrantyTypeLabel(warrantyType)
                 )
             }
 
             if (startDate != null) {
                 DetailRow(
-                    label = "Début",
+                    label = stringResource(R.string.doc_detail_warranty_start),
                     value = formatDate(startDate)
                 )
             }
 
             if (endDate != null) {
                 DetailRow(
-                    label = "Fin",
+                    label = stringResource(R.string.doc_detail_warranty_end),
                     value = formatDate(endDate)
                 )
             }
@@ -511,19 +559,11 @@ private fun WarrantyStatusCard(
 
 @Composable
 private fun PurchaseDetailsCard(metadata: DocumentMetadata) {
-    InfoCard(title = "Détails d'achat") {
-        if (metadata.merchant != null) {
-            InfoRow(
-                icon = Icons.Default.Store,
-                label = "Marchand",
-                value = metadata.merchant
-            )
-        }
-
+    InfoCard(title = stringResource(R.string.doc_detail_purchase)) {
         if (metadata.purchaseDate != null) {
             InfoRow(
                 icon = Icons.Default.CalendarMonth,
-                label = "Date d'achat",
+                label = stringResource(R.string.doc_detail_purchase_date),
                 value = formatDate(metadata.purchaseDate)
             )
         }
@@ -531,7 +571,7 @@ private fun PurchaseDetailsCard(metadata: DocumentMetadata) {
         if (metadata.totalAmount != null) {
             InfoRow(
                 icon = Icons.Default.ShoppingBag,
-                label = "Montant",
+                label = stringResource(R.string.doc_detail_amount),
                 value = "${String.format(Locale.FRANCE, "%.2f", metadata.totalAmount)} ${metadata.currency}"
             )
         }
@@ -540,24 +580,32 @@ private fun PurchaseDetailsCard(metadata: DocumentMetadata) {
 
 @Composable
 private fun DocumentInfoCard(document: Document) {
-    InfoCard(title = "Informations") {
+    InfoCard(title = stringResource(R.string.doc_detail_info)) {
         InfoRow(
             icon = Icons.Default.Description,
-            label = "Type",
+            label = stringResource(R.string.doc_detail_type),
             value = getDocumentTypeLabel(document.type)
         )
 
         InfoRow(
             icon = Icons.Default.CalendarMonth,
-            label = "Date du document",
-            value = formatDate(document.documentDate)
+            label = stringResource(R.string.doc_detail_upload_date),
+            value = formatInstant(document.uploadedAt)
         )
 
         InfoRow(
             icon = Icons.Default.Description,
-            label = "Format",
-            value = getFileExtension(document.fileUrl).uppercase()
+            label = stringResource(R.string.doc_detail_format),
+            value = document.fileExtension
         )
+
+        if (document.fileSizeFormatted.isNotEmpty()) {
+            InfoRow(
+                icon = Icons.Default.Description,
+                label = stringResource(R.string.doc_detail_size),
+                value = document.fileSizeFormatted
+            )
+        }
     }
 }
 
@@ -753,39 +801,28 @@ private fun formatDate(date: LocalDate): String {
     return date.format(formatter)
 }
 
-private fun getFileExtension(url: String): String {
-    return url.substringAfterLast('.', "pdf")
+private fun formatInstant(instant: Instant): String {
+    val date = instant.atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+    return formatDate(date)
 }
 
-private fun getCategoryLabel(category: ProductCategory): String {
-    return when (category) {
-        ProductCategory.ELECTRONIQUE -> "Électronique"
-        ProductCategory.ELECTROMENAGER -> "Électroménager"
-        ProductCategory.ECLAIRAGE -> "Éclairage"
-        ProductCategory.GAMING -> "Gaming"
-        ProductCategory.CLIMATISATION -> "Climatisation"
-        ProductCategory.INFORMATIQUE -> "Informatique"
-        ProductCategory.TELEPHONIE -> "Téléphonie"
-        ProductCategory.AUDIO_VIDEO -> "Audio/Vidéo"
-        ProductCategory.OTHER -> "Autre"
-    }
-}
-
+@Composable
 private fun getDocumentTypeLabel(type: DocumentType): String {
     return when (type) {
-        DocumentType.FACTURE -> "Facture"
-        DocumentType.GARANTIE -> "Garantie"
-        DocumentType.MANUEL -> "Manuel"
-        DocumentType.OTHER -> "Autre"
+        DocumentType.FACTURE -> stringResource(R.string.type_invoice)
+        DocumentType.GARANTIE -> stringResource(R.string.type_warranty)
+        DocumentType.MANUEL -> stringResource(R.string.type_manual)
+        DocumentType.OTHER -> stringResource(R.string.type_other)
     }
 }
 
+@Composable
 private fun getWarrantyTypeLabel(type: WarrantyType): String {
     return when (type) {
-        WarrantyType.LEGAL -> "Garantie légale"
-        WarrantyType.MANUFACTURER -> "Garantie constructeur"
-        WarrantyType.EXTENDED -> "Extension de garantie"
-        WarrantyType.COMMERCIAL -> "Garantie commerciale"
+        WarrantyType.LEGAL -> stringResource(R.string.warranty_legal)
+        WarrantyType.MANUFACTURER -> stringResource(R.string.warranty_manufacturer)
+        WarrantyType.EXTENDED -> stringResource(R.string.warranty_extended)
+        WarrantyType.COMMERCIAL -> stringResource(R.string.warranty_commercial)
     }
 }
 
@@ -803,7 +840,7 @@ private fun DocumentDetailContentPreview() {
                 productName = "iPhone 15 Pro",
                 productCategory = ProductCategory.ELECTRONIQUE,
                 gtin = "0194253401148",
-                fileUrl = "https://example.com/doc.pdf",
+                fileUrl = "",
                 thumbnailUrl = null,
                 documentDate = LocalDate.now(),
                 metadata = DocumentMetadata(
@@ -813,7 +850,10 @@ private fun DocumentDetailContentPreview() {
                     warrantyStartDate = LocalDate.now().minusMonths(3),
                     warrantyEndDate = LocalDate.now().plusMonths(21),
                     warrantyType = WarrantyType.MANUFACTURER
-                )
+                ),
+                filename = "facture_apple_store_2026.pdf",
+                mimeType = "application/pdf",
+                fileSize = 524_288L
             ),
             isWarrantyActive = true,
             daysUntilExpiry = 640,

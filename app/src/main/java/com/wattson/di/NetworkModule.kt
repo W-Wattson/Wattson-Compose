@@ -6,7 +6,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -41,9 +43,15 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val original = chain.request()
-                val request = original.newBuilder()
+                val requestBuilder = original.newBuilder()
                     .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
+
+                // Don't override Content-Type for multipart requests (file uploads)
+                if (original.body !is okhttp3.MultipartBody) {
+                    requestBuilder.header("Content-Type", "application/json")
+                }
+
+                val request = requestBuilder
                     .method(original.method, original.body)
                     .build()
                 chain.proceed(request)
@@ -53,6 +61,11 @@ object NetworkModule {
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS) // Longer timeout for uploads
+            .retryOnConnectionFailure(true)
+            // Shorter keep-alive to avoid "unexpected end of stream" on stale connections
+            .connectionPool(ConnectionPool(5, 15, TimeUnit.SECONDS))
+            // Force HTTP/1.1 to avoid HTTP/2 multiplexing issues with some servers
+            .protocols(listOf(Protocol.HTTP_1_1))
             .build()
     }
 

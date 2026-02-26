@@ -1,14 +1,17 @@
 package com.wattson.ui.screens.documents.detail
 
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
-import com.wattson.domain.model.DocumentMetadata
-import com.wattson.domain.model.DocumentType
-import com.wattson.domain.model.ProductCategory
-import com.wattson.domain.model.WarrantyType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,14 +64,14 @@ sealed interface DocumentDetailIntent {
 
 /**
  * ViewModel for the Document Detail screen.
- * Displays full document information with actions.
+ * Displays full document information with actions, backed by real API.
  */
 @HiltViewModel
 class DocumentDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
-    // TODO: Inject use cases when implemented
-    // private val getDocumentUseCase: GetDocumentUseCase,
-    // private val deleteDocumentUseCase: DeleteDocumentUseCase
+    savedStateHandle: SavedStateHandle,
+    private val documentRepository: DocumentRepository,
+    private val authRepository: AuthRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val documentId: String = checkNotNull(savedStateHandle["documentId"])
@@ -105,21 +108,30 @@ class DocumentDetailViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                // TODO: Replace with actual use case
-                kotlinx.coroutines.delay(300)
-                
-                val document = getMockDocument()
-                val warrantyInfo = calculateWarrantyInfo(document)
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.getDocumentById(userId, documentId)
 
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        document = document,
-                        isWarrantyActive = warrantyInfo.first,
-                        daysUntilWarrantyExpiry = warrantyInfo.second
-                    )
-                }
-
+                result.fold(
+                    onSuccess = { document ->
+                        val warrantyInfo = calculateWarrantyInfo(document)
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                document = document,
+                                isWarrantyActive = warrantyInfo.first,
+                                daysUntilWarrantyExpiry = warrantyInfo.second
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.message ?: "Erreur lors du chargement"
+                            )
+                        }
+                    }
+                )
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -134,21 +146,92 @@ class DocumentDetailViewModel @Inject constructor(
     private fun openDocument() {
         viewModelScope.launch {
             val document = _uiState.value.document ?: return@launch
-            _events.emit(DocumentDetailEvent.OpenDocument(document.fileUrl))
+            try {
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.getDownloadUrl(userId, document.id)
+                result.fold(
+                    onSuccess = { downloadInfo ->
+                        _events.emit(DocumentDetailEvent.OpenDocument(downloadInfo.url))
+                    },
+                    onFailure = { error ->
+                        _events.emit(DocumentDetailEvent.ShowError(
+                            error.message ?: "Impossible d'obtenir l'URL du document"
+                        ))
+                    }
+                )
+            } catch (e: Exception) {
+                _events.emit(DocumentDetailEvent.ShowError(
+                    e.message ?: "Erreur lors de l'ouverture"
+                ))
+            }
         }
     }
 
     private fun shareDocument() {
         viewModelScope.launch {
             val document = _uiState.value.document ?: return@launch
-            _events.emit(DocumentDetailEvent.ShareDocument(document.fileUrl))
+            try {
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.getDownloadUrl(userId, document.id)
+                result.fold(
+                    onSuccess = { downloadInfo ->
+                        _events.emit(DocumentDetailEvent.ShareDocument(downloadInfo.url))
+                    },
+                    onFailure = { error ->
+                        _events.emit(DocumentDetailEvent.ShowError(
+                            error.message ?: "Impossible de partager le document"
+                        ))
+                    }
+                )
+            } catch (e: Exception) {
+                _events.emit(DocumentDetailEvent.ShowError(
+                    e.message ?: "Erreur lors du partage"
+                ))
+            }
         }
     }
 
     private fun downloadDocument() {
         viewModelScope.launch {
-            // TODO: Implement actual download
-            _events.emit(DocumentDetailEvent.DownloadStarted)
+            val document = _uiState.value.document ?: return@launch
+            try {
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.getDownloadUrl(userId, document.id)
+                result.fold(
+                    onSuccess = { downloadInfo ->
+                        try {
+                            val downloadManager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                            val uri = Uri.parse(downloadInfo.url)
+                            val filename = document.filename ?: "document_${document.id}"
+
+                            val request = DownloadManager.Request(uri).apply {
+                                setTitle(filename)
+                                setDescription("Wattson — Téléchargement")
+                                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
+                                // Allow all network types
+                                setAllowedOverMetered(true)
+                                setAllowedOverRoaming(true)
+                            }
+
+                            downloadManager.enqueue(request)
+                            _events.emit(DocumentDetailEvent.DownloadStarted)
+                        } catch (e: Exception) {
+                            // Fallback: open URL in browser
+                            _events.emit(DocumentDetailEvent.OpenDocument(downloadInfo.url))
+                        }
+                    },
+                    onFailure = { error ->
+                        _events.emit(DocumentDetailEvent.ShowError(
+                            error.message ?: "Impossible de télécharger"
+                        ))
+                    }
+                )
+            } catch (e: Exception) {
+                _events.emit(DocumentDetailEvent.ShowError(
+                    e.message ?: "Erreur lors du téléchargement"
+                ))
+            }
         }
     }
 
@@ -161,12 +244,23 @@ class DocumentDetailViewModel @Inject constructor(
             _uiState.update { it.copy(showDeleteConfirmation = false, isLoading = true) }
 
             try {
-                // TODO: Replace with actual use case
-                kotlinx.coroutines.delay(500)
-                
-                _events.emit(DocumentDetailEvent.DocumentDeleted)
-                _events.emit(DocumentDetailEvent.NavigateBack)
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.deleteDocument(userId, documentId)
 
+                result.fold(
+                    onSuccess = {
+                        _events.emit(DocumentDetailEvent.DocumentDeleted)
+                        _events.emit(DocumentDetailEvent.NavigateBack)
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.message ?: "Erreur lors de la suppression"
+                            )
+                        }
+                    }
+                )
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -195,36 +289,12 @@ class DocumentDetailViewModel @Inject constructor(
     private fun calculateWarrantyInfo(document: Document): Pair<Boolean, Int?> {
         val endDate = document.metadata.warrantyEndDate ?: return Pair(false, null)
         val today = LocalDate.now()
-        
+
         val isActive = endDate.isAfter(today) || endDate.isEqual(today)
         val daysRemaining = if (isActive) {
             java.time.temporal.ChronoUnit.DAYS.between(today, endDate).toInt()
         } else null
 
         return Pair(isActive, daysRemaining)
-    }
-
-    // Mock data for development
-    private fun getMockDocument(): Document {
-        return Document(
-            id = documentId,
-            userId = "user_123",
-            type = DocumentType.GARANTIE,
-            productName = "iPhone 15 Pro",
-            productCategory = ProductCategory.ELECTRONIQUE,
-            gtin = "0194253401148",
-            fileUrl = "https://storage.wattson.app/documents/doc_${documentId}.pdf",
-            thumbnailUrl = "https://storage.wattson.app/thumbnails/doc_${documentId}_thumb.jpg",
-            documentDate = LocalDate.of(2025, 1, 15),
-            metadata = DocumentMetadata(
-                merchant = "Apple Store Lyon Part-Dieu",
-                purchaseDate = LocalDate.of(2025, 1, 15),
-                totalAmount = 1229.0,
-                currency = "EUR",
-                warrantyStartDate = LocalDate.of(2025, 1, 15),
-                warrantyEndDate = LocalDate.of(2027, 1, 15),
-                warrantyType = WarrantyType.MANUFACTURER
-            )
-        )
     }
 }

@@ -1,5 +1,6 @@
 package com.wattson;
 
+import com.wattson.di.DatabaseModule;
 import com.wattson.di.NetworkModule;
 import com.wattson.ui.screens.account.AccountViewModel_HiltModules;
 import com.wattson.ui.screens.auth.AuthViewModel_HiltModules;
@@ -9,6 +10,7 @@ import com.wattson.ui.screens.history.HistoryViewModel_HiltModules;
 import com.wattson.ui.screens.premium.PremiumViewModel_HiltModules;
 import com.wattson.ui.screens.product.ProductDetailViewModel_HiltModules;
 import com.wattson.ui.screens.repair.RepairViewModel_HiltModules;
+import com.wattson.ui.screens.repair.chat.RepairChatViewModel_HiltModules;
 import com.wattson.ui.screens.scan.ScanViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
@@ -135,6 +137,7 @@ public final class WattsonApplication_HiltComponents {
   @Component(
       modules = {
           ApplicationContextModule.class,
+          DatabaseModule.class,
           HiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule.class,
           NetworkModule.class,
           ActivityRetainedCBuilderModule.class,
@@ -170,6 +173,7 @@ public final class WattsonApplication_HiltComponents {
           HistoryViewModel_HiltModules.KeyModule.class,
           PremiumViewModel_HiltModules.KeyModule.class,
           ProductDetailViewModel_HiltModules.KeyModule.class,
+          RepairChatViewModel_HiltModules.KeyModule.class,
           RepairViewModel_HiltModules.KeyModule.class,
           ScanViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
@@ -217,6 +221,7 @@ public final class WattsonApplication_HiltComponents {
           HistoryViewModel_HiltModules.BindsModule.class,
           PremiumViewModel_HiltModules.BindsModule.class,
           ProductDetailViewModel_HiltModules.BindsModule.class,
+          RepairChatViewModel_HiltModules.BindsModule.class,
           RepairViewModel_HiltModules.BindsModule.class,
           ScanViewModel_HiltModules.BindsModule.class
       }

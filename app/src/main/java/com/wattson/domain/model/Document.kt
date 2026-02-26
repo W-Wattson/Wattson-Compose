@@ -19,9 +19,38 @@ data class Document(
     val metadata: DocumentMetadata = DocumentMetadata(),
     val ocrData: OcrData? = null,
     val uploadedAt: Instant = Instant.now(),
-    val deletedAt: Instant? = null // Soft delete support
+    val deletedAt: Instant? = null, // Soft delete support
+    val filename: String? = null,
+    val mimeType: String? = null,
+    val fileSize: Long = 0L
 ) {
     val isDeleted: Boolean get() = deletedAt != null
+
+    /**
+     * Returns human-readable file extension from filename or mimeType.
+     */
+    val fileExtension: String
+        get() = filename?.substringAfterLast('.', "")?.uppercase()
+            ?: mimeType?.let { mimeToExtension(it) }
+            ?: "PDF"
+
+    /**
+     * Returns human-readable file size string.
+     */
+    val fileSizeFormatted: String
+        get() = when {
+            fileSize <= 0 -> ""
+            fileSize < 1024 -> "$fileSize o"
+            fileSize < 1024 * 1024 -> "${fileSize / 1024} Ko"
+            else -> String.format("%.1f Mo", fileSize / (1024.0 * 1024.0))
+        }
+
+    private fun mimeToExtension(mime: String): String = when (mime.lowercase()) {
+        "application/pdf" -> "PDF"
+        "image/jpeg", "image/jpg" -> "JPG"
+        "image/png" -> "PNG"
+        else -> mime.substringAfterLast('/').uppercase()
+    }
 }
 
 /**

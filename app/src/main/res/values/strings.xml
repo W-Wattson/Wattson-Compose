@@ -191,7 +191,34 @@
     <string name="repair_typing">Responding…</string>
     <string name="repair_welcome_message">Hello! I\'m your repair assistant. Describe the problem with your device and I\'ll help you diagnose and fix it.</string>
     <string name="close">Close</string>
-    
+
+    <!-- Document Detail -->
+    <string name="doc_detail_title">Document details</string>
+    <string name="doc_detail_open">Open</string>
+    <string name="doc_detail_share">Share</string>
+    <string name="doc_detail_product">Product</string>
+    <string name="doc_detail_name">Name</string>
+    <string name="doc_detail_merchant">Merchant</string>
+    <string name="doc_detail_purchase">Purchase details</string>
+    <string name="doc_detail_purchase_date">Purchase date</string>
+    <string name="doc_detail_amount">Amount</string>
+    <string name="doc_detail_info">Document info</string>
+    <string name="doc_detail_type">Type</string>
+    <string name="doc_detail_upload_date">Upload date</string>
+    <string name="doc_detail_format">Format</string>
+    <string name="doc_detail_size">Size</string>
+    <string name="doc_detail_open_error">Unable to open the document</string>
+    <string name="doc_detail_share_error">Unable to share the document</string>
+    <string name="doc_detail_share_chooser">Share document</string>
+    <string name="doc_detail_deleted">Document deleted</string>
+    <string name="doc_detail_download_started">Download started</string>
+    <string name="doc_detail_warranty_active">Active warranty</string>
+    <string name="doc_detail_warranty_expiring">Expiring soon</string>
+    <string name="doc_detail_warranty_expired">Warranty expired</string>
+    <string name="doc_detail_warranty_days">%d days remaining</string>
+    <string name="doc_detail_warranty_start">Start</string>
+    <string name="doc_detail_warranty_end">End</string>
+
     <!-- Product Categories -->
     <string name="cat_electronics">Electronics</string>
     <string name="cat_appliances">Appliances</string>
