@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -184,9 +185,18 @@ fun WattsonNavHost(
             )
         }
 
-        // ===== MAIN TABS =====
-        
+        // ===== MAIN TABS (all require authentication) =====
+
         composable<WattsonRoute.History> {
+            // Auth guard: redirect to Auth if not logged in
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val viewModel: HistoryViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
 
@@ -218,6 +228,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.Repair> {
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             RepairScreen(
                 onNavigateToScan = { 
                     navController.navigate(WattsonRoute.Scan) 
@@ -230,6 +248,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.Scan> {
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val viewModel: ScanViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
             ScanScreen(
@@ -246,6 +272,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.Documents> {
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val viewModel: DocumentsViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
             DocumentsScreen(
@@ -262,6 +296,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.Account> {
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val viewModel: AccountViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
             AccountScreen(
@@ -273,9 +315,7 @@ fun WattsonNavHost(
                 },
                 onNavigateToLogin = {
                     onLogout()
-                    // If we want to fully bypass login, we might not even want to allow going back to Auth
-                    // But if requested, we can still allow it, or just navigate to History
-                    navController.navigate(WattsonRoute.History) {
+                    navController.navigate(WattsonRoute.Auth) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -285,6 +325,14 @@ fun WattsonNavHost(
         // ===== DETAIL SCREENS =====
         
         composable<WattsonRoute.ProductDetail> { backStackEntry ->
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val productDetail: WattsonRoute.ProductDetail = backStackEntry.toRoute()
             ProductDetailScreen(
                 productId = productDetail.productId,
@@ -293,6 +341,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.Premium> {
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val viewModel: PremiumViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
             PremiumScreen(
@@ -304,6 +360,14 @@ fun WattsonNavHost(
         }
         
         composable<WattsonRoute.DocumentDetail> { backStackEntry ->
+            if (!isLoggedIn) {
+                LaunchedEffect(Unit) {
+                    navController.navigate(WattsonRoute.Auth) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+                return@composable
+            }
             val documentDetail: WattsonRoute.DocumentDetail = backStackEntry.toRoute()
             DocumentDetailScreen(
                 documentId = documentDetail.documentId,

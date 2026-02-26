@@ -1,18 +1,18 @@
-#Thu Feb 26 09:12:02 CET 2026
-base.0=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.10=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
-base.11=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
-base.12=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
-base.13=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes3.dex
-base.2=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
-base.3=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
-base.4=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
-base.5=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
-base.6=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
-base.7=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
-base.8=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
-base.9=D\:\\Code\\Claude-Pitier-Je-t-aime\\wattson-mobile\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
+#Thu Feb 26 10:00:46 CET 2026
+base.0=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.10=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
+base.11=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
+base.12=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+base.13=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes3.dex
+base.2=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
+base.3=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
+base.4=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
+base.5=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
+base.6=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
+base.7=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
+base.8=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
+base.9=D\:\\Code\\Wattson-Compose\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.10=8/classes.dex

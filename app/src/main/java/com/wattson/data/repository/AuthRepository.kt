@@ -94,10 +94,10 @@ class AuthRepository @Inject constructor(
         try {
             // Validate inputs locally first
             if (!isValidEmail(email)) {
-                return@withContext Result.failure(AuthException("Email invalide"))
+                return@withContext Result.failure(AuthException("Format d'email invalide"))
             }
-            if (password.length < 6) {
-                return@withContext Result.failure(AuthException("Mot de passe trop court"))
+            if (password.isBlank()) {
+                return@withContext Result.failure(AuthException("Mot de passe requis"))
             }
 
             // Try backend authentication
@@ -132,7 +132,7 @@ class AuthRepository @Inject constructor(
                     gson.fromJson(errorBody, AuthErrorResponse::class.java)?.message
                 } catch (e: Exception) {
                     null
-                } ?: "Email ou mot de passe incorrect"
+                } ?: "Identifiants incorrects"
 
                 android.util.Log.w("AuthRepository", "Login failed: $errorMessage")
                 Result.failure(AuthException(errorMessage))
@@ -153,7 +153,7 @@ class AuthRepository @Inject constructor(
                 return@withContext Result.failure(AuthException("Email invalide"))
             }
             if (!isValidPassword(password)) {
-                return@withContext Result.failure(AuthException("Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial"))
+                return@withContext Result.failure(AuthException("Le mot de passe ne respecte pas les criteres de securite"))
             }
 
             // Try backend registration

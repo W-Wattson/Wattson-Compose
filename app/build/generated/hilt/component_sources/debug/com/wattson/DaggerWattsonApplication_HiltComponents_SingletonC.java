@@ -422,36 +422,36 @@ public final class DaggerWattsonApplication_HiltComponents_SingletonC {
     private static final class LazyClassKeyProvider {
       static String com_wattson_ui_screens_account_AccountViewModel = "com.wattson.ui.screens.account.AccountViewModel";
 
-      static String com_wattson_ui_screens_documents_detail_DocumentDetailViewModel = "com.wattson.ui.screens.documents.detail.DocumentDetailViewModel";
+      static String com_wattson_ui_screens_documents_DocumentsViewModel = "com.wattson.ui.screens.documents.DocumentsViewModel";
 
-      static String com_wattson_ui_screens_auth_AuthViewModel = "com.wattson.ui.screens.auth.AuthViewModel";
+      static String com_wattson_ui_screens_history_HistoryViewModel = "com.wattson.ui.screens.history.HistoryViewModel";
 
       static String com_wattson_ui_screens_product_ProductDetailViewModel = "com.wattson.ui.screens.product.ProductDetailViewModel";
 
-      static String com_wattson_ui_screens_history_HistoryViewModel = "com.wattson.ui.screens.history.HistoryViewModel";
+      static String com_wattson_ui_screens_documents_detail_DocumentDetailViewModel = "com.wattson.ui.screens.documents.detail.DocumentDetailViewModel";
 
       static String com_wattson_ui_screens_premium_PremiumViewModel = "com.wattson.ui.screens.premium.PremiumViewModel";
 
       static String com_wattson_ui_screens_repair_RepairViewModel = "com.wattson.ui.screens.repair.RepairViewModel";
 
-      static String com_wattson_ui_screens_scan_ScanViewModel = "com.wattson.ui.screens.scan.ScanViewModel";
+      static String com_wattson_ui_screens_auth_AuthViewModel = "com.wattson.ui.screens.auth.AuthViewModel";
 
-      static String com_wattson_ui_screens_documents_DocumentsViewModel = "com.wattson.ui.screens.documents.DocumentsViewModel";
+      static String com_wattson_ui_screens_scan_ScanViewModel = "com.wattson.ui.screens.scan.ScanViewModel";
 
       @KeepFieldType
       AccountViewModel com_wattson_ui_screens_account_AccountViewModel2;
 
       @KeepFieldType
-      DocumentDetailViewModel com_wattson_ui_screens_documents_detail_DocumentDetailViewModel2;
+      DocumentsViewModel com_wattson_ui_screens_documents_DocumentsViewModel2;
 
       @KeepFieldType
-      AuthViewModel com_wattson_ui_screens_auth_AuthViewModel2;
+      HistoryViewModel com_wattson_ui_screens_history_HistoryViewModel2;
 
       @KeepFieldType
       ProductDetailViewModel com_wattson_ui_screens_product_ProductDetailViewModel2;
 
       @KeepFieldType
-      HistoryViewModel com_wattson_ui_screens_history_HistoryViewModel2;
+      DocumentDetailViewModel com_wattson_ui_screens_documents_detail_DocumentDetailViewModel2;
 
       @KeepFieldType
       PremiumViewModel com_wattson_ui_screens_premium_PremiumViewModel2;
@@ -460,10 +460,10 @@ public final class DaggerWattsonApplication_HiltComponents_SingletonC {
       RepairViewModel com_wattson_ui_screens_repair_RepairViewModel2;
 
       @KeepFieldType
-      ScanViewModel com_wattson_ui_screens_scan_ScanViewModel2;
+      AuthViewModel com_wattson_ui_screens_auth_AuthViewModel2;
 
       @KeepFieldType
-      DocumentsViewModel com_wattson_ui_screens_documents_DocumentsViewModel2;
+      ScanViewModel com_wattson_ui_screens_scan_ScanViewModel2;
     }
   }
 
@@ -530,32 +530,41 @@ public final class DaggerWattsonApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_wattson_ui_screens_account_AccountViewModel = "com.wattson.ui.screens.account.AccountViewModel";
+      static String com_wattson_ui_screens_scan_ScanViewModel = "com.wattson.ui.screens.scan.ScanViewModel";
+
+      static String com_wattson_ui_screens_documents_DocumentsViewModel = "com.wattson.ui.screens.documents.DocumentsViewModel";
+
+      static String com_wattson_ui_screens_product_ProductDetailViewModel = "com.wattson.ui.screens.product.ProductDetailViewModel";
 
       static String com_wattson_ui_screens_documents_detail_DocumentDetailViewModel = "com.wattson.ui.screens.documents.detail.DocumentDetailViewModel";
 
-      static String com_wattson_ui_screens_documents_DocumentsViewModel = "com.wattson.ui.screens.documents.DocumentsViewModel";
+      static String com_wattson_ui_screens_premium_PremiumViewModel = "com.wattson.ui.screens.premium.PremiumViewModel";
+
+      static String com_wattson_ui_screens_account_AccountViewModel = "com.wattson.ui.screens.account.AccountViewModel";
 
       static String com_wattson_ui_screens_auth_AuthViewModel = "com.wattson.ui.screens.auth.AuthViewModel";
 
       static String com_wattson_ui_screens_history_HistoryViewModel = "com.wattson.ui.screens.history.HistoryViewModel";
 
-      static String com_wattson_ui_screens_scan_ScanViewModel = "com.wattson.ui.screens.scan.ScanViewModel";
-
       static String com_wattson_ui_screens_repair_RepairViewModel = "com.wattson.ui.screens.repair.RepairViewModel";
 
-      static String com_wattson_ui_screens_premium_PremiumViewModel = "com.wattson.ui.screens.premium.PremiumViewModel";
-
-      static String com_wattson_ui_screens_product_ProductDetailViewModel = "com.wattson.ui.screens.product.ProductDetailViewModel";
+      @KeepFieldType
+      ScanViewModel com_wattson_ui_screens_scan_ScanViewModel2;
 
       @KeepFieldType
-      AccountViewModel com_wattson_ui_screens_account_AccountViewModel2;
+      DocumentsViewModel com_wattson_ui_screens_documents_DocumentsViewModel2;
+
+      @KeepFieldType
+      ProductDetailViewModel com_wattson_ui_screens_product_ProductDetailViewModel2;
 
       @KeepFieldType
       DocumentDetailViewModel com_wattson_ui_screens_documents_detail_DocumentDetailViewModel2;
 
       @KeepFieldType
-      DocumentsViewModel com_wattson_ui_screens_documents_DocumentsViewModel2;
+      PremiumViewModel com_wattson_ui_screens_premium_PremiumViewModel2;
+
+      @KeepFieldType
+      AccountViewModel com_wattson_ui_screens_account_AccountViewModel2;
 
       @KeepFieldType
       AuthViewModel com_wattson_ui_screens_auth_AuthViewModel2;
@@ -564,16 +573,7 @@ public final class DaggerWattsonApplication_HiltComponents_SingletonC {
       HistoryViewModel com_wattson_ui_screens_history_HistoryViewModel2;
 
       @KeepFieldType
-      ScanViewModel com_wattson_ui_screens_scan_ScanViewModel2;
-
-      @KeepFieldType
       RepairViewModel com_wattson_ui_screens_repair_RepairViewModel2;
-
-      @KeepFieldType
-      PremiumViewModel com_wattson_ui_screens_premium_PremiumViewModel2;
-
-      @KeepFieldType
-      ProductDetailViewModel com_wattson_ui_screens_product_ProductDetailViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -733,7 +733,7 @@ public final class DaggerWattsonApplication_HiltComponents_SingletonC {
     }
 
     @Override
-    public void injectWattsonApplication(WattsonApplication arg0) {
+    public void injectWattsonApplication(WattsonApplication wattsonApplication) {
     }
 
     @Override

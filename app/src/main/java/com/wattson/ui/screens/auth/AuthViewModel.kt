@@ -130,9 +130,17 @@ class AuthViewModel @Inject constructor(
 
     private fun updateEmail(email: String) {
         _uiState.update { state ->
+            // Real-time email validation: only show error after user has typed enough
+            val emailError = when {
+                email.isBlank() -> null // Don't show error while field is empty
+                email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
+                email.contains("@") && email.contains(".") && !EMAIL_REGEX.matches(email) ->
+                    "Format invalide — ex : nom@domaine.com"
+                else -> null
+            }
             state.copy(
                 email = email,
-                emailError = null // Clear error on change
+                emailError = emailError
             )
         }
     }
@@ -141,16 +149,27 @@ class AuthViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 password = password,
-                passwordError = null
+                passwordError = null,
+                // Also re-validate confirm password if it's already filled
+                confirmPasswordError = if (state.confirmPassword.isNotBlank() && state.confirmPassword != password) {
+                    "Les mots de passe ne correspondent pas"
+                } else {
+                    null
+                }
             )
         }
     }
 
     private fun updateConfirmPassword(confirmPassword: String) {
         _uiState.update { state ->
+            val confirmError = when {
+                confirmPassword.isBlank() -> null
+                confirmPassword != state.password -> "Les mots de passe ne correspondent pas"
+                else -> null
+            }
             state.copy(
                 confirmPassword = confirmPassword,
-                confirmPasswordError = null
+                confirmPasswordError = confirmError
             )
         }
     }
@@ -178,9 +197,9 @@ class AuthViewModel @Inject constructor(
     fun performLogin() {
         val currentState = _uiState.value
 
-        // Validate inputs
+        // Validate inputs with detailed feedback
         val emailError = validateEmail(currentState.email)
-        val passwordError = if (currentState.password.isBlank()) "Mot de passe requis" else null
+        val passwordError = validateLoginPassword(currentState.password)
 
         if (emailError != null || passwordError != null) {
             _uiState.update { state ->
@@ -207,8 +226,14 @@ class AuthViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     android.util.Log.e("AuthViewModel", "Login failed", error)
-                    _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur de connexion"))
+                    val errorMessage = error.message ?: "Erreur de connexion"
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            // Show API error in the appropriate field for clear UX feedback
+                            passwordError = "Email ou mot de passe incorrect"
+                        )
+                    }
                 }
             )
         }
@@ -308,27 +333,51 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // Validation helpers
+    // ===== Validation helpers =====
+
+    /**
+     * Validates email format with detailed user feedback.
+     * Used on both Login and Register screens.
+     */
     private fun validateEmail(email: String): String? {
         return when {
             email.isBlank() -> "Email requis"
-            !EMAIL_REGEX.matches(email) -> "Format d'email invalide"
-            email.length > MAX_EMAIL_LENGTH -> "Email trop long"
+            !email.contains("@") -> "Format invalide — ex : nom@domaine.com"
+            !EMAIL_REGEX.matches(email) -> "Format d'email invalide — ex : nom@domaine.com"
+            email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
             else -> null
         }
     }
 
+    /**
+     * Validates password for LOGIN only — we don't reveal password policy on login
+     * to avoid giving hints to attackers. Just check it's not blank.
+     */
+    private fun validateLoginPassword(password: String): String? {
+        return when {
+            password.isBlank() -> "Mot de passe requis"
+            else -> null
+        }
+    }
+
+    /**
+     * Validates password for REGISTRATION — full policy feedback.
+     * Returns the FIRST unmet requirement for clear UX guidance.
+     */
     private fun validatePassword(password: String): String? {
         return when {
             password.isBlank() -> "Mot de passe requis"
-            password.length < MIN_PASSWORD_LENGTH -> "Le mot de passe doit contenir au moins $MIN_PASSWORD_LENGTH caracteres"
-            !password.any { it.isUpperCase() } -> "Le mot de passe doit contenir une majuscule"
-            !password.any { it.isDigit() } -> "Le mot de passe doit contenir un chiffre"
-            !password.any { !it.isLetterOrDigit() } -> "Le mot de passe doit contenir un caractere special"
+            password.length < MIN_PASSWORD_LENGTH -> "$MIN_PASSWORD_LENGTH caracteres minimum"
+            !password.any { it.isUpperCase() } -> "Une majuscule est requise"
+            !password.any { it.isDigit() } -> "Un chiffre est requis"
+            !password.any { !it.isLetterOrDigit() } -> "Un caractere special est requis (!@#\$%...)"
             else -> null
         }
     }
 
+    /**
+     * Validates confirm password matches.
+     */
     private fun validateConfirmPassword(password: String, confirmPassword: String): String? {
         return when {
             confirmPassword.isBlank() -> "Confirmez votre mot de passe"
@@ -340,6 +389,6 @@ class AuthViewModel @Inject constructor(
     companion object {
         private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
         private const val MAX_EMAIL_LENGTH = 255
-        private const val MIN_PASSWORD_LENGTH = 8
+        const val MIN_PASSWORD_LENGTH = 8
     }
 }
