@@ -12,8 +12,31 @@ data class Product(
     val brand: String,
     val model: String?,
     val category: ProductCategory,
+    val commercialName: String? = null,
+    // Energy
     val energyLabel: EnergyClass?,
-    val repairabilityIndex: Double?, // 0-10 scale, 1 decimal
+    val kwhPerYear: Int? = null,
+    val energyEfficiencyIndex: Double? = null,
+    val powerStandbyMode: Double? = null, // Watts
+    val powerOffMode: Double? = null, // Watts
+    // Noise
+    val noiseDecibels: Int? = null, // dB(A)
+    val noiseClass: String? = null, // A-G
+    // Wet grip (tyres)
+    val wetGripClass: String? = null, // A-G
+    // Sustainability
+    val repairabilityIndex: Double? = null, // 0-10 scale
+    // Regulation
+    val implementingAct: String? = null, // EU regulation reference
+    val onMarketStartYear: Int? = null,
+    val productFicheUrl: String? = null, // Link to EPREL product fiche
+    // EPREL category-specific details
+    val eprelProductGroup: String? = null, // e.g., "lightsources", "electronicdisplays"
+    val eprelDetails: Map<String, Any?> = emptyMap(), // All raw EPREL fields for the category
+    // Source
+    val sourceName: String? = null,
+    val sourceUrl: String? = null,
+    // Legacy
     val characteristics: ProductCharacteristics = ProductCharacteristics(),
     val metrics: ProductMetrics? = null,
     val imageUrl: String? = null,
@@ -26,6 +49,7 @@ data class Product(
 enum class ProductCategory {
     ELECTRONIQUE,
     ELECTROMENAGER,
+    ECLAIRAGE,
     GAMING,
     CLIMATISATION,
     INFORMATIQUE,

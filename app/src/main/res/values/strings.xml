@@ -207,8 +207,45 @@
     <string name="cat_it">IT</string>
     <string name="cat_telephony">Telephony</string>
     <string name="cat_audio_video">Audio/Video</string>
+    <string name="cat_lighting">Lighting</string>
     <string name="cat_other">Other</string>
-    
+
+    <!-- Environmental Detail Cards (French labels for product detail) -->
+    <string name="energy_class_label">Classe énergie</string>
+    <string name="kwh_per_year_value">%d kWh/an</string>
+    <string name="energy_efficiency_index_label">Indice d\'efficacité énergétique</string>
+    <string name="power_standby_label">Consommation en veille</string>
+    <string name="power_standby_value">%.1f W</string>
+    <string name="power_off_label">Consommation arrêt</string>
+    <string name="power_off_value">%.1f W</string>
+    <string name="noise_emission">Émissions sonores</string>
+    <string name="noise_decibels_value">%d dB(A)</string>
+    <string name="noise_class_label">Classe bruit</string>
+    <string name="wet_grip">Adhérence sur sol mouillé</string>
+    <string name="wet_grip_class_label">Classe</string>
+    <string name="regulation_info">Réglementation</string>
+    <string name="implementing_act_label">Acte d\'exécution</string>
+    <string name="market_year_label">Sur le marché depuis</string>
+    <string name="product_fiche_label">Fiche produit EPREL</string>
+    <string name="product_fiche_link">Voir la fiche</string>
+    <string name="data_source">Source des données</string>
+    <string name="source_link">Voir la source</string>
+    <string name="no_data_available">Aucune donnée disponible</string>
+    <string name="durability_label">Durabilité</string>
+    <string name="durability_score_value">%.1f/10</string>
+    <string name="gtin_label">Code EAN</string>
+    <string name="commercial_name_label">Nom commercial</string>
+    <string name="consumption_details">Détails consommation</string>
+    <string name="eprel_details">Détails EPREL</string>
+
+    <!-- EPREL Search -->
+    <string name="eprel_search">EPREL ID</string>
+    <string name="eprel_search_title">Search by EPREL ID</string>
+    <string name="eprel_search_subtitle">Enter the EPREL product category and registration number to look up the energy label.</string>
+    <string name="eprel_category">Product category</string>
+    <string name="eprel_registration_number">Registration number</string>
+    <string name="eprel_search_button">Search</string>
+
     <!-- Error Messages -->
     <string name="error_generic">An error occurred</string>
     <string name="error_network">Network connection error</string>

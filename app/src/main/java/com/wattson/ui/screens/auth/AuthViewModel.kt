@@ -2,6 +2,7 @@ package com.wattson.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.AuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,13 +22,14 @@ data class AuthUiState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
+    val fullName: String = "",
     val isLoading: Boolean = false,
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
-    val rememberMe: Boolean = false
+    val rememberMe: Boolean = true
 )
 
 /**
@@ -50,6 +52,7 @@ sealed interface AuthIntent {
     data class UpdateEmail(val email: String) : AuthIntent
     data class UpdatePassword(val password: String) : AuthIntent
     data class UpdateConfirmPassword(val confirmPassword: String) : AuthIntent
+    data class UpdateFullName(val fullName: String) : AuthIntent
     data class TogglePasswordVisibility(val isConfirmField: Boolean = false) : AuthIntent
     data class ToggleRememberMe(val checked: Boolean) : AuthIntent
     data object Login : AuthIntent
@@ -65,14 +68,11 @@ sealed interface AuthIntent {
 
 /**
  * ViewModel for authentication screens (Auth, Login, Register).
- * Follows UDF pattern: Intent → State → UI.
+ * Follows UDF pattern: Intent -> State -> UI.
  */
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    // TODO: Inject use cases when implemented
-    // private val loginUseCase: LoginUseCase,
-    // private val registerUseCase: RegisterUseCase,
-    // private val loginWithProviderUseCase: LoginWithProviderUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -80,6 +80,18 @@ class AuthViewModel @Inject constructor(
 
     private val _events = MutableSharedFlow<AuthEvent>()
     val events = _events.asSharedFlow()
+
+    init {
+        // Check if already logged in
+        viewModelScope.launch {
+            authRepository.isLoggedIn.collect { isLoggedIn ->
+                if (isLoggedIn) {
+                    android.util.Log.d("AuthViewModel", "User already logged in, navigating to main")
+                    _events.emit(AuthEvent.NavigateToMain)
+                }
+            }
+        }
+    }
 
     /**
      * Process user intents and update state accordingly.
@@ -90,6 +102,7 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.UpdateEmail -> updateEmail(intent.email)
             is AuthIntent.UpdatePassword -> updatePassword(intent.password)
             is AuthIntent.UpdateConfirmPassword -> updateConfirmPassword(intent.confirmPassword)
+            is AuthIntent.UpdateFullName -> updateFullName(intent.fullName)
             is AuthIntent.TogglePasswordVisibility -> togglePasswordVisibility(intent.isConfirmField)
             is AuthIntent.ToggleRememberMe -> toggleRememberMe(intent.checked)
             is AuthIntent.Login -> performLogin()
@@ -105,7 +118,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun autoFillTestUser() {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 email = "test@wattson.com",
                 password = "Password123!",
@@ -119,7 +132,7 @@ class AuthViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 email = email,
-                emailError = validateEmail(email)
+                emailError = null // Clear error on change
             )
         }
     }
@@ -128,7 +141,7 @@ class AuthViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 password = password,
-                passwordError = validatePassword(password)
+                passwordError = null
             )
         }
     }
@@ -137,8 +150,14 @@ class AuthViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 confirmPassword = confirmPassword,
-                confirmPasswordError = validateConfirmPassword(state.password, confirmPassword)
+                confirmPasswordError = null
             )
+        }
+    }
+
+    private fun updateFullName(fullName: String) {
+        _uiState.update { state ->
+            state.copy(fullName = fullName)
         }
     }
 
@@ -158,11 +177,11 @@ class AuthViewModel @Inject constructor(
 
     fun performLogin() {
         val currentState = _uiState.value
-        
+
         // Validate inputs
         val emailError = validateEmail(currentState.email)
-        val passwordError = if (currentState.password.isBlank()) "Password is required" else null
-        
+        val passwordError = if (currentState.password.isBlank()) "Mot de passe requis" else null
+
         if (emailError != null || passwordError != null) {
             _uiState.update { state ->
                 state.copy(emailError = emailError, passwordError = passwordError)
@@ -172,37 +191,37 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
-            try {
-                // Simulate API call
-                kotlinx.coroutines.delay(1000)
-                
-                // Allow specific test user for navigation
-                if (currentState.email == "test@wattson.com" && currentState.password == "Password123!") {
+
+            val result = authRepository.login(
+                email = currentState.email,
+                password = currentState.password,
+                rememberMe = currentState.rememberMe
+            )
+
+            result.fold(
+                onSuccess = { user ->
+                    android.util.Log.d("AuthViewModel", "Login successful: ${user.email}")
                     _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowSnackbar("Bienvenue ${user.fullName}!"))
                     _events.emit(AuthEvent.NavigateToMain)
-                } else if (currentState.email.isNotBlank() && currentState.password.isNotBlank()) {
-                    // For now, allow any non-empty credentials to ease testing
+                },
+                onFailure = { error ->
+                    android.util.Log.e("AuthViewModel", "Login failed", error)
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.NavigateToMain)
-                } else {
-                    throw Exception("Identifiants invalides")
+                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur de connexion"))
                 }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.ShowError(e.message ?: "Login failed"))
-            }
+            )
         }
     }
 
     fun performRegister() {
         val currentState = _uiState.value
-        
+
         // Validate all inputs
         val emailError = validateEmail(currentState.email)
         val passwordError = validatePassword(currentState.password)
         val confirmPasswordError = validateConfirmPassword(currentState.password, currentState.confirmPassword)
-        
+
         if (emailError != null || passwordError != null || confirmPasswordError != null) {
             _uiState.update { state ->
                 state.copy(
@@ -216,51 +235,60 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
-            try {
-                // TODO: Replace with actual register use case
-                // val result = registerUseCase(currentState.email, currentState.password)
-                kotlinx.coroutines.delay(1500)
-                
-                _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.ShowSnackbar("Account created successfully"))
-                _events.emit(AuthEvent.NavigateToMain)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.ShowError(e.message ?: "Registration failed"))
-            }
+
+            val result = authRepository.register(
+                email = currentState.email,
+                password = currentState.password,
+                fullName = currentState.fullName.takeIf { it.isNotBlank() }
+            )
+
+            result.fold(
+                onSuccess = { user ->
+                    android.util.Log.d("AuthViewModel", "Registration successful: ${user.email}")
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowSnackbar("Compte cree avec succes!"))
+                    _events.emit(AuthEvent.NavigateToMain)
+                },
+                onFailure = { error ->
+                    android.util.Log.e("AuthViewModel", "Registration failed", error)
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur d'inscription"))
+                }
+            )
         }
     }
 
     fun loginWithProvider(provider: AuthProvider) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
-            try {
-                // TODO: Implement OAuth flow
-                // val result = loginWithProviderUseCase(provider)
-                kotlinx.coroutines.delay(1000)
-                
-                _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.NavigateToMain)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.ShowError("${provider.name} login failed"))
-            }
+
+            val result = authRepository.loginWithProvider(provider)
+
+            result.fold(
+                onSuccess = { user ->
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowSnackbar("Connexion ${provider.name} reussie!"))
+                    _events.emit(AuthEvent.NavigateToMain)
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowError("Erreur ${provider.name}: ${error.message}"))
+                }
+            )
         }
     }
 
     fun handleForgotPassword() {
         val currentState = _uiState.value
         val emailError = validateEmail(currentState.email)
-        
+
         if (emailError != null) {
-            _uiState.update { it.copy(emailError = "Please enter a valid email first") }
+            _uiState.update { it.copy(emailError = "Entrez d'abord un email valide") }
             return
         }
 
         viewModelScope.launch {
-            _events.emit(AuthEvent.ShowSnackbar("Password reset email sent to ${currentState.email}"))
+            _events.emit(AuthEvent.ShowSnackbar("Email de reinitialisation envoye a ${currentState.email}"))
         }
     }
 
@@ -283,28 +311,28 @@ class AuthViewModel @Inject constructor(
     // Validation helpers
     private fun validateEmail(email: String): String? {
         return when {
-            email.isBlank() -> "Email is required"
-            !EMAIL_REGEX.matches(email) -> "Invalid email format"
-            email.length > MAX_EMAIL_LENGTH -> "Email too long"
+            email.isBlank() -> "Email requis"
+            !EMAIL_REGEX.matches(email) -> "Format d'email invalide"
+            email.length > MAX_EMAIL_LENGTH -> "Email trop long"
             else -> null
         }
     }
 
     private fun validatePassword(password: String): String? {
         return when {
-            password.isBlank() -> "Password is required"
-            password.length < MIN_PASSWORD_LENGTH -> "Password must be at least $MIN_PASSWORD_LENGTH characters"
-            !password.any { it.isUpperCase() } -> "Password must contain at least one uppercase letter"
-            !password.any { it.isDigit() } -> "Password must contain at least one digit"
-            !password.any { !it.isLetterOrDigit() } -> "Password must contain at least one special character"
+            password.isBlank() -> "Mot de passe requis"
+            password.length < MIN_PASSWORD_LENGTH -> "Le mot de passe doit contenir au moins $MIN_PASSWORD_LENGTH caracteres"
+            !password.any { it.isUpperCase() } -> "Le mot de passe doit contenir une majuscule"
+            !password.any { it.isDigit() } -> "Le mot de passe doit contenir un chiffre"
+            !password.any { !it.isLetterOrDigit() } -> "Le mot de passe doit contenir un caractere special"
             else -> null
         }
     }
 
     private fun validateConfirmPassword(password: String, confirmPassword: String): String? {
         return when {
-            confirmPassword.isBlank() -> "Please confirm your password"
-            confirmPassword != password -> "Passwords do not match"
+            confirmPassword.isBlank() -> "Confirmez votre mot de passe"
+            confirmPassword != password -> "Les mots de passe ne correspondent pas"
             else -> null
         }
     }

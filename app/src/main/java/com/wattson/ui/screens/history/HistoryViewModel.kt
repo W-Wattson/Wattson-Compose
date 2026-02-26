@@ -2,6 +2,8 @@ package com.wattson.ui.screens.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.ProductRepository
 import com.wattson.domain.model.EnergyClass
 import com.wattson.domain.model.HistoryEntry
 import com.wattson.domain.model.HistoryFilter
@@ -26,13 +28,17 @@ import javax.inject.Inject
  */
 data class HistoryUiState(
     val isLoading: Boolean = false,
+    val isLoadingMore: Boolean = false,
     val searchQuery: String = "",
     val historyEntries: List<HistoryEntry> = emptyList(),
     val filteredEntries: List<HistoryEntry> = emptyList(),
     val filter: HistoryFilter = HistoryFilter(),
     val sortOrder: HistorySortOrder = HistorySortOrder.DATE_DESC,
     val errorMessage: String? = null,
-    val isEmpty: Boolean = false
+    val isEmpty: Boolean = false,
+    val currentPage: Int = 0,
+    val hasMorePages: Boolean = false,
+    val totalScans: Long = 0
 )
 
 /**
@@ -54,6 +60,7 @@ sealed interface HistoryIntent {
     data class SelectProduct(val productId: String) : HistoryIntent
     data object NavigateToScan : HistoryIntent
     data object RefreshHistory : HistoryIntent
+    data object LoadMoreHistory : HistoryIntent
     data class UpdateFilter(val filter: HistoryFilter) : HistoryIntent
     data class UpdateSortOrder(val sortOrder: HistorySortOrder) : HistoryIntent
 }
@@ -64,9 +71,8 @@ sealed interface HistoryIntent {
  */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    // TODO: Inject use cases when implemented
-    // private val getHistoryUseCase: GetHistoryUseCase,
-    // private val searchHistoryUseCase: SearchHistoryUseCase
+    private val productRepository: ProductRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -74,6 +80,8 @@ class HistoryViewModel @Inject constructor(
 
     private val _events = MutableSharedFlow<HistoryEvent>()
     val events = _events.asSharedFlow()
+
+    private val pageSize = 20
 
     init {
         loadHistory()
@@ -89,6 +97,7 @@ class HistoryViewModel @Inject constructor(
             is HistoryIntent.SelectProduct -> selectProduct(intent.productId)
             is HistoryIntent.NavigateToScan -> navigateToScan()
             is HistoryIntent.RefreshHistory -> loadHistory()
+            is HistoryIntent.LoadMoreHistory -> loadMoreHistory()
             is HistoryIntent.UpdateFilter -> updateFilter(intent.filter)
             is HistoryIntent.UpdateSortOrder -> updateSortOrder(intent.sortOrder)
         }
@@ -97,28 +106,103 @@ class HistoryViewModel @Inject constructor(
     private fun loadHistory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            
+
             try {
-                // TODO: Replace with actual use case
-                // val history = getHistoryUseCase()
-                val history = getMockHistory()
-                
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        historyEntries = history,
-                        filteredEntries = applyFilters(history, state.searchQuery, state.filter, state.sortOrder),
-                        isEmpty = history.isEmpty()
-                    )
-                }
+                val userId = authRepository.getCurrentUserId()
+                android.util.Log.d("HistoryViewModel", "Loading history for user: $userId")
+
+                val result = productRepository.getScanHistory(
+                    userId = userId,
+                    page = 0,
+                    size = pageSize
+                )
+
+                result.fold(
+                    onSuccess = { scans ->
+                        android.util.Log.d("HistoryViewModel", "Loaded ${scans.size} scans from API")
+                        val entries = scans.map { scan ->
+                            HistoryEntry(scan = scan, product = null)
+                        }
+
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false,
+                                historyEntries = entries,
+                                filteredEntries = applyFilters(entries, state.searchQuery, state.filter, state.sortOrder),
+                                isEmpty = entries.isEmpty(),
+                                currentPage = 0,
+                                hasMorePages = scans.size >= pageSize,
+                                totalScans = scans.size.toLong()
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        android.util.Log.e("HistoryViewModel", "Failed to load history", error)
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                historyEntries = emptyList(),
+                                filteredEntries = emptyList(),
+                                isEmpty = true,
+                                errorMessage = null // Don't show error, just empty list
+                            )
+                        }
+                    }
+                )
             } catch (e: Exception) {
-                _uiState.update { 
+                android.util.Log.e("HistoryViewModel", "Exception loading history", e)
+                _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Failed to load history"
+                        isEmpty = true,
+                        errorMessage = null
                     )
                 }
-                _events.emit(HistoryEvent.ShowError(e.message ?: "Failed to load history"))
+            }
+        }
+    }
+
+    private fun loadMoreHistory() {
+        val currentState = _uiState.value
+        if (currentState.isLoadingMore || !currentState.hasMorePages) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingMore = true) }
+
+            try {
+                val userId = authRepository.getCurrentUserId()
+                val nextPage = currentState.currentPage + 1
+
+                val result = productRepository.getScanHistory(
+                    userId = userId,
+                    page = nextPage,
+                    size = pageSize
+                )
+
+                result.fold(
+                    onSuccess = { scans ->
+                        val newEntries = scans.map { scan ->
+                            HistoryEntry(scan = scan, product = null)
+                        }
+                        val allEntries = currentState.historyEntries + newEntries
+
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoadingMore = false,
+                                historyEntries = allEntries,
+                                filteredEntries = applyFilters(allEntries, state.searchQuery, state.filter, state.sortOrder),
+                                currentPage = nextPage,
+                                hasMorePages = scans.size >= pageSize
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        _uiState.update { it.copy(isLoadingMore = false) }
+                        _events.emit(HistoryEvent.ShowError("Erreur: ${error.message}"))
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoadingMore = false) }
             }
         }
     }
@@ -201,9 +285,6 @@ class HistoryViewModel @Inject constructor(
             }
         }
 
-        // Apply date range filter
-        // HistoryFilter does not contain fromDate/toDate according to Scan.kt
-        
         // Apply sorting
         result = when (sortOrder) {
             HistorySortOrder.DATE_DESC -> result.sortedByDescending { it.scannedAt }
@@ -215,105 +296,5 @@ class HistoryViewModel @Inject constructor(
         }
 
         return result
-    }
-
-    /**
-     * Mock data for development/preview.
-     * TODO: Remove when repository is implemented.
-     */
-    private fun getMockHistory(): List<HistoryEntry> {
-        val now = Instant.now()
-        return listOf(
-            HistoryEntry(
-                scan = Scan(
-                    id = "scan_1",
-                    userId = "user_1",
-                    gtin = "3760000000001",
-                    scannedAt = now.minusSeconds(86400),
-                    snapshotData = ScanSnapshot(
-                        productName = "iPhone 15 Pro",
-                        brand = "Apple",
-                        model = "A3517",
-                        category = ProductCategory.ELECTRONIQUE,
-                        energyClass = null,
-                        repairabilityIndex = 7.2,
-                        imageUrl = null
-                    )
-                ),
-                product = null
-            ),
-            HistoryEntry(
-                scan = Scan(
-                    id = "scan_2",
-                    userId = "user_1",
-                    gtin = "3760000000002",
-                    scannedAt = now.minusSeconds(86400 * 3),
-                    snapshotData = ScanSnapshot(
-                        productName = "MF205W80WB-14A30",
-                        brand = "Midea",
-                        model = "MF205W80WB",
-                        category = ProductCategory.ELECTROMENAGER,
-                        energyClass = EnergyClass.A,
-                        repairabilityIndex = 8.2,
-                        imageUrl = null
-                    )
-                ),
-                product = null
-            ),
-            HistoryEntry(
-                scan = Scan(
-                    id = "scan_3",
-                    userId = "user_1",
-                    gtin = "3760000000003",
-                    scannedAt = now.minusSeconds(86400 * 7),
-                    snapshotData = ScanSnapshot(
-                        productName = "GB167",
-                        brand = "Beatsonic Sarl.",
-                        model = "GB167",
-                        category = ProductCategory.ELECTRONIQUE,
-                        energyClass = EnergyClass.E,
-                        repairabilityIndex = 5.2,
-                        imageUrl = null
-                    )
-                ),
-                product = null
-            ),
-            HistoryEntry(
-                scan = Scan(
-                    id = "scan_4",
-                    userId = "user_1",
-                    gtin = "3760000000004",
-                    scannedAt = now.minusSeconds(86400 * 30),
-                    snapshotData = ScanSnapshot(
-                        productName = "PlayStation 5",
-                        brand = "Sony",
-                        model = "CFI-1216A",
-                        category = ProductCategory.GAMING,
-                        energyClass = EnergyClass.C,
-                        repairabilityIndex = 6.5,
-                        imageUrl = null
-                    )
-                ),
-                product = null
-            ),
-            HistoryEntry(
-                scan = Scan(
-                    id = "scan_5",
-                    userId = "user_1",
-                    gtin = "3760000000005",
-                    scannedAt = now.minusSeconds(86400 * 60),
-                    snapshotData = ScanSnapshot(
-                        productName = "Climatiseur Daikin",
-                        brand = "Daikin",
-                        model = "FTXM-R",
-                        category = ProductCategory.CLIMATISATION,
-                        energyClass = EnergyClass.A,
-                        repairabilityIndex = 7.8,
-                        imageUrl = null
-                    )
-                ),
-                product = null
-            )
-        )
     }
 }

@@ -14,17 +14,42 @@ data class Scan(
 )
 
 /**
- * Snapshot of product data at the time of scan
- * Preserves historical data even if product info is updated later
+ * Snapshot of product data at the time of scan.
+ * Preserves historical data even if product info is updated later.
+ * Contains all environmental and sustainability fields.
  */
 data class ScanSnapshot(
     val productName: String,
     val brand: String,
-    val model: String?,
-    val category: ProductCategory,
-    val energyClass: EnergyClass?,
-    val repairabilityIndex: Double?,
-    val imageUrl: String?
+    val model: String? = null,
+    val category: ProductCategory = ProductCategory.OTHER,
+    val commercialName: String? = null,
+    // Energy
+    val energyClass: EnergyClass? = null,
+    val kwhPerYear: Int? = null,
+    val energyEfficiencyIndex: Double? = null,
+    val powerStandbyMode: Double? = null,
+    val powerOffMode: Double? = null,
+    // Noise
+    val noiseDecibels: Int? = null,
+    val noiseClass: String? = null,
+    // Wet grip (tyres)
+    val wetGripClass: String? = null,
+    // Sustainability
+    val repairabilityIndex: Double? = null,
+    val durabilityScore: Double? = null,
+    // EPREL details
+    val eprelProductGroup: String? = null,
+    val eprelDetails: Map<String, Any?> = emptyMap(),
+    // Regulation
+    val implementingAct: String? = null,
+    val onMarketStartYear: Int? = null,
+    val productFicheUrl: String? = null,
+    // Source
+    val sourceName: String? = null,
+    val sourceUrl: String? = null,
+    // Legacy
+    val imageUrl: String? = null
 )
 
 /**
