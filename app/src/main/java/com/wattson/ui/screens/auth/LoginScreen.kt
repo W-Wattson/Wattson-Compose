@@ -203,12 +203,14 @@ fun LoginScreen(
                         
                         Spacer(modifier = Modifier.height(24.dp))
                         
-                        // Login button
+                        // Login button — disabled if fields are empty or have validation errors
                         WattsonButton(
                             text = stringResource(id = R.string.continue_button),
                             onClick = onLogin,
                             isLoading = uiState.isLoading,
-                            enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank(),
+                            enabled = uiState.email.isNotBlank() &&
+                                    uiState.password.isNotBlank() &&
+                                    uiState.emailError == null,
                             modifier = Modifier.fillMaxWidth()
                         )
                         

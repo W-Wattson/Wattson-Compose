@@ -68,10 +68,10 @@ com.wattson.app-graphics-path-1.0.1-66 C:\Users\victo\.gradle\caches\8.13\transf
 com.wattson.app-ui-tooling-preview-release-67 C:\Users\victo\.gradle\caches\8.13\transforms\f4d77e22fd6057526fddeb06664bcf4e\transformed\ui-tooling-preview-release\res
 com.wattson.app-ui-text-release-68 C:\Users\victo\.gradle\caches\8.13\transforms\f9e9388ac56eed28d651ed913ab87147\transformed\ui-text-release\res
 com.wattson.app-material-release-69 C:\Users\victo\.gradle\caches\8.13\transforms\fb1e7c2aab6a597dc81b144cf712632d\transformed\material-release\res
-com.wattson.app-resValues-70 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\build\generated\res\resValues\debug
-com.wattson.app-updated_navigation_xml-71 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\build\generated\updated_navigation_xml\debug
-com.wattson.app-packageDebugResources-72 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.wattson.app-packageDebugResources-73 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.wattson.app-debug-74 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.wattson.app-debug-75 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\debug\res
-com.wattson.app-main-76 D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\res
+com.wattson.app-resValues-70 D:\Code\Wattson-Compose\app\build\generated\res\resValues\debug
+com.wattson.app-updated_navigation_xml-71 D:\Code\Wattson-Compose\app\build\generated\updated_navigation_xml\debug
+com.wattson.app-packageDebugResources-72 D:\Code\Wattson-Compose\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.wattson.app-packageDebugResources-73 D:\Code\Wattson-Compose\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.wattson.app-debug-74 D:\Code\Wattson-Compose\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.wattson.app-debug-75 D:\Code\Wattson-Compose\app\src\debug\res
+com.wattson.app-main-76 D:\Code\Wattson-Compose\app\src\main\res

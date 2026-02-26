@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -288,7 +289,8 @@ fun RegisterScreen(
 }
 
 /**
- * Password requirements indicator showing which criteria are met.
+ * Password requirements indicator with strength bar and requirement chips.
+ * Provides real-time visual feedback as the user types.
  */
 @Composable
 private fun PasswordRequirementsHint(
@@ -299,17 +301,80 @@ private fun PasswordRequirementsHint(
     val hasUppercase = password.any { it.isUpperCase() }
     val hasDigit = password.any { it.isDigit() }
     val hasSpecial = password.any { !it.isLetterOrDigit() }
-    
+
+    // Calculate strength score (0-4)
+    val strengthScore = listOf(hasMinLength, hasUppercase, hasDigit, hasSpecial).count { it }
+
+    // Strength label and color
+    val strengthLabel = when {
+        password.isBlank() -> ""
+        strengthScore <= 1 -> "Faible"
+        strengthScore == 2 -> "Moyen"
+        strengthScore == 3 -> "Bon"
+        else -> "Fort"
+    }
+
+    val strengthColor = when {
+        password.isBlank() -> MaterialTheme.colorScheme.outlineVariant
+        strengthScore <= 1 -> Color(0xFFE53935) // Red
+        strengthScore == 2 -> Color(0xFFFFA726) // Orange
+        strengthScore == 3 -> Color(0xFFFDD835) // Yellow
+        else -> Color(0xFF66BB6A) // Green
+    }
+
+    // Animated strength progress
+    val animatedProgress by animateFloatAsState(
+        targetValue = if (password.isBlank()) 0f else strengthScore / 4f,
+        animationSpec = tween(300),
+        label = "strengthProgress"
+    )
+
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.password_requirements_title),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        
+        // Strength bar
+        if (password.isNotBlank()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Progress bar segments
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    repeat(4) { index ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(4.dp)
+                                .background(
+                                    color = if (index < strengthScore) strengthColor
+                                    else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                    shape = MaterialTheme.shapes.extraSmall
+                                )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Strength label
+                Text(
+                    text = strengthLabel,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = strengthColor
+                )
+            }
+
+            Spacer(modifier = Modifier.height(2.dp))
+        }
+
+        // Requirements chips
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -323,7 +388,7 @@ private fun PasswordRequirementsHint(
                 isMet = hasUppercase
             )
         }
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
