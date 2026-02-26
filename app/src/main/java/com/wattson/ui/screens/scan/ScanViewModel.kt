@@ -2,6 +2,7 @@ package com.wattson.ui.screens.scan
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.BarcodeFormat
 import com.wattson.domain.model.ScanResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,8 @@ data class ScanUiState(
     val lastScannedCode: String? = null,
     val scanResult: ScanResult? = null,
     val errorMessage: String? = null,
-    val showPermissionRationale: Boolean = false
+    val showPermissionRationale: Boolean = false,
+    val showEprelDialog: Boolean = false
 )
 
 /**
@@ -54,6 +56,9 @@ sealed interface ScanIntent {
     data object RequestPermission : ScanIntent
     data object OpenSettings : ScanIntent
     data object RetryLastScan : ScanIntent
+    data object ShowEprelDialog : ScanIntent
+    data object DismissEprelDialog : ScanIntent
+    data class SearchByEprelId(val category: String, val registrationNumber: String) : ScanIntent
 }
 
 /**
@@ -62,9 +67,8 @@ sealed interface ScanIntent {
  */
 @HiltViewModel
 class ScanViewModel @Inject constructor(
-    // TODO: Inject use cases when implemented
-    // private val scanProductUseCase: ScanProductUseCase,
-    // private val getProductByBarcodeUseCase: GetProductByBarcodeUseCase
+    private val productRepository: com.wattson.data.repository.ProductRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanUiState())
@@ -88,6 +92,9 @@ class ScanViewModel @Inject constructor(
             is ScanIntent.RequestPermission -> requestPermission()
             is ScanIntent.OpenSettings -> openSettings()
             is ScanIntent.RetryLastScan -> retryLastScan()
+            is ScanIntent.ShowEprelDialog -> showEprelDialog()
+            is ScanIntent.DismissEprelDialog -> dismissEprelDialog()
+            is ScanIntent.SearchByEprelId -> searchByEprelId(intent.category, intent.registrationNumber)
         }
     }
 
@@ -127,50 +134,65 @@ class ScanViewModel @Inject constructor(
             }
 
             try {
-                // TODO: Replace with actual use case
-                // val result = scanProductUseCase(barcode, format)
-                
-                // Simulate API call
-                kotlinx.coroutines.delay(1500)
-                
-                // Mock success - in production, check if product exists
-                val productId = "prod_${barcode.takeLast(6)}"
-                val product = com.wattson.domain.model.Product(
-                    id = productId,
-                    gtin = barcode,
-                    name = "Produit scanné",
-                    brand = "Marque",
-                    model = "Modèle",
-                    category = com.wattson.domain.model.ProductCategory.OTHER,
-                    energyLabel = null,
-                    repairabilityIndex = null,
-                    updatedAt = java.time.Instant.now()
-                )
-                
-                _uiState.update { 
-                    it.copy(
-                        isProcessing = false,
-                        scanResult = ScanResult.Success(
-                            product = product,
-                            isNewProduct = true
+                // Call real API via ProductRepository
+                val userId = authRepository.getCurrentUserId()
+                val scanResult = productRepository.scanProduct(userId, barcode)
+
+                if (scanResult is ScanResult.Success) {
+                    _uiState.update {
+                        it.copy(
+                            isProcessing = false,
+                            scanResult = scanResult
                         )
-                    ) 
+                    }
+                    // Navigate using GTIN (EAN) instead of internal ID for API lookup
+                    _events.emit(ScanEvent.NavigateToProductDetail(scanResult.product.gtin))
                 }
-                
-                _events.emit(ScanEvent.NavigateToProductDetail(productId))
-                
+                else if (scanResult is ScanResult.ProductNotFound) {
+                    _uiState.update {
+                        it.copy(
+                            isProcessing = false,
+                            errorMessage = "Produit non trouvé: $barcode",
+                            scanResult = scanResult
+                        )
+                    }
+                    _events.emit(ScanEvent.ShowProductNotFound(barcode))
+                }
+                else if (scanResult is ScanResult.NetworkError) {
+                    _uiState.update {
+                        it.copy(
+                            isProcessing = false,
+                            errorMessage = scanResult.message ?: "Erreur réseau",
+                            scanResult = scanResult
+                        )
+                    }
+                    _events.emit(ScanEvent.ShowError(scanResult.message ?: "Erreur réseau"))
+                }
+                else {
+                    // Handle other ScanResult types (DecodingFailed, CameraError)
+                    _uiState.update {
+                        it.copy(
+                            isProcessing = false,
+                            errorMessage = "Erreur inattendue: ${scanResult::class.simpleName}",
+                            scanResult = scanResult
+                        )
+                    }
+                }
+
             } catch (e: Exception) {
-                _uiState.update { 
+                android.util.Log.e("ScanViewModel", "Scan exception", e)
+                val errorMsg = e.message ?: e.javaClass.simpleName
+                _uiState.update {
                     it.copy(
                         isProcessing = false,
-                        errorMessage = e.message ?: "Scan failed",
+                        errorMessage = errorMsg,
                         scanResult = ScanResult.NetworkError(
                             gtin = barcode,
-                            message = e.message ?: "Network error"
+                            message = errorMsg
                         )
-                    ) 
+                    )
                 }
-                _events.emit(ScanEvent.ShowError(e.message ?: "Scan failed"))
+                _events.emit(ScanEvent.ShowError(errorMsg))
             }
         }
     }
@@ -224,6 +246,71 @@ class ScanViewModel @Inject constructor(
             onBarcodeDetected(lastCode, BarcodeFormat.EAN_13)
         } else {
             startScanning()
+        }
+    }
+
+    private fun showEprelDialog() {
+        _uiState.update { it.copy(showEprelDialog = true) }
+    }
+
+    private fun dismissEprelDialog() {
+        _uiState.update { it.copy(showEprelDialog = false) }
+    }
+
+    private fun searchByEprelId(category: String, registrationNumber: String) {
+        if (_uiState.value.isProcessing) return
+
+        _uiState.update {
+            it.copy(
+                showEprelDialog = false,
+                isProcessing = true,
+                errorMessage = null,
+                lastScannedCode = "$category/$registrationNumber"
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                val result = productRepository.getProductByEprelId(category, registrationNumber)
+                result.fold(
+                    onSuccess = { product ->
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                scanResult = ScanResult.Success(product = product, isNewProduct = false)
+                            )
+                        }
+                        // Register the EPREL scan in history
+                        try {
+                            val userId = authRepository.getCurrentUserId()
+                            productRepository.registerEprelScan(userId, category, registrationNumber)
+                        } catch (e: Exception) {
+                            android.util.Log.w("ScanViewModel", "Failed to register EPREL scan in history", e)
+                        }
+                        // Navigate using EPREL identifier (gtin is synthetic "0000000000000")
+                        val productId = "eprel:$category/$registrationNumber"
+                        _events.emit(ScanEvent.NavigateToProductDetail(productId))
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                errorMessage = "Produit EPREL non trouvé: $category/$registrationNumber"
+                            )
+                        }
+                        _events.emit(ScanEvent.ShowError("Produit EPREL non trouvé"))
+                    }
+                )
+            } catch (e: Exception) {
+                android.util.Log.e("ScanViewModel", "EPREL search error", e)
+                _uiState.update {
+                    it.copy(
+                        isProcessing = false,
+                        errorMessage = e.message ?: "Erreur de recherche EPREL"
+                    )
+                }
+                _events.emit(ScanEvent.ShowError(e.message ?: "Erreur de recherche EPREL"))
+            }
         }
     }
 

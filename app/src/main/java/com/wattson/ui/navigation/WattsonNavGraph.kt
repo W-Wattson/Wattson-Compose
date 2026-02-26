@@ -12,14 +12,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.wattson.domain.model.AuthProvider
 import com.wattson.ui.screens.account.AccountViewModel
 import com.wattson.ui.screens.auth.AuthIntent
 import com.wattson.ui.screens.auth.AuthViewModel
 import com.wattson.ui.screens.documents.DocumentsViewModel
+import com.wattson.ui.screens.history.HistoryIntent
 import com.wattson.ui.screens.history.HistoryViewModel
 import com.wattson.ui.screens.premium.PremiumViewModel
 import com.wattson.ui.screens.scan.ScanIntent
@@ -105,6 +110,24 @@ fun WattsonNavHost(
         composable<WattsonRoute.Login> {
             val viewModel: AuthViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+
+            // Handle auth events
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is com.wattson.ui.screens.auth.AuthEvent.NavigateToMain -> {
+                            navController.navigate(WattsonRoute.History) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                        is com.wattson.ui.screens.auth.AuthEvent.NavigateToRegister -> {
+                            navController.navigate(WattsonRoute.Register)
+                        }
+                        else -> { /* Handle other events */ }
+                    }
+                }
+            }
+
             LoginScreen(
                 uiState = uiState,
                 onEmailChange = { viewModel.onIntent(AuthIntent.UpdateEmail(it)) },
@@ -126,6 +149,24 @@ fun WattsonNavHost(
         composable<WattsonRoute.Register> {
             val viewModel: AuthViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+
+            // Handle auth events
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is com.wattson.ui.screens.auth.AuthEvent.NavigateToMain -> {
+                            navController.navigate(WattsonRoute.History) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                        is com.wattson.ui.screens.auth.AuthEvent.NavigateToLogin -> {
+                            navController.navigate(WattsonRoute.Login)
+                        }
+                        else -> { /* Handle other events */ }
+                    }
+                }
+            }
+
             RegisterScreen(
                 uiState = uiState,
                 onEmailChange = { viewModel.onIntent(AuthIntent.UpdateEmail(it)) },
@@ -148,6 +189,21 @@ fun WattsonNavHost(
         composable<WattsonRoute.History> {
             val viewModel: HistoryViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+
+            // Refresh history when screen becomes active (e.g., after returning from ProductDetail)
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        viewModel.onIntent(HistoryIntent.RefreshHistory)
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+
             HistoryScreen(
                 uiState = uiState,
                 onSearchQueryChange = { viewModel.updateSearchQuery(it) },

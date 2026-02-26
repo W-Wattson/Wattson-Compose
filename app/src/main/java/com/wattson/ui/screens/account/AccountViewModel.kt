@@ -2,7 +2,8 @@ package com.wattson.ui.screens.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wattson.domain.model.AuthProvider
+import com.wattson.data.remote.api.WattsonApi
+import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.PreferenceType
 import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 import javax.inject.Inject
 
 /**
@@ -29,6 +29,7 @@ data class AccountUiState(
     val isPremium: Boolean = false,
     val documentCount: Int = 0,
     val documentLimit: Int? = null,
+    val scanCount: Int = 0,
     val errorMessage: String? = null,
     val showLogoutConfirmation: Boolean = false,
     val isUpdatingPreferences: Boolean = false
@@ -65,11 +66,8 @@ sealed interface AccountIntent {
  */
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-    // TODO: Inject use cases when implemented
-    // private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    // private val updatePreferencesUseCase: UpdatePreferencesUseCase,
-    // private val logoutUseCase: LogoutUseCase,
-    // private val getUserDocumentCountUseCase: GetUserDocumentCountUseCase
+    private val authRepository: AuthRepository,
+    private val api: WattsonApi
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -80,6 +78,24 @@ class AccountViewModel @Inject constructor(
 
     init {
         loadProfile()
+        observeUserChanges()
+    }
+
+    private fun observeUserChanges() {
+        viewModelScope.launch {
+            authRepository.currentUser.collect { user ->
+                if (user != null) {
+                    _uiState.update {
+                        it.copy(
+                            user = user,
+                            preferences = user.preferences,
+                            isPremium = user.subscriptionType != SubscriptionType.FREE,
+                            documentLimit = user.subscriptionType.getDocumentLimit()
+                        )
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -103,13 +119,36 @@ class AccountViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                // TODO: Replace with actual use cases
-                // val user = getCurrentUserUseCase()
-                // val docCount = getUserDocumentCountUseCase()
-                
-                // Mock data for development
-                val user = getMockUser()
-                val docCount = 8
+                val user = authRepository.currentUser.value
+
+                if (user == null) {
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AccountEvent.NavigateToLogin)
+                    return@launch
+                }
+
+                // Fetch document count from API
+                var documentCount = 0
+                var scanCount = 0
+
+                try {
+                    val docResponse = api.getDocuments(user.id, limit = 1, offset = 0)
+                    if (docResponse.isSuccessful) {
+                        // Get total from response
+                        documentCount = docResponse.body()?.documents?.size ?: 0
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("AccountViewModel", "Failed to fetch documents", e)
+                }
+
+                try {
+                    val scanResponse = api.getScanHistory(user.id, page = 0, size = 1)
+                    if (scanResponse.isSuccessful) {
+                        scanCount = scanResponse.body()?.totalCount?.toInt() ?: 0
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("AccountViewModel", "Failed to fetch scan history", e)
+                }
 
                 _uiState.update {
                     it.copy(
@@ -117,12 +156,14 @@ class AccountViewModel @Inject constructor(
                         user = user,
                         preferences = user.preferences,
                         isPremium = user.subscriptionType != SubscriptionType.FREE,
-                        documentCount = docCount,
-                        documentLimit = user.subscriptionType.getDocumentLimit()
+                        documentCount = documentCount,
+                        documentLimit = user.subscriptionType.getDocumentLimit(),
+                        scanCount = scanCount
                     )
                 }
-                
+
             } catch (e: Exception) {
+                android.util.Log.e("AccountViewModel", "Failed to load profile", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -142,28 +183,35 @@ class AccountViewModel @Inject constructor(
             _uiState.update { it.copy(isUpdatingPreferences = true) }
 
             try {
-                // TODO: Replace with actual use case
-                // updatePreferencesUseCase(newOrder)
-                
-                kotlinx.coroutines.delay(500)
-
                 val updatedPreferences = UserPreferences(orderedPreferences = newOrder)
-                
-                _uiState.update {
-                    it.copy(
-                        isUpdatingPreferences = false,
-                        preferences = updatedPreferences,
-                        user = it.user?.copy(preferences = updatedPreferences)
-                    )
-                }
-                
-                _events.emit(AccountEvent.PreferencesUpdated)
-                
+                val result = authRepository.updatePreferences(updatedPreferences)
+
+                result.fold(
+                    onSuccess = { updatedUser ->
+                        _uiState.update {
+                            it.copy(
+                                isUpdatingPreferences = false,
+                                preferences = updatedUser.preferences,
+                                user = updatedUser
+                            )
+                        }
+                        _events.emit(AccountEvent.PreferencesUpdated)
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                isUpdatingPreferences = false,
+                                errorMessage = error.message ?: "Erreur lors de la mise a jour"
+                            )
+                        }
+                    }
+                )
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isUpdatingPreferences = false,
-                        errorMessage = e.message ?: "Erreur lors de la mise à jour"
+                        errorMessage = e.message ?: "Erreur lors de la mise a jour"
                     )
                 }
             }
@@ -185,19 +233,31 @@ class AccountViewModel @Inject constructor(
             _uiState.update { it.copy(showLogoutConfirmation = false, isLoading = true) }
 
             try {
-                // TODO: Replace with actual logout
-                // logoutUseCase()
-                
-                kotlinx.coroutines.delay(300)
-                
-                _events.emit(AccountEvent.LogoutSuccess)
-                _events.emit(AccountEvent.NavigateToLogin)
-                
+                val result = authRepository.logout()
+
+                result.fold(
+                    onSuccess = {
+                        android.util.Log.d("AccountViewModel", "Logout successful")
+                        _uiState.update { it.copy(isLoading = false, user = null) }
+                        _events.emit(AccountEvent.LogoutSuccess)
+                        _events.emit(AccountEvent.NavigateToLogin)
+                    },
+                    onFailure = { error ->
+                        android.util.Log.e("AccountViewModel", "Logout failed", error)
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.message ?: "Erreur lors de la deconnexion"
+                            )
+                        }
+                    }
+                )
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors de la déconnexion"
+                        errorMessage = e.message ?: "Erreur lors de la deconnexion"
                     )
                 }
             }
@@ -211,22 +271,4 @@ class AccountViewModel @Inject constructor(
     private fun dismissError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
-
-    // Mock data for development
-    private fun getMockUser(): User = User(
-        id = "user_1",
-        email = "amelie.brun@gmail.com",
-        fullName = "Amélie Brun",
-        authProvider = AuthProvider.EMAIL,
-        subscriptionType = SubscriptionType.FREE,
-        preferences = UserPreferences(
-            orderedPreferences = listOf(
-                PreferenceType.ECONOMY,
-                PreferenceType.ECOLOGY,
-                PreferenceType.REPAIRABILITY
-            )
-        ),
-        createdAt = Instant.parse("2024-06-15T10:00:00Z"),
-        updatedAt = Instant.now()
-    )
 }

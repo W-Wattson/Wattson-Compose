@@ -1,0 +1,644 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:2:1-37:12
+MERGED from [androidx.camera:camera-video:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\767c68e268c23c209c719a6333201c2f\transformed\camera-video-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.camera:camera-view:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\7a70f5a1613220bd367650c1f9fac8f4\transformed\camera-view-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.camera:camera-lifecycle:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\2ba2fec899fddbdc1f5890900463715a\transformed\camera-lifecycle-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:17:1-36:12
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:17:1-36:12
+MERGED from [com.google.mlkit:barcode-scanning:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc249b12607df1bbcbcb1b33e4f29491\transformed\barcode-scanning-17.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:2:1-18:12
+MERGED from [com.google.mlkit:barcode-scanning-common:17.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\0de7fa7c34a33db66da67f5dc8d76a94\transformed\barcode-scanning-common-17.0.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:2:1-18:12
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:2:1-26:12
+MERGED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.mlkit:vision-interfaces:16.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\6b47bd302011c028ce2da98b599743e0\transformed\vision-interfaces-16.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\11bbc3551bf0dc0b2a81e5b04fd15c63\transformed\play-services-tasks-18.2.0\AndroidManifest.xml:2:1-5:12
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\5a67e5e4c7f90f661f6a5a9455782409\transformed\hilt-navigation-compose-1.2.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.hilt:hilt-navigation:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\6e7743d5329a4e936be8fb5d6656700f\transformed\hilt-navigation-1.2.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-common:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\a8ecbf36ac4e6916090ec7cdd1139e77\transformed\navigation-common-2.8.4\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-runtime:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\2dda58734232e236196dc04216250a9e\transformed\navigation-runtime-2.8.4\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-common-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\680f1a4f9b8046a00b6d66b739e45b43\transformed\navigation-common-ktx-2.8.4\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\c1fea5e2795eb48483ea2bef10d0ce7d\transformed\navigation-runtime-ktx-2.8.4\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-compose:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\aa71fae36bee3c11cd71a669af165a84\transformed\navigation-compose-2.8.4\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material3:material3-android:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\e2648fb9ccb7870d8a3f6fa24d97b813\transformed\material3-release\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.dagger:hilt-android:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\b975d754766d32b647baa71376ab1fc0\transformed\hilt-android-2.52\AndroidManifest.xml:16:1-19:12
+MERGED from [io.coil-kt:coil-compose:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\8793fc652237346a4cc09760e2369267\transformed\coil-compose-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-compose-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\15504f7617e563fedb137613d7011a13\transformed\coil-compose-base-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\e5f01575980e8bde5f8d27bce12e60c0\transformed\coil-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\18798367e53c40242099638d4aca89ff\transformed\coil-base-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\ddac76d0acda68e7415957a5dc7b8152\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\27f68aacda7267a5496e585588a96ddb\transformed\appcompat-1.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.fragment:fragment:1.5.1] C:\Users\victo\.gradle\caches\8.13\transforms\d64d0f6fcf9732acf74436af245b9af8\transformed\fragment-1.5.1\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\74aa53a08d360a2237b2330e25822c6f\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.material:material-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\fb1e7c2aab6a597dc81b144cf712632d\transformed\material-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\03555bbdba05747b2c1e3502a954c5fd\transformed\animation-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\ec9eea8b5adae219fb5c3d4243f83813\transformed\material-ripple-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\0d43d7610c4da994b75e95adcf0b1acb\transformed\animation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\79d83b2d29763b5d91f701beec92af42\transformed\foundation-layout-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\4c4d76e12be3b279d36b6821a3be35fa\transformed\foundation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b38da2fb9a650e893d3a273c41c91a4a\transformed\ui-tooling-data-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\54f82d5d6e4b07d81066ed4bdb36ef5c\transformed\ui-unit-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\e348769052ee831384a45cbea2b7339a\transformed\ui-geometry-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\090f00e1cf035ad255f77031d9081b8a\transformed\ui-util-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f4d77e22fd6057526fddeb06664bcf4e\transformed\ui-tooling-preview-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\d907e3222de295721b0bceb2866a56ca\transformed\ui-graphics-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f9e9388ac56eed28d651ed913ab87147\transformed\ui-text-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\20125b25abd91cacb875e9c081aa65fa\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0ebaa1a27da72a7768eabc2e189d73ba\transformed\lifecycle-viewmodel-2.8.7\AndroidManifest.xml:2:1-5:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\256bfe21353805114c0ef896ded877f9\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\67987cc80de0d8225d29b32aaab635dc\transformed\lifecycle-livedata-core-ktx-2.8.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\5024c1ae34e1901a580bbe03207313ac\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\4684e2a355fe2b6e84617643c4b1e882\transformed\savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\a7257cf158910d163002f524cebac0f2\transformed\lifecycle-runtime-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\bfa90fcee8627c0282b6a80bb4de492e\transformed\lifecycle-livedata-core-2.8.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\d2ea63b2964915fb1a86d78d2567c4f2\transformed\lifecycle-viewmodel-ktx-2.8.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\da46921b75302b47874ddd6aff82ad4c\transformed\lifecycle-viewmodel-savedstate-2.8.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\961469fd08584c458d41a33945f4c592\transformed\lifecycle-livedata-2.8.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\7e513a95b2bfbbe5e23f8de2d5d3bc2d\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0af5ab0ee5429f2add89a495eea3b4f2\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\aab4c016667f4587e01135ecfc9590ea\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\victo\.gradle\caches\8.13\transforms\343b753de53fafc8258e448b9b7dc11c\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\c6f91e28f6af0b12ca3237de8a541c19\transformed\material-icons-extended-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\199d05a06e11fd0d4d8e61dd8a67f2d6\transformed\material-icons-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\23fbe91be73e79cf61da5926199a9885\transformed\ui-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.activity:activity-compose:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\d1dd674f40c97ce5659ccf061ec87743\transformed\activity-compose-1.9.3\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity-ktx:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\1c9d24c5f27479acff051468bbca6fde\transformed\activity-ktx-1.9.3\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\45db1be9919b7bc43c79d293c8f717ed\transformed\activity-1.9.3\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\068450e1d5e2e43f23023b16b78c5a7f\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\255832c1ae988fa646a23bcde28154e0\transformed\autofill-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\victo\.gradle\caches\8.13\transforms\f4cf44ee6568a61737b6a9472845d882\transformed\graphics-path-1.0.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\6df79d0b3fe31355eda02a31e4e16f6a\transformed\drawerlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\c70645417369fe9b51eaef5d667685e2\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\d63295ee086d747c5b9e30ade2ec364e\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\f6fefed7e5ccc38f1e83efc8c0bfc3e8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\33a10c391095a61ce31f19fc88cd4433\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\be612e56096fe42f32cbcc859b8ea484\transformed\core-ktx-1.15.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\8f2adc1415fab4ab1074c62a18a1be20\transformed\datastore-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\f287768032bdf23678a3f36fda81441e\transformed\datastore-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\348f4caa108ccec32c893fd9a0cc5ea9\transformed\datastore-preferences-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b2415129d0b33bab9852903d06d6677c\transformed\runtime-saveable-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\6c8472e4ab96d34fee078fd9e8898032\transformed\runtime-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\victo\.gradle\caches\8.13\transforms\bd1814913955c0585b860a0fd46ea15a\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\9e25cc35f98399824f81ec745fcb1f12\transformed\tracing-1.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\21e13ae81f7a79311e17bce8be665348\transformed\tracing-ktx-1.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] C:\Users\victo\.gradle\caches\8.13\transforms\e1cc300fdf13b78fc0ac8443e5d1c4c8\transformed\security-crypto-1.1.0-alpha06\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc73e70fd4d653c7256091042b5b744c\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\2617b328ef1bdfe16f01245c444896ac\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:15:1-38:12
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:15:1-41:12
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\0db90c6da14efcd57bef931b78f1c399\transformed\transport-api-2.2.1\AndroidManifest.xml:15:1-22:12
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\68f87be6cdc26567e3c4c8cbccb1ab9b\transformed\firebase-components-16.1.0\AndroidManifest.xml:15:1-23:12
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\7925c577988a49f5db68840d30791489\transformed\firebase-encoders-json-17.1.0\AndroidManifest.xml:15:1-23:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\47e63229628fc5b47b90e600e6996a4b\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\victo\.gradle\caches\8.13\transforms\c976a055de1120e3384d920d8e129bfe\transformed\exifinterface-1.3.7\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\01f8dfb10557cdc94dc4aff887e6e9c7\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.dagger:dagger-lint-aar:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\2d81439640495dafaadfeed01476105a\transformed\dagger-lint-aar-2.52\AndroidManifest.xml:16:1-19:12
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\victo\.gradle\caches\8.13\transforms\e6169ec769bcf55f19f7c671206cbd4e\transformed\image-1.0.0-beta1\AndroidManifest.xml:2:1-9:12
+	package
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:6:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:6:22-64
+uses-permission#android.permission.CAMERA
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:7:5-65
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:7:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:8:5-9:38
+	android:maxSdkVersion
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:9:9-35
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:8:22-77
+uses-permission#android.permission.READ_MEDIA_IMAGES
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:10:5-76
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:10:22-73
+uses-feature#android.hardware.camera
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:12:5-85
+	android:required
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:12:58-82
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:12:19-57
+uses-feature#android.hardware.camera.autofocus
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:13:5-95
+	android:required
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:13:68-92
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:13:19-67
+application
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:15:5-35:19
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:15:5-35:19
+MERGED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:23:5-34:19
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:23:5-34:19
+MERGED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:8:5-16:19
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:8:5-24:19
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:8:5-24:19
+MERGED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:4:5-6:19
+MERGED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:4:5-6:19
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\11bbc3551bf0dc0b2a81e5b04fd15c63\transformed\play-services-tasks-18.2.0\AndroidManifest.xml:4:5-20
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\11bbc3551bf0dc0b2a81e5b04fd15c63\transformed\play-services-tasks-18.2.0\AndroidManifest.xml:4:5-20
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:5:5-7:19
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:5:5-7:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\2617b328ef1bdfe16f01245c444896ac\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\2617b328ef1bdfe16f01245c444896ac\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:25:5-39:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:25:5-39:19
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\victo\.gradle\caches\8.13\transforms\e6169ec769bcf55f19f7c671206cbd4e\transformed\image-1.0.0-beta1\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\victo\.gradle\caches\8.13\transforms\e6169ec769bcf55f19f7c671206cbd4e\transformed\image-1.0.0-beta1\AndroidManifest.xml:7:5-20
+	android:extractNativeLibs
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:22:9-35
+	android:label
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:20:9-41
+	android:roundIcon
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:21:9-54
+	tools:targetApi
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:24:9-29
+	android:icon
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:19:9-43
+	android:allowBackup
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:17:9-35
+	android:theme
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:23:9-45
+	android:usesCleartextTraffic
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:18:9-44
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:16:9-43
+activity#com.wattson.MainActivity
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:26:9-34:20
+	android:exported
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:28:13-36
+	android:theme
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:29:13-49
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:27:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:30:13-33:29
+action#android.intent.action.MAIN
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:31:17-69
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:31:25-66
+category#android.intent.category.LAUNCHER
+ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:32:17-77
+	android:name
+		ADDED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml:32:27-74
+uses-sdk
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+MERGED from [androidx.camera:camera-video:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\767c68e268c23c209c719a6333201c2f\transformed\camera-video-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-video:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\767c68e268c23c209c719a6333201c2f\transformed\camera-video-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-view:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\7a70f5a1613220bd367650c1f9fac8f4\transformed\camera-view-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-view:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\7a70f5a1613220bd367650c1f9fac8f4\transformed\camera-view-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-lifecycle:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\2ba2fec899fddbdc1f5890900463715a\transformed\camera-lifecycle-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-lifecycle:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\2ba2fec899fddbdc1f5890900463715a\transformed\camera-lifecycle-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [com.google.mlkit:barcode-scanning:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc249b12607df1bbcbcb1b33e4f29491\transformed\barcode-scanning-17.3.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:barcode-scanning:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc249b12607df1bbcbcb1b33e4f29491\transformed\barcode-scanning-17.3.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:barcode-scanning-common:17.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\0de7fa7c34a33db66da67f5dc8d76a94\transformed\barcode-scanning-common-17.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:barcode-scanning-common:17.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\0de7fa7c34a33db66da67f5dc8d76a94\transformed\barcode-scanning-common-17.0.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:3:5-44
+MERGED from [com.google.mlkit:vision-interfaces:16.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\6b47bd302011c028ce2da98b599743e0\transformed\vision-interfaces-16.3.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.mlkit:vision-interfaces:16.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\6b47bd302011c028ce2da98b599743e0\transformed\vision-interfaces-16.3.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\11bbc3551bf0dc0b2a81e5b04fd15c63\transformed\play-services-tasks-18.2.0\AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\11bbc3551bf0dc0b2a81e5b04fd15c63\transformed\play-services-tasks-18.2.0\AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:3:5-44
+MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\5a67e5e4c7f90f661f6a5a9455782409\transformed\hilt-navigation-compose-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\5a67e5e4c7f90f661f6a5a9455782409\transformed\hilt-navigation-compose-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\6e7743d5329a4e936be8fb5d6656700f\transformed\hilt-navigation-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.hilt:hilt-navigation:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\6e7743d5329a4e936be8fb5d6656700f\transformed\hilt-navigation-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\a8ecbf36ac4e6916090ec7cdd1139e77\transformed\navigation-common-2.8.4\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\a8ecbf36ac4e6916090ec7cdd1139e77\transformed\navigation-common-2.8.4\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\2dda58734232e236196dc04216250a9e\transformed\navigation-runtime-2.8.4\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\2dda58734232e236196dc04216250a9e\transformed\navigation-runtime-2.8.4\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\680f1a4f9b8046a00b6d66b739e45b43\transformed\navigation-common-ktx-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\680f1a4f9b8046a00b6d66b739e45b43\transformed\navigation-common-ktx-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\c1fea5e2795eb48483ea2bef10d0ce7d\transformed\navigation-runtime-ktx-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\c1fea5e2795eb48483ea2bef10d0ce7d\transformed\navigation-runtime-ktx-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\aa71fae36bee3c11cd71a669af165a84\transformed\navigation-compose-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.8.4] C:\Users\victo\.gradle\caches\8.13\transforms\aa71fae36bee3c11cd71a669af165a84\transformed\navigation-compose-2.8.4\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\e2648fb9ccb7870d8a3f6fa24d97b813\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\e2648fb9ccb7870d8a3f6fa24d97b813\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [com.google.dagger:hilt-android:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\b975d754766d32b647baa71376ab1fc0\transformed\hilt-android-2.52\AndroidManifest.xml:18:3-42
+MERGED from [com.google.dagger:hilt-android:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\b975d754766d32b647baa71376ab1fc0\transformed\hilt-android-2.52\AndroidManifest.xml:18:3-42
+MERGED from [io.coil-kt:coil-compose:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\8793fc652237346a4cc09760e2369267\transformed\coil-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\8793fc652237346a4cc09760e2369267\transformed\coil-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\15504f7617e563fedb137613d7011a13\transformed\coil-compose-base-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\15504f7617e563fedb137613d7011a13\transformed\coil-compose-base-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\e5f01575980e8bde5f8d27bce12e60c0\transformed\coil-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\e5f01575980e8bde5f8d27bce12e60c0\transformed\coil-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\18798367e53c40242099638d4aca89ff\transformed\coil-base-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.7.0] C:\Users\victo\.gradle\caches\8.13\transforms\18798367e53c40242099638d4aca89ff\transformed\coil-base-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\ddac76d0acda68e7415957a5dc7b8152\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\ddac76d0acda68e7415957a5dc7b8152\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\27f68aacda7267a5496e585588a96ddb\transformed\appcompat-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\victo\.gradle\caches\8.13\transforms\27f68aacda7267a5496e585588a96ddb\transformed\appcompat-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.5.1] C:\Users\victo\.gradle\caches\8.13\transforms\d64d0f6fcf9732acf74436af245b9af8\transformed\fragment-1.5.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.1] C:\Users\victo\.gradle\caches\8.13\transforms\d64d0f6fcf9732acf74436af245b9af8\transformed\fragment-1.5.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\74aa53a08d360a2237b2330e25822c6f\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\74aa53a08d360a2237b2330e25822c6f\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material:material-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\fb1e7c2aab6a597dc81b144cf712632d\transformed\material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\fb1e7c2aab6a597dc81b144cf712632d\transformed\material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\03555bbdba05747b2c1e3502a954c5fd\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\03555bbdba05747b2c1e3502a954c5fd\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\ec9eea8b5adae219fb5c3d4243f83813\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\ec9eea8b5adae219fb5c3d4243f83813\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\0d43d7610c4da994b75e95adcf0b1acb\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\0d43d7610c4da994b75e95adcf0b1acb\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\79d83b2d29763b5d91f701beec92af42\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\79d83b2d29763b5d91f701beec92af42\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\4c4d76e12be3b279d36b6821a3be35fa\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\4c4d76e12be3b279d36b6821a3be35fa\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b38da2fb9a650e893d3a273c41c91a4a\transformed\ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b38da2fb9a650e893d3a273c41c91a4a\transformed\ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\54f82d5d6e4b07d81066ed4bdb36ef5c\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\54f82d5d6e4b07d81066ed4bdb36ef5c\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\e348769052ee831384a45cbea2b7339a\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\e348769052ee831384a45cbea2b7339a\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\090f00e1cf035ad255f77031d9081b8a\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\090f00e1cf035ad255f77031d9081b8a\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f4d77e22fd6057526fddeb06664bcf4e\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f4d77e22fd6057526fddeb06664bcf4e\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\d907e3222de295721b0bceb2866a56ca\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\d907e3222de295721b0bceb2866a56ca\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f9e9388ac56eed28d651ed913ab87147\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\f9e9388ac56eed28d651ed913ab87147\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\20125b25abd91cacb875e9c081aa65fa\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\20125b25abd91cacb875e9c081aa65fa\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0ebaa1a27da72a7768eabc2e189d73ba\transformed\lifecycle-viewmodel-2.8.7\AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0ebaa1a27da72a7768eabc2e189d73ba\transformed\lifecycle-viewmodel-2.8.7\AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\256bfe21353805114c0ef896ded877f9\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\256bfe21353805114c0ef896ded877f9\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\67987cc80de0d8225d29b32aaab635dc\transformed\lifecycle-livedata-core-ktx-2.8.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\67987cc80de0d8225d29b32aaab635dc\transformed\lifecycle-livedata-core-ktx-2.8.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\5024c1ae34e1901a580bbe03207313ac\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\5024c1ae34e1901a580bbe03207313ac\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\4684e2a355fe2b6e84617643c4b1e882\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\4684e2a355fe2b6e84617643c4b1e882\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\a7257cf158910d163002f524cebac0f2\transformed\lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\a7257cf158910d163002f524cebac0f2\transformed\lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\bfa90fcee8627c0282b6a80bb4de492e\transformed\lifecycle-livedata-core-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\bfa90fcee8627c0282b6a80bb4de492e\transformed\lifecycle-livedata-core-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\d2ea63b2964915fb1a86d78d2567c4f2\transformed\lifecycle-viewmodel-ktx-2.8.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\d2ea63b2964915fb1a86d78d2567c4f2\transformed\lifecycle-viewmodel-ktx-2.8.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\da46921b75302b47874ddd6aff82ad4c\transformed\lifecycle-viewmodel-savedstate-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\da46921b75302b47874ddd6aff82ad4c\transformed\lifecycle-viewmodel-savedstate-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\961469fd08584c458d41a33945f4c592\transformed\lifecycle-livedata-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\961469fd08584c458d41a33945f4c592\transformed\lifecycle-livedata-2.8.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\7e513a95b2bfbbe5e23f8de2d5d3bc2d\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\7e513a95b2bfbbe5e23f8de2d5d3bc2d\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0af5ab0ee5429f2add89a495eea3b4f2\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\0af5ab0ee5429f2add89a495eea3b4f2\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\aab4c016667f4587e01135ecfc9590ea\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\aab4c016667f4587e01135ecfc9590ea\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\victo\.gradle\caches\8.13\transforms\343b753de53fafc8258e448b9b7dc11c\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\victo\.gradle\caches\8.13\transforms\343b753de53fafc8258e448b9b7dc11c\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\c6f91e28f6af0b12ca3237de8a541c19\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\c6f91e28f6af0b12ca3237de8a541c19\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\199d05a06e11fd0d4d8e61dd8a67f2d6\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\199d05a06e11fd0d4d8e61dd8a67f2d6\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\23fbe91be73e79cf61da5926199a9885\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\23fbe91be73e79cf61da5926199a9885\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\d1dd674f40c97ce5659ccf061ec87743\transformed\activity-compose-1.9.3\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\d1dd674f40c97ce5659ccf061ec87743\transformed\activity-compose-1.9.3\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\1c9d24c5f27479acff051468bbca6fde\transformed\activity-ktx-1.9.3\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\1c9d24c5f27479acff051468bbca6fde\transformed\activity-ktx-1.9.3\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\45db1be9919b7bc43c79d293c8f717ed\transformed\activity-1.9.3\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.9.3] C:\Users\victo\.gradle\caches\8.13\transforms\45db1be9919b7bc43c79d293c8f717ed\transformed\activity-1.9.3\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\068450e1d5e2e43f23023b16b78c5a7f\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\068450e1d5e2e43f23023b16b78c5a7f\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\255832c1ae988fa646a23bcde28154e0\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\255832c1ae988fa646a23bcde28154e0\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\victo\.gradle\caches\8.13\transforms\f4cf44ee6568a61737b6a9472845d882\transformed\graphics-path-1.0.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\victo\.gradle\caches\8.13\transforms\f4cf44ee6568a61737b6a9472845d882\transformed\graphics-path-1.0.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\6df79d0b3fe31355eda02a31e4e16f6a\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\6df79d0b3fe31355eda02a31e4e16f6a\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\c70645417369fe9b51eaef5d667685e2\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\c70645417369fe9b51eaef5d667685e2\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\d63295ee086d747c5b9e30ade2ec364e\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\d63295ee086d747c5b9e30ade2ec364e\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\f6fefed7e5ccc38f1e83efc8c0bfc3e8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\f6fefed7e5ccc38f1e83efc8c0bfc3e8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\33a10c391095a61ce31f19fc88cd4433\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\33a10c391095a61ce31f19fc88cd4433\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\be612e56096fe42f32cbcc859b8ea484\transformed\core-ktx-1.15.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\be612e56096fe42f32cbcc859b8ea484\transformed\core-ktx-1.15.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\8f2adc1415fab4ab1074c62a18a1be20\transformed\datastore-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-core-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\8f2adc1415fab4ab1074c62a18a1be20\transformed\datastore-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\f287768032bdf23678a3f36fda81441e\transformed\datastore-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\f287768032bdf23678a3f36fda81441e\transformed\datastore-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\348f4caa108ccec32c893fd9a0cc5ea9\transformed\datastore-preferences-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.datastore:datastore-preferences-android:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\348f4caa108ccec32c893fd9a0cc5ea9\transformed\datastore-preferences-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b2415129d0b33bab9852903d06d6677c\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\b2415129d0b33bab9852903d06d6677c\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\6c8472e4ab96d34fee078fd9e8898032\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\6c8472e4ab96d34fee078fd9e8898032\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\victo\.gradle\caches\8.13\transforms\bd1814913955c0585b860a0fd46ea15a\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\victo\.gradle\caches\8.13\transforms\bd1814913955c0585b860a0fd46ea15a\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\9e25cc35f98399824f81ec745fcb1f12\transformed\tracing-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\9e25cc35f98399824f81ec745fcb1f12\transformed\tracing-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\21e13ae81f7a79311e17bce8be665348\transformed\tracing-ktx-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing-ktx:1.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\21e13ae81f7a79311e17bce8be665348\transformed\tracing-ktx-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] C:\Users\victo\.gradle\caches\8.13\transforms\e1cc300fdf13b78fc0ac8443e5d1c4c8\transformed\security-crypto-1.1.0-alpha06\AndroidManifest.xml:20:5-44
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] C:\Users\victo\.gradle\caches\8.13\transforms\e1cc300fdf13b78fc0ac8443e5d1c4c8\transformed\security-crypto-1.1.0-alpha06\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc73e70fd4d653c7256091042b5b744c\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\bc73e70fd4d653c7256091042b5b744c\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\2617b328ef1bdfe16f01245c444896ac\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\2617b328ef1bdfe16f01245c444896ac\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\0db90c6da14efcd57bef931b78f1c399\transformed\transport-api-2.2.1\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-api:2.2.1] C:\Users\victo\.gradle\caches\8.13\transforms\0db90c6da14efcd57bef931b78f1c399\transformed\transport-api-2.2.1\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\68f87be6cdc26567e3c4c8cbccb1ab9b\transformed\firebase-components-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-components:16.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\68f87be6cdc26567e3c4c8cbccb1ab9b\transformed\firebase-components-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\7925c577988a49f5db68840d30791489\transformed\firebase-encoders-json-17.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:17.1.0] C:\Users\victo\.gradle\caches\8.13\transforms\7925c577988a49f5db68840d30791489\transformed\firebase-encoders-json-17.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\47e63229628fc5b47b90e600e6996a4b\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\victo\.gradle\caches\8.13\transforms\47e63229628fc5b47b90e600e6996a4b\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\victo\.gradle\caches\8.13\transforms\c976a055de1120e3384d920d8e129bfe\transformed\exifinterface-1.3.7\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.7] C:\Users\victo\.gradle\caches\8.13\transforms\c976a055de1120e3384d920d8e129bfe\transformed\exifinterface-1.3.7\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\01f8dfb10557cdc94dc4aff887e6e9c7\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\victo\.gradle\caches\8.13\transforms\01f8dfb10557cdc94dc4aff887e6e9c7\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.dagger:dagger-lint-aar:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\2d81439640495dafaadfeed01476105a\transformed\dagger-lint-aar-2.52\AndroidManifest.xml:18:3-42
+MERGED from [com.google.dagger:dagger-lint-aar:2.52] C:\Users\victo\.gradle\caches\8.13\transforms\2d81439640495dafaadfeed01476105a\transformed\dagger-lint-aar-2.52\AndroidManifest.xml:18:3-42
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\victo\.gradle\caches\8.13\transforms\e6169ec769bcf55f19f7c671206cbd4e\transformed\image-1.0.0-beta1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\victo\.gradle\caches\8.13\transforms\e6169ec769bcf55f19f7c671206cbd4e\transformed\image-1.0.0-beta1\AndroidManifest.xml:5:5-44
+	android:targetSdkVersion
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Code\Claude-Pitier-Je-t-aime\wattson-mobile\app\src\main\AndroidManifest.xml
+service#androidx.camera.core.impl.MetadataHolderService
+ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:24:9-33:19
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:29:9-33:78
+MERGED from [androidx.camera:camera-core:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\9fd365574f054f685d781eaab00a610b\transformed\camera-core-1.4.0\AndroidManifest.xml:29:9-33:78
+	tools:node
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:29:13-31
+	android:enabled
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:26:13-36
+	android:exported
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:28:13-75
+	android:name
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:25:13-75
+meta-data#androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER
+ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:30:13-32:89
+	android:value
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:32:17-86
+	android:name
+		ADDED from [androidx.camera:camera-camera2:1.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\8c1e2b96278c4411b6e850c67ba3a985\transformed\camera-camera2-1.4.0\AndroidManifest.xml:31:17-103
+service#com.google.mlkit.common.internal.MlKitComponentDiscoveryService
+ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:9:9-15:19
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:15:9-23:19
+MERGED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:15:9-23:19
+	android:exported
+		ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:11:13-37
+	tools:targetApi
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:19:13-32
+	android:directBootAware
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:17:13-43
+	android:name
+		ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:10:13-91
+meta-data#com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar
+ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:12:13-14:85
+	android:value
+		ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:14:17-82
+	android:name
+		ADDED from [com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\dc35bc12581ff873b0d2e41d92fcaec7\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:13:17-120
+meta-data#com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar
+ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:12:13-14:85
+	android:value
+		ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:14:17-82
+	android:name
+		ADDED from [com.google.mlkit:vision-common:17.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\917d33fa226a15888466e2ac241126f4\transformed\vision-common-17.3.0\AndroidManifest.xml:13:17-124
+provider#com.google.mlkit.common.internal.MlKitInitProvider
+ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:9:9-13:38
+	android:authorities
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:11:13-69
+	android:exported
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:12:13-37
+	android:initOrder
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:13:13-35
+	android:name
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:10:13-78
+meta-data#com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar
+ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:20:13-22:85
+	android:value
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:22:17-82
+	android:name
+		ADDED from [com.google.mlkit:common:18.11.0] C:\Users\victo\.gradle\caches\8.13\transforms\cd0a9a8aa8177ec2073f19467fd5b892\transformed\common-18.11.0\AndroidManifest.xml:21:17-120
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:9-173
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:146-170
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:86-145
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:18.5.0] C:\Users\victo\.gradle\caches\8.13\transforms\5135bea4e9e3a568778621a9e66b28cc\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:19-85
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:18.4.0] C:\Users\victo\.gradle\caches\8.13\transforms\f3afb71872e2e7ce672302931fb976ae\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\victo\.gradle\caches\8.13\transforms\90d8f36cb6d20914ed7c54ed092e8b8b\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\victo\.gradle\caches\8.13\transforms\3c4ae6785f6e652cbffad5eae11d2b8c\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\victo\.gradle\caches\8.13\transforms\6281eeff65551ee7ab638782f452d640\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\victo\.gradle\caches\8.13\transforms\11ffccbec322a722e24c357ee4fb1532\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:23:9-81
+permission#com.wattson.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:26:22-94
+uses-permission#com.wattson.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.15.0] C:\Users\victo\.gradle\caches\8.13\transforms\3ce5ad2d93937f4468f497e3775381f5\transformed\core-1.15.0\AndroidManifest.xml:26:22-94
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\victo\.gradle\caches\8.13\transforms\ebcf45983c23cc06975dfbc257efb9e8\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:25:22-76
+service#com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:29:9-35:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:36:9-38:40
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:36:9-38:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:31:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:30:13-103
+meta-data#backend:com.google.android.datatransport.cct.CctBackendFactory
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:32:13-34:39
+	android:value
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:34:17-36
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\victo\.gradle\caches\8.13\transforms\0b3fb08a8921e95276b4dbb942e5afd7\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:33:17-94
+service#com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:26:9-30:19
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:28:13-37
+	android:permission
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:29:13-69
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:27:13-117
+receiver#com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:32:9-34:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:34:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\victo\.gradle\caches\8.13\transforms\0e6fd68e159aaa57c2033b8a353fde33\transformed\transport-runtime-2.2.6\AndroidManifest.xml:33:13-132

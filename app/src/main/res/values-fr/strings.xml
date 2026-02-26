@@ -207,8 +207,17 @@
     <string name="cat_it">Informatique</string>
     <string name="cat_telephony">Téléphonie</string>
     <string name="cat_audio_video">Audio/Vidéo</string>
+    <string name="cat_lighting">Éclairage</string>
     <string name="cat_other">Autre</string>
-    
+
+    <!-- EPREL Search -->
+    <string name="eprel_search">EPREL ID</string>
+    <string name="eprel_search_title">Recherche par ID EPREL</string>
+    <string name="eprel_search_subtitle">Entrez la catégorie et le numéro d\'enregistrement EPREL pour consulter l\'étiquette énergie.</string>
+    <string name="eprel_category">Catégorie de produit</string>
+    <string name="eprel_registration_number">Numéro d\'enregistrement</string>
+    <string name="eprel_search_button">Rechercher</string>
+
     <!-- Error Messages -->
     <string name="error_generic">Une erreur est survenue</string>
     <string name="error_network">Erreur de connexion réseau</string>
