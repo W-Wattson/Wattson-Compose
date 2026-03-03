@@ -52,6 +52,8 @@ sealed interface DocumentsEvent {
     data class ShowDeleteSuccess(val documentName: String) : DocumentsEvent
     data object NavigateToPremium : DocumentsEvent
     data object ShowQuotaExceeded : DocumentsEvent
+    data class StartDownload(val url: String, val filename: String) : DocumentsEvent
+    data class ShowDownloadError(val message: String) : DocumentsEvent
 }
 
 /**
@@ -71,6 +73,7 @@ sealed interface DocumentsIntent {
     data object CancelDelete : DocumentsIntent
     data object DismissError : DocumentsIntent
     data object NavigateToPremium : DocumentsIntent
+    data class DownloadDocument(val document: Document) : DocumentsIntent
 }
 
 /**
@@ -113,6 +116,7 @@ class DocumentsViewModel @Inject constructor(
             is DocumentsIntent.CancelDelete -> cancelDelete()
             is DocumentsIntent.DismissError -> dismissError()
             is DocumentsIntent.NavigateToPremium -> navigateToPremium()
+            is DocumentsIntent.DownloadDocument -> downloadDocument(intent.document)
         }
     }
 
@@ -366,6 +370,27 @@ class DocumentsViewModel @Inject constructor(
         val cutoff = Instant.now().minusSeconds(120) // 2 minutes
         return documents.any { doc ->
             doc.uploadedAt.isAfter(cutoff) && doc.type.name == "OTHER"
+        }
+    }
+
+    private fun downloadDocument(document: Document) {
+        viewModelScope.launch {
+            try {
+                val userId = authRepository.getCurrentUserId()
+                val result = documentRepository.getDownloadUrl(userId, document.id)
+
+                result.fold(
+                    onSuccess = { downloadInfo ->
+                        val filename = "document_${document.id}"
+                        _events.emit(DocumentsEvent.StartDownload(downloadInfo.url, filename))
+                    },
+                    onFailure = { error ->
+                        _events.emit(DocumentsEvent.ShowDownloadError(error.message ?: "Erreur download"))
+                    }
+                )
+            } catch (e: Exception) {
+                _events.emit(DocumentsEvent.ShowDownloadError(e.message ?: "Erreur download"))
+            }
         }
     }
 }
