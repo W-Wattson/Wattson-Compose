@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import java.time.Instant
 
 /**
  * UI State for the Documents screen (Conciergerie).
@@ -85,6 +88,8 @@ class DocumentsViewModel @Inject constructor(
 
     private val _events = MutableSharedFlow<DocumentsEvent>()
     val events = _events.asSharedFlow()
+
+    private var postUploadRefreshJob: Job? = null
 
     init {
         loadDocuments()
@@ -259,9 +264,9 @@ class DocumentsViewModel @Inject constructor(
 
                 result.fold(
                     onSuccess = {
-                        _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
                         _events.emit(DocumentsEvent.ShowUploadSuccess(fileName))
                         loadDocuments()
+                        startPostUploadRefreshWindow()
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
@@ -325,6 +330,42 @@ class DocumentsViewModel @Inject constructor(
     private fun navigateToPremium() {
         viewModelScope.launch {
             _events.emit(DocumentsEvent.NavigateToPremium)
+        }
+    }
+
+    private fun startPostUploadRefreshWindow() {
+        postUploadRefreshJob?.cancel()
+        postUploadRefreshJob = viewModelScope.launch {
+            // Refresh plusieurs fois pendant ~20s max
+            val delays = listOf(800L, 1500L, 2500L, 4000L, 6500L, 10000L)
+            for (d in delays) {
+                delay(d)
+                reloadDocumentsSilently()
+
+                // Stop si on ne voit plus de doc récent en OTHER
+                if (!hasRecentOther(_uiState.value.documents)) break
+            }
+        }
+    }
+
+    private suspend fun reloadDocumentsSilently() {
+        try {
+            val userId = authRepository.getCurrentUserId()
+            val result = documentRepository.getDocuments(userId)
+
+            result.onSuccess { documents ->
+                processDocuments(documents)
+            }
+            // En cas d'erreur, on ne spam pas l'UI (silencieux)
+        } catch (_: Exception) {
+            // silencieux
+        }
+    }
+
+    private fun hasRecentOther(documents: List<Document>): Boolean {
+        val cutoff = Instant.now().minusSeconds(120) // 2 minutes
+        return documents.any { doc ->
+            doc.uploadedAt.isAfter(cutoff) && doc.type.name == "OTHER"
         }
     }
 }

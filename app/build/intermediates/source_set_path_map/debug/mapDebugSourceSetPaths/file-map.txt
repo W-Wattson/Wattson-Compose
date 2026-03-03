@@ -1,0 +1,81 @@
+com.wattson.app-resValues-0 C:\Projet51\Mobile\Wattson-Compose\app\build\generated\res\resValues\debug
+com.wattson.app-updated_navigation_xml-1 C:\Projet51\Mobile\Wattson-Compose\app\build\generated\updated_navigation_xml\debug
+com.wattson.app-packageDebugResources-2 C:\Projet51\Mobile\Wattson-Compose\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.wattson.app-packageDebugResources-3 C:\Projet51\Mobile\Wattson-Compose\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.wattson.app-debug-4 C:\Projet51\Mobile\Wattson-Compose\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.wattson.app-debug-5 C:\Projet51\Mobile\Wattson-Compose\app\src\debug\res
+com.wattson.app-main-6 C:\Projet51\Mobile\Wattson-Compose\app\src\main\res
+com.wattson.app-lifecycle-runtime-ktx-release-7 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\0011e05222f93fafaa3a9984f7e33013\transformed\lifecycle-runtime-ktx-release\res
+com.wattson.app-startup-runtime-1.1.1-8 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\0485c66608d1ec722aaf2477534ed0e7\transformed\startup-runtime-1.1.1\res
+com.wattson.app-lifecycle-viewmodel-release-9 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\0bc9d458db56ee32ff81b738689647ce\transformed\lifecycle-viewmodel-release\res
+com.wattson.app-foundation-layout-release-10 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\0c88b714ec6a93a7352e9bef1529d5dd\transformed\foundation-layout-release\res
+com.wattson.app-ui-graphics-release-11 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\0ec806842615d40936fa8e077134dd60\transformed\ui-graphics-release\res
+com.wattson.app-lifecycle-viewmodel-ktx-2.8.7-12 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\16403cdf22fb72ed83d3ba0a0e760cee\transformed\lifecycle-viewmodel-ktx-2.8.7\res
+com.wattson.app-runtime-release-13 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\1853c17664d7f56eb5bd30e56204b8e6\transformed\runtime-release\res
+com.wattson.app-ui-tooling-data-release-14 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\1b9fe30d1610377e6153580382e4b085\transformed\ui-tooling-data-release\res
+com.wattson.app-datastore-preferences-release-15 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\1c639707070210486d4609ea8db7b2ab\transformed\datastore-preferences-release\res
+com.wattson.app-navigation-common-ktx-2.8.4-16 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\1d6e162ecad120ab920e4f605ebadf49\transformed\navigation-common-ktx-2.8.4\res
+com.wattson.app-camera-core-1.4.0-17 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\213cd57aa915e0f913b449d85e18718d\transformed\camera-core-1.4.0\res
+com.wattson.app-hilt-navigation-1.2.0-18 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\22e7bd7957b1236e3f9dc0ec978b1efe\transformed\hilt-navigation-1.2.0\res
+com.wattson.app-play-services-base-18.5.0-19 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\257d58f05c2fbfaf8605993849450d8a\transformed\play-services-base-18.5.0\res
+com.wattson.app-core-1.15.0-20 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\2c31a960c4924a7d3665fd7027502771\transformed\core-1.15.0\res
+com.wattson.app-graphics-path-1.0.1-21 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\341783ee0a622963284a81d66457efca\transformed\graphics-path-1.0.1\res
+com.wattson.app-savedstate-ktx-1.2.1-22 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\359784f4f6437044eb3f62a38e31e0ee\transformed\savedstate-ktx-1.2.1\res
+com.wattson.app-datastore-release-23 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\39f2b891bd24b3d23b31bfe8ddd4f5a3\transformed\datastore-release\res
+com.wattson.app-sqlite-2.4.0-24 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\4250f0f3463145fbff81e85089b0b518\transformed\sqlite-2.4.0\res
+com.wattson.app-activity-1.9.3-25 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\446935cd33728bb1d304b00385ad02b1\transformed\activity-1.9.3\res
+com.wattson.app-lifecycle-runtime-compose-release-26 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\4b453e02a78461ac5924193ecf849070\transformed\lifecycle-runtime-compose-release\res
+com.wattson.app-navigation-compose-2.8.4-27 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\4b99d608dc8f11149bb996d6be4ae38b\transformed\navigation-compose-2.8.4\res
+com.wattson.app-lifecycle-viewmodel-savedstate-2.8.7-28 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\52bc8f9da9b853eca6cb0705a8825da3\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
+com.wattson.app-navigation-common-2.8.4-29 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\5458cade02f79e8f831786e89f41c0dc\transformed\navigation-common-2.8.4\res
+com.wattson.app-material-ripple-release-30 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\5a7a75ec8f8cc837559786d45c0d92d8\transformed\material-ripple-release\res
+com.wattson.app-coil-base-2.7.0-31 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\5ca9c0f031bdb1d34c9e67549d6858b1\transformed\coil-base-2.7.0\res
+com.wattson.app-play-services-basement-18.4.0-32 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\5cb5d02e59878289bfb4c61935de8e31\transformed\play-services-basement-18.4.0\res
+com.wattson.app-appcompat-resources-1.6.1-33 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\5d60f2fb59965a63873cc05d0e488df0\transformed\appcompat-resources-1.6.1\res
+com.wattson.app-tracing-1.2.0-34 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\603496f5a306918c0ff25f9c04f0ccb3\transformed\tracing-1.2.0\res
+com.wattson.app-material3-release-35 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\629b18574f52f46821bed01dbeb6578a\transformed\material3-release\res
+com.wattson.app-navigation-runtime-2.8.4-36 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\65e28f69af6fd6fec9905bcf732e2548\transformed\navigation-runtime-2.8.4\res
+com.wattson.app-material-release-37 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\6bf16151806188ea46b7da8e42c4685e\transformed\material-release\res
+com.wattson.app-activity-ktx-1.9.3-38 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\6dba75cb385be7fbad895479da82fe29\transformed\activity-ktx-1.9.3\res
+com.wattson.app-customview-poolingcontainer-1.0.0-39 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\72cf8694dc31b6b8beb51ccff98986e0\transformed\customview-poolingcontainer-1.0.0\res
+com.wattson.app-ui-text-release-40 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\7ca1948e409bb145943d13a6945dec30\transformed\ui-text-release\res
+com.wattson.app-lifecycle-runtime-release-41 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\7ff6a3b1963363555df89ca8e7a729bd\transformed\lifecycle-runtime-release\res
+com.wattson.app-ui-geometry-release-42 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\81bc0c9368c41c093b55e88df884b4a9\transformed\ui-geometry-release\res
+com.wattson.app-ui-unit-release-43 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\82ab41002b2b6f88fa580cf0070e05b1\transformed\ui-unit-release\res
+com.wattson.app-navigation-runtime-ktx-2.8.4-44 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\83877c131b0d2aaace60c15451704a05\transformed\navigation-runtime-ktx-2.8.4\res
+com.wattson.app-camera-lifecycle-1.4.0-45 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\85ac5b172f5d9f48fd3475e38e826aaa\transformed\camera-lifecycle-1.4.0\res
+com.wattson.app-ui-util-release-46 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\86b054433ba17f67c6968e56ddcc110b\transformed\ui-util-release\res
+com.wattson.app-ui-tooling-preview-release-47 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\8725188f7f8634bc2f1b32d16fa92a96\transformed\ui-tooling-preview-release\res
+com.wattson.app-core-ktx-1.15.0-48 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\88738933911e994ab02544a32d4b9642\transformed\core-ktx-1.15.0\res
+com.wattson.app-emoji2-views-helper-1.3.0-49 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\8b0e7be77d6c3b07691c22ff86f447c1\transformed\emoji2-views-helper-1.3.0\res
+com.wattson.app-annotation-experimental-1.4.1-50 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\904bccf2ae00275cbd8928a6baa8b354\transformed\annotation-experimental-1.4.1\res
+com.wattson.app-material-icons-extended-release-51 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\947d935c8f2c0f1bc650e8558042634b\transformed\material-icons-extended-release\res
+com.wattson.app-security-crypto-1.1.0-alpha06-52 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\952eae4617805ba0be90faa8d95c0f5c\transformed\security-crypto-1.1.0-alpha06\res
+com.wattson.app-material-icons-core-release-53 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\96030b424f7b656438c84f964312f48a\transformed\material-icons-core-release\res
+com.wattson.app-sqlite-framework-2.4.0-54 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\988cff14a1661aebeef3298038c50526\transformed\sqlite-framework-2.4.0\res
+com.wattson.app-hilt-navigation-compose-1.2.0-55 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\a49d78f27c606b1102bc74a94b04cad8\transformed\hilt-navigation-compose-1.2.0\res
+com.wattson.app-ui-release-56 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\a7a39d4b7ab046871dc256cf19f5490f\transformed\ui-release\res
+com.wattson.app-camera-video-1.4.0-57 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\aacf74bf26dfaf53434dfd400c62aaa5\transformed\camera-video-1.4.0\res
+com.wattson.app-activity-compose-1.9.3-58 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\ae3906ad4938f46b7dafe44fc03afbd1\transformed\activity-compose-1.9.3\res
+com.wattson.app-lifecycle-livedata-core-2.8.7-59 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\b255328dd659629fef0035911c6f4154\transformed\lifecycle-livedata-core-2.8.7\res
+com.wattson.app-foundation-release-60 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\b2bc40a5907758f0e3de7b8a0eede0b3\transformed\foundation-release\res
+com.wattson.app-savedstate-1.2.1-61 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\b4f6097bf7b880b2526232de654c8f1f\transformed\savedstate-1.2.1\res
+com.wattson.app-animation-release-62 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\c0f965c6f22c256dd5c4cd4b431d85a6\transformed\animation-release\res
+com.wattson.app-lifecycle-livedata-core-ktx-2.8.7-63 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\c958b9c0ff4383758e94c4a4ac96daa4\transformed\lifecycle-livedata-core-ktx-2.8.7\res
+com.wattson.app-profileinstaller-1.3.1-64 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\cb02a435fc27e99e57d18ed60b783a4d\transformed\profileinstaller-1.3.1\res
+com.wattson.app-camera-camera2-1.4.0-65 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\cbab035d340cd03cb0c79b53d032c7e5\transformed\camera-camera2-1.4.0\res
+com.wattson.app-room-ktx-2.6.1-66 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\cef1bbb2e28cdb57d03c824416380681\transformed\room-ktx-2.6.1\res
+com.wattson.app-lifecycle-process-2.8.7-67 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\cf5d3bb944fffc92e8a36d239e728255\transformed\lifecycle-process-2.8.7\res
+com.wattson.app-ui-tooling-release-68 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\d262a1c19342f1fc8c9dd845898e6289\transformed\ui-tooling-release\res
+com.wattson.app-camera-view-1.4.0-69 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\d448c68a7a492d2a8f2db17a738bd090\transformed\camera-view-1.4.0\res
+com.wattson.app-animation-core-release-70 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\d61046aec0f1ca819fb2468806680157\transformed\animation-core-release\res
+com.wattson.app-room-runtime-2.6.1-71 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\d878fdff75a0c55b944b7e562a19ae57\transformed\room-runtime-2.6.1\res
+com.wattson.app-emoji2-1.3.0-72 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\dbf351451342b72ab50de32fa536b4e2\transformed\emoji2-1.3.0\res
+com.wattson.app-appcompat-1.6.1-73 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\e32ab009c1b8191917efff4df26902b1\transformed\appcompat-1.6.1\res
+com.wattson.app-lifecycle-viewmodel-compose-release-74 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\e4f61294417fd366b9f88c7dd1222ba5\transformed\lifecycle-viewmodel-compose-release\res
+com.wattson.app-core-runtime-2.2.0-75 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\e7d62d5ff383f05ad6faae24ba9c1c92\transformed\core-runtime-2.2.0\res
+com.wattson.app-runtime-saveable-release-76 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\eccb41001d91ef2f0876c26e4281f552\transformed\runtime-saveable-release\res
+com.wattson.app-fragment-1.5.1-77 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\ed2fa6c39ed39453b144681c8a9ef97f\transformed\fragment-1.5.1\res
+com.wattson.app-datastore-core-release-78 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\ed5af85531066232bb6e8f235b68d286\transformed\datastore-core-release\res
+com.wattson.app-tracing-ktx-1.2.0-79 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\f4c6604e9b3903d0b941030825d388fd\transformed\tracing-ktx-1.2.0\res
+com.wattson.app-lifecycle-livedata-2.8.7-80 C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\f85622da526faac55dd33c1d0b3ca000\transformed\lifecycle-livedata-2.8.7\res
