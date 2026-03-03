@@ -74,6 +74,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 
 /**
  * Documents screen for managing receipts and warranties.
@@ -132,6 +137,36 @@ fun DocumentsScreen(
                 is DocumentsEvent.NavigateToPremium -> onNavigateToPremium()
                 is DocumentsEvent.ShowQuotaExceeded -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.quota_exceeded))
+                }
+                is DocumentsEvent.StartDownload -> {
+                    try {
+                        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+                        val request = DownloadManager.Request(Uri.parse(event.url)).apply {
+                            setTitle(event.filename)
+                            setDescription("Wattson — Téléchargement")
+                            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, event.filename)
+                            setAllowedOverMetered(true)
+                            setAllowedOverRoaming(true)
+                        }
+
+                        dm.enqueue(request)
+                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                    } catch (e: Exception) {
+                        // fallback navigateur
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.url)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                    }
+                }
+
+                is DocumentsEvent.ShowDownloadError -> {
+                    snackbarHostState.showSnackbar("${context.getString(R.string.error)}: ${event.message}")
                 }
             }
         }
@@ -213,7 +248,8 @@ fun DocumentsScreen(
                             expandedYears = uiState.expandedYears,
                             onToggleYear = { onIntent(DocumentsIntent.ToggleYearExpanded(it)) },
                             onDocumentClick = { onIntent(DocumentsIntent.OpenDocument(it)) },
-                            onDocumentDelete = { onIntent(DocumentsIntent.DeleteDocument(it)) }
+                            onDocumentDelete = { onIntent(DocumentsIntent.DeleteDocument(it)) },
+                            onDocumentDownload = { doc -> onIntent(DocumentsIntent.DownloadDocument(doc)) }
                         )
                     }
                 }
@@ -355,6 +391,7 @@ private fun DocumentsList(
     onToggleYear: (Int) -> Unit,
     onDocumentClick: (String) -> Unit,
     onDocumentDelete: (Document) -> Unit,
+    onDocumentDownload: (Document) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -397,7 +434,7 @@ private fun DocumentsList(
                         DocumentCard(
                             document = document,
                             onClick = { onDocumentClick(document.id) },
-                            onDownload = { /* TODO */ },
+                            onDownload = { onDocumentDownload(document) },
                             onDelete = { onDocumentDelete(document) },
                             modifier = Modifier.fillMaxWidth()
                         )
