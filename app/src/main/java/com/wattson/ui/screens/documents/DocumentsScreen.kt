@@ -79,6 +79,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.provider.OpenableColumns
 
 /**
  * Documents screen for managing receipts and warranties.
@@ -100,7 +101,7 @@ fun DocumentsScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            val fileName = uri.lastPathSegment ?: "document"
+            val fileName = getDisplayName(context, uri)
             onIntent(DocumentsIntent.UploadDocument(uri.toString(), fileName))
         }
     }
@@ -275,7 +276,16 @@ fun DocumentsScreen(
         )
     }
 }
-
+private fun getDisplayName(context: android.content.Context, uri: Uri): String {
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (nameIndex >= 0 && it.moveToFirst()) {
+            return it.getString(nameIndex) ?: "document"
+        }
+    }
+    return "document"
+}
 @Composable
 private fun DocumentsHeader(
     searchQuery: String,

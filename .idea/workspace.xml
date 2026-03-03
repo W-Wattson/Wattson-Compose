@@ -10,9 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6a28fe26-0885-4b79-af26-1efab2852740" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Wattson.app.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
