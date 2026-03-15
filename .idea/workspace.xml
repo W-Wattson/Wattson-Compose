@@ -10,9 +10,172 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6a28fe26-0885-4b79-af26-1efab2852740" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/Wattson.app.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/DocumentsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/apk/debug/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/apk/debug/app-debug.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_0/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_1/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_2/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_3/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_4/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_5/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_6/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/dirs_bucket_7/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_0/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_1/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_2/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_3/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_4/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_5/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_6/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/currentProject/jar_980f54d583d6939a3623a9671f9688074e7db2e719e61749db131ae678e8e24a_bucket_7/graph.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/dex_archive_input_jar_hashes/debug/dexBuilderDebug/out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/dex_number_of_buckets_file/debug/dexBuilderDebug/out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kotlin/compileDebugKotlin/local-state/build-history.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/ap-classpath-entries.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/Hilt_MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/MainActivity_GeneratedInjector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/MainActivity_MembersInjector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/WattsonApplication_GeneratedInjector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/local/AppDatabase_Impl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/local/dao/ChatMessageDao_Impl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/local/dao/RepairConversationDao_Impl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/local/service/MockRepairAssistantService_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/repository/AuthRepository_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/repository/DocumentRepository_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/repository/ProductRepository_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/data/repository/RepairChatRepository_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/DatabaseModule_ProvideAppDatabaseFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/DatabaseModule_ProvideChatMessageDaoFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/DatabaseModule_ProvideRepairConversationDaoFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/NetworkModule_ProvideBaseUrlFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/NetworkModule_ProvideOkHttpClientFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/NetworkModule_ProvideRetrofitFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/di/NetworkModule_ProvideWattsonApiFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/account/AccountViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/account/AccountViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/auth/AuthViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/auth/AuthViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/documents/DocumentsViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/documents/DocumentsViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/documents/detail/DocumentDetailViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/documents/detail/DocumentDetailViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/history/HistoryViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/history/HistoryViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/premium/PremiumViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/premium/PremiumViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/product/ProductDetailViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/product/ProductDetailViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/repair/RepairViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/repair/RepairViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/repair/chat/RepairChatViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/repair/chat/RepairChatViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/scan/ScanViewModel_Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/com/wattson/ui/screens/scan/ScanViewModel_HiltModules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/dagger/hilt/internal/aggregatedroot/codegen/_com_wattson_WattsonApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/hilt_aggregated_deps/_com_wattson_di_DatabaseModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/1/hilt_aggregated_deps/_com_wattson_di_NetworkModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/account/AccountViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/auth/AuthViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/documents/DocumentsViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/documents/detail/DocumentDetailViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/history/HistoryViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/premium/PremiumViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/product/ProductDetailViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/repair/RepairViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/repair/chat/RepairChatViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/com/wattson/ui/screens/scan/ScanViewModel_HiltModules_KeyModule_ProvideFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_MainActivity_GeneratedInjector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_WattsonApplication_GeneratedInjector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_account_AccountViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_account_AccountViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_auth_AuthViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_auth_AuthViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_documents_DocumentsViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_documents_DocumentsViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_documents_detail_DocumentDetailViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_documents_detail_DocumentDetailViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_history_HistoryViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_history_HistoryViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_premium_PremiumViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_premium_PremiumViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_product_ProductDetailViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_product_ProductDetailViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_repair_RepairViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_repair_RepairViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_repair_chat_RepairChatViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_scan_ScanViewModel_HiltModules_BindsModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/backups/java/byRounds/2/hilt_aggregated_deps/_com_wattson_ui_screens_scan_ScanViewModel_HiltModules_KeyModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/caches.uptodate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/counters.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/file-to-id.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/id-to-file.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classLookups/lookups.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classpath-entries.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/classpath-structure.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/sealed" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/sourceToOutputs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/counters.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/file-to-id.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/id-to-file.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbolLookups/lookups.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/kspCaches/debug/symbols" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/DocumentsViewModel_Factory.class.uniqueId1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/DocumentsViewModel_HiltModules$BindsModule.class.uniqueId5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/DocumentsViewModel_HiltModules$KeyModule.class.uniqueId3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/DocumentsViewModel_HiltModules_KeyModule_ProvideFactory$InstanceHolder.class.uniqueId2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/DocumentsViewModel_HiltModules_KeyModule_ProvideFactory.class.uniqueId0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC$ActivityCImpl$LazyClassKeyProvider.class.uniqueId19" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC$ActivityCImpl$LazyClassKeyProvider.class.uniqueId19" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC$ViewModelCImpl$LazyClassKeyProvider.class.uniqueId24" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC$ViewModelCImpl$LazyClassKeyProvider.class.uniqueId24" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC.java.uniqueId5" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/tmp/hiltJavaCompileDebug/compileTransaction/stash-dir/DaggerWattsonApplication_HiltComponents_SingletonC.java.uniqueId5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wattson/data/remote/dto/DocumentDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wattson/data/remote/dto/DocumentDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/detail/DocumentDetailViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/wattson/ui/screens/documents/detail/DocumentDetailViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

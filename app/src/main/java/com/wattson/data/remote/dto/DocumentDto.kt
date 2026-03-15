@@ -26,21 +26,34 @@ data class DocumentResponse(
         val uploadInstant = uploadedAt?.let { parseInstant(it) } ?: Instant.now()
         val uploadDate = uploadInstant.atZone(ZoneId.systemDefault()).toLocalDate()
 
+        val mappedType = mapDocumentType(documentType)
+        val purchaseDate = ocrData?.purchaseDate?.let { parseLocalDate(it) }
+
+        val warrantyStartDate = if (mappedType == DocumentType.GARANTIE) {
+            purchaseDate
+        } else null
+
+        val warrantyEndDate = if (mappedType == DocumentType.GARANTIE && purchaseDate != null) {
+            purchaseDate.plusMonths(24)
+        } else null
+
         return Document(
             id = id,
             userId = userId,
-            type = mapDocumentType(documentType),
+            type = mappedType,
             productName = ocrData?.merchantName ?: filename ?: "Document sans nom",
             productCategory = ProductCategory.OTHER,
             gtin = ocrData?.extractedGtin,
-            fileUrl = "", // URL obtained separately via download endpoint
+            fileUrl = "",
             thumbnailUrl = null,
-            documentDate = ocrData?.purchaseDate?.let { parseLocalDate(it) } ?: uploadDate,
+            documentDate = purchaseDate ?: uploadDate,
             metadata = DocumentMetadata(
                 merchant = ocrData?.merchantName,
-                purchaseDate = ocrData?.purchaseDate?.let { parseLocalDate(it) },
+                purchaseDate = purchaseDate,
                 totalAmount = ocrData?.totalAmount,
-                currency = ocrData?.currency ?: "EUR"
+                currency = ocrData?.currency ?: "EUR",
+                warrantyStartDate = warrantyStartDate,
+                warrantyEndDate = warrantyEndDate
             ),
             ocrData = ocrData?.toDomain(),
             uploadedAt = uploadInstant,

@@ -287,13 +287,23 @@ class DocumentDetailViewModel @Inject constructor(
     }
 
     private fun calculateWarrantyInfo(document: Document): Pair<Boolean, Int?> {
-        val endDate = document.metadata.warrantyEndDate ?: return Pair(false, null)
-        val today = LocalDate.now()
+        val startDate = document.metadata.warrantyStartDate ?: document.metadata.purchaseDate
+        val endDate = document.metadata.warrantyEndDate
+            ?: if (document.type == com.wattson.domain.model.DocumentType.GARANTIE && startDate != null) {
+                startDate.plusMonths(24)
+            } else {
+                null
+            }
 
+        if (endDate == null) return Pair(false, null)
+
+        val today = LocalDate.now()
         val isActive = endDate.isAfter(today) || endDate.isEqual(today)
         val daysRemaining = if (isActive) {
             java.time.temporal.ChronoUnit.DAYS.between(today, endDate).toInt()
-        } else null
+        } else {
+            null
+        }
 
         return Pair(isActive, daysRemaining)
     }
