@@ -18,6 +18,7 @@ data class Document(
     val documentDate: LocalDate,
     val metadata: DocumentMetadata = DocumentMetadata(),
     val ocrData: OcrData? = null,
+    val ocrStatus: OcrStatus? = null,
     val uploadedAt: Instant = Instant.now(),
     val deletedAt: Instant? = null, // Soft delete support
     val filename: String? = null,
@@ -121,6 +122,23 @@ enum class ReminderType {
 /**
  * OCR data extracted from receipt or invoice images.
  */
+
+
+enum class OcrStatus {
+    PENDING,
+    PROCESSING,
+    COMPLETED,
+    PARTIAL,
+    FAILED,
+    UNKNOWN;
+
+    val isTerminal: Boolean
+        get() = this == COMPLETED || this == PARTIAL || this == FAILED
+
+    val isInProgress: Boolean
+        get() = this == PENDING || this == PROCESSING
+}
+
 data class OcrData(
     val rawText: String,
     val merchant: String?,

@@ -176,7 +176,7 @@
     <string name="priority_support">Priority support</string>
     <string name="warranty_alerts">Warranty alerts</string>
     <string name="data_export">Data export</string>
-    
+    <string name="documents_upload_help">Accepted formats: PDF, JPG, PNG • Max size: 10 MB</string>
     <!-- Repair Screen -->
     <string name="repair_title">Repair</string>
     <string name="repair_subtitle">Chat with our AI assistant to diagnose your devices</string>

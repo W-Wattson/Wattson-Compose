@@ -1135,6 +1135,7 @@ string documents_label
 string documents_subtitle
 string documents_suffix
 string documents_title
+string documents_upload_help
 string download
 string drop_resistance
 string dropdown_menu

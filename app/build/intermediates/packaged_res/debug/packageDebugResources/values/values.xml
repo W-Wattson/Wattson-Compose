@@ -105,6 +105,7 @@
     <string name="documents_subtitle">Manage your receipts and warranties</string>
     <string name="documents_suffix">documents</string>
     <string name="documents_title">Documents</string>
+    <string name="documents_upload_help">Accepted formats: PDF, JPG, PNG • Max size: 10 MB</string>
     <string name="download">Download</string>
     <string name="drop_resistance">Drop resistance</string>
     <string name="durability_label">Durabilité</string>

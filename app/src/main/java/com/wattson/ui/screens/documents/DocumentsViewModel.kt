@@ -1,12 +1,14 @@
 package com.wattson.ui.screens.documents
 
 import android.net.Uri
-import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
+import com.wattson.domain.model.DocumentConstraints
+import com.wattson.domain.model.OcrStatus
+import com.wattson.domain.model.isAllowedMimeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +70,12 @@ sealed interface DocumentsIntent {
     data class ToggleYearExpanded(val year: Int) : DocumentsIntent
     data class OpenDocument(val documentId: String) : DocumentsIntent
     data object StartUpload : DocumentsIntent
-    data class UploadDocument(val uri: String, val fileName: String) : DocumentsIntent
+    data class UploadDocument(
+        val uri: String,
+        val fileName: String,
+        val mimeType: String?,
+        val fileSize: Long
+    ) : DocumentsIntent
     data class DeleteDocument(val document: Document) : DocumentsIntent
     data object ConfirmDelete : DocumentsIntent
     data object CancelDelete : DocumentsIntent
@@ -111,7 +118,7 @@ class DocumentsViewModel @Inject constructor(
             is DocumentsIntent.ToggleYearExpanded -> toggleYearExpanded(intent.year)
             is DocumentsIntent.OpenDocument -> openDocument(intent.documentId)
             is DocumentsIntent.StartUpload -> startUpload()
-            is DocumentsIntent.UploadDocument -> uploadDocument(intent.uri, intent.fileName)
+            is DocumentsIntent.UploadDocument -> uploadDocument(intent.uri, intent.fileName, intent.mimeType, intent.fileSize)
             is DocumentsIntent.DeleteDocument -> requestDeleteDocument(intent.document)
             is DocumentsIntent.ConfirmDelete -> confirmDelete()
             is DocumentsIntent.CancelDelete -> cancelDelete()
@@ -253,7 +260,12 @@ class DocumentsViewModel @Inject constructor(
         }
     }
 
-    private fun uploadDocument(uri: String, fileName: String) {
+    private fun uploadDocument(uri: String, fileName: String, mimeType: String?, fileSize: Long) {
+        val validationError = validateFileBeforeUpload(fileName, mimeType, fileSize)
+        if (validationError != null) {
+            viewModelScope.launch { _events.emit(DocumentsEvent.ShowUploadError(validationError)) }
+            return
+        }
         viewModelScope.launch {
             _uiState.update { it.copy(isUploadInProgress = true, uploadProgress = 0.1f) }
 
@@ -275,12 +287,12 @@ class DocumentsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-                        _events.emit(DocumentsEvent.ShowUploadError(error.message ?: "Erreur d'upload"))
+                        _events.emit(DocumentsEvent.ShowUploadError(mapUploadErrorMessage(error.message)))
                     }
                 )
             } catch (e: Exception) {
                 _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-                _events.emit(DocumentsEvent.ShowUploadError(e.message ?: "Erreur d'upload"))
+                _events.emit(DocumentsEvent.ShowUploadError(mapUploadErrorMessage(e.message)))
             }
         }
     }
@@ -347,8 +359,8 @@ class DocumentsViewModel @Inject constructor(
                 delay(d)
                 reloadDocumentsSilently()
 
-                // Stop si on ne voit plus de doc récent en OTHER
-                if (!hasRecentOther(_uiState.value.documents)) break
+                // Stop si aucun document récent n'est encore en OCR pending/processing
+                if (!hasRecentPendingOcr(_uiState.value.documents)) break
             }
         }
     }
@@ -367,10 +379,50 @@ class DocumentsViewModel @Inject constructor(
         }
     }
 
-    private fun hasRecentOther(documents: List<Document>): Boolean {
+    private fun hasRecentPendingOcr(documents: List<Document>): Boolean {
         val cutoff = Instant.now().minusSeconds(120) // 2 minutes
         return documents.any { doc ->
-            doc.uploadedAt.isAfter(cutoff) && doc.type.name == "OTHER"
+            doc.uploadedAt.isAfter(cutoff) && (doc.ocrStatus?.isInProgress == true || doc.ocrStatus == OcrStatus.UNKNOWN)
+        }
+    }
+
+    private fun validateFileBeforeUpload(fileName: String, mimeType: String?, fileSize: Long): String? {
+        val normalizedMime = mimeType?.lowercase()
+        if (normalizedMime.isNullOrBlank() || !normalizedMime.isAllowedMimeType()) {
+            return "Format invalide. Formats acceptés : PDF, JPG, PNG."
+        }
+
+        if (fileSize <= 0L) {
+            return "Impossible de lire ce fichier. Réessaie avec un autre document."
+        }
+
+        if (fileSize > DocumentConstraints.MAX_FILE_SIZE_BYTES) {
+            return "Fichier trop volumineux (max ${DocumentConstraints.MAX_FILE_SIZE_MB} Mo)."
+        }
+
+        if (!fileName.contains('.')) {
+            return "Nom de fichier invalide. Formats acceptés : PDF, JPG, PNG."
+        }
+
+        return null
+    }
+
+    private fun mapUploadErrorMessage(raw: String?): String {
+        val source = raw.orEmpty()
+        val code = Regex("\\b(400|401|403|404|413|429)\\b").find(source)?.value
+
+        if (source.contains("quota", ignoreCase = true) || source.contains("limit", ignoreCase = true)) {
+            return "Limite de documents atteinte."
+        }
+
+        return when (code) {
+            "400" -> "Format invalide ou document non pris en charge."
+            "401" -> "Session expirée, reconnecte-toi."
+            "403" -> "Accès refusé."
+            "404" -> "Document introuvable."
+            "413" -> "Fichier trop volumineux."
+            "429" -> "Limite de documents atteinte."
+            else -> "Une erreur est survenue pendant l'envoi."
         }
     }
 

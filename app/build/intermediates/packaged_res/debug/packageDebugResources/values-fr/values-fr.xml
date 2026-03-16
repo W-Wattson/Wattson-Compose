@@ -79,6 +79,7 @@
     <string name="documents_subtitle">Gérez vos factures et garanties</string>
     <string name="documents_suffix">documents</string>
     <string name="documents_title">Documents</string>
+    <string name="documents_upload_help">Formats acceptés : PDF, JPG, PNG • Taille maximale : 10 Mo</string>
     <string name="download">Télécharger</string>
     <string name="drop_resistance">Résistance aux chutes</string>
     <string name="ecology">Ecologie</string>

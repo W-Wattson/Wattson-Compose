@@ -118,6 +118,7 @@
     <string name="document_added_success">%s ajouté avec succès</string>
     <string name="document_deleted_success">%s supprimé</string>
     <string name="quota_exceeded">Limite de documents atteinte. Passez à Premium !</string>
+    <string name="documents_upload_help">Formats acceptés : PDF, JPG, PNG • Taille maximale : 10 Mo</string>
     <string name="expand">Développer</string>
     <string name="collapse">Réduire</string>
     <string name="cancel">Annuler</string>

@@ -99,12 +99,13 @@ fun DocumentCard(
             // Document info
             Column(modifier = Modifier.weight(1f)) {
                 // Category label
-                Text(
-                    text = document.productCategory.name.uppercase(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
+                if (document.productCategory.name != "OTHER") {
+                    Text(
+                        text = document.productCategory.name.uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 // Document type tag
                 DocumentTypeTag(
                     type = document.type,
