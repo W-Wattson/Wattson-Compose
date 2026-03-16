@@ -5,6 +5,7 @@ import com.wattson.domain.model.Document
 import com.wattson.domain.model.DocumentMetadata
 import com.wattson.domain.model.DocumentType
 import com.wattson.domain.model.OcrData
+import com.wattson.domain.model.OcrStatus
 import com.wattson.domain.model.ProductCategory
 import java.time.Instant
 import java.time.LocalDate
@@ -20,7 +21,8 @@ data class DocumentResponse(
     @SerializedName("fileSize") val fileSize: Long,
     @SerializedName("documentType") val documentType: String?,
     @SerializedName("ocrData") val ocrData: OcrDataDto?,
-    @SerializedName("uploadedAt") val uploadedAt: String?
+    @SerializedName("uploadedAt") val uploadedAt: String?,
+    @SerializedName("ocrStatus") val ocrStatus: String?
 ) {
     fun toDomain(userId: String): Document {
         val uploadInstant = uploadedAt?.let { parseInstant(it) } ?: Instant.now()
@@ -56,6 +58,7 @@ data class DocumentResponse(
                 warrantyEndDate = warrantyEndDate
             ),
             ocrData = ocrData?.toDomain(),
+            ocrStatus = mapOcrStatus(ocrStatus),
             uploadedAt = uploadInstant,
             filename = filename,
             mimeType = mimeType,
@@ -69,6 +72,18 @@ data class DocumentResponse(
             "WARRANTY" -> DocumentType.GARANTIE
             "MANUAL" -> DocumentType.MANUEL
             else -> DocumentType.OTHER
+        }
+    }
+
+    private fun mapOcrStatus(status: String?): OcrStatus? {
+        return when (status?.uppercase()) {
+            null -> null
+            "PENDING", "QUEUED", "WAITING" -> OcrStatus.PENDING
+            "PROCESSING", "IN_PROGRESS", "RUNNING" -> OcrStatus.PROCESSING
+            "COMPLETED", "DONE", "SUCCESS" -> OcrStatus.COMPLETED
+            "PARTIAL", "PARTIALLY_COMPLETED" -> OcrStatus.PARTIAL
+            "FAILED", "ERROR" -> OcrStatus.FAILED
+            else -> OcrStatus.UNKNOWN
         }
     }
 

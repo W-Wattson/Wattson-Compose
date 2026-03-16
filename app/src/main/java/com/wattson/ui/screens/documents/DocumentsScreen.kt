@@ -98,11 +98,13 @@ fun DocumentsScreen(
 
     // File picker launcher
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
             val fileName = getDisplayName(context, uri)
-            onIntent(DocumentsIntent.UploadDocument(uri.toString(), fileName))
+            val mimeType = context.contentResolver.getType(uri)
+            val fileSize = getFileSize(context, uri)
+            onIntent(DocumentsIntent.UploadDocument(uri.toString(), fileName, mimeType, fileSize))
         }
     }
 
@@ -124,7 +126,7 @@ fun DocumentsScreen(
             when (event) {
                 is DocumentsEvent.NavigateToDocumentDetail -> onNavigateToDocument(event.documentId)
                 is DocumentsEvent.ShowUploadPicker -> {
-                    filePickerLauncher.launch("*/*")
+                    filePickerLauncher.launch(arrayOf("application/pdf", "image/jpeg", "image/png"))
                 }
                 is DocumentsEvent.ShowUploadSuccess -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.document_added_success, event.fileName))
@@ -226,6 +228,13 @@ fun DocumentsScreen(
                     onYearSelected = { onIntent(DocumentsIntent.FilterByYear(it)) }
                 )
 
+                Text(
+                    text = stringResource(R.string.documents_upload_help),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                )
+
                 // Content
                 when {
                     uiState.isLoading -> {
@@ -285,6 +294,17 @@ private fun getDisplayName(context: android.content.Context, uri: Uri): String {
         }
     }
     return "document"
+}
+
+private fun getFileSize(context: android.content.Context, uri: Uri): Long {
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+        if (sizeIndex >= 0 && it.moveToFirst()) {
+            return it.getLong(sizeIndex)
+        }
+    }
+    return -1L
 }
 @Composable
 private fun DocumentsHeader(
