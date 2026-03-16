@@ -291,7 +291,9 @@ class AuthRepository @Inject constructor(
      * Get stored access token.
      */
     fun getAccessToken(): String? {
-        return prefs.getString(KEY_ACCESS_TOKEN, null)
+        val token = prefs.getString(KEY_ACCESS_TOKEN, null)
+        android.util.Log.d("AuthRepository", "getAccessToken tokenPresent=${!token.isNullOrBlank()}")
+        return token
     }
 
     /**
@@ -333,6 +335,10 @@ class AuthRepository @Inject constructor(
             }
             apply()
         }
+        android.util.Log.d(
+            "AuthRepository",
+            "Session saved for ${user.email}, accessTokenPresent=${!accessToken.isNullOrBlank()}, refreshTokenPresent=${!refreshToken.isNullOrBlank()}"
+        )
     }
 
     private fun isValidEmail(email: String): Boolean {

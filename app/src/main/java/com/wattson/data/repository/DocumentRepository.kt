@@ -23,6 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class DocumentRepository @Inject constructor(
     private val api: WattsonApi,
+    private val authRepository: AuthRepository,
     @ApplicationContext private val context: Context
 ) {
     /**
@@ -34,7 +35,10 @@ class DocumentRepository @Inject constructor(
         offset: Int = 0
     ): Result<List<Document>> = withContext(Dispatchers.IO) {
         try {
-            val response = api.getDocuments(userId, limit, offset)
+            val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
+                Exception("Missing access token for documents API")
+            )
+            val response = api.getDocuments(authorization, userId, limit, offset)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
@@ -59,7 +63,10 @@ class DocumentRepository @Inject constructor(
         documentId: String
     ): Result<Document> = withContext(Dispatchers.IO) {
         try {
-            val response = api.getDocumentById(userId, documentId)
+            val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
+                Exception("Missing access token for documents API")
+            )
+            val response = api.getDocumentById(authorization, userId, documentId)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
@@ -85,7 +92,10 @@ class DocumentRepository @Inject constructor(
         documentId: String
     ): Result<DocumentDownloadInfo> = withContext(Dispatchers.IO) {
         try {
-            val response = api.getDocumentDownloadUrl(userId, documentId)
+            val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
+                Exception("Missing access token for documents API")
+            )
+            val response = api.getDocumentDownloadUrl(authorization, userId, documentId)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
@@ -129,7 +139,10 @@ class DocumentRepository @Inject constructor(
                 val filePart = MultipartBody.Part.createFormData("file", fileName, requestFile)
                 val typePart = documentType.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                val response = api.uploadDocument(userId, filePart, typePart)
+                val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
+                    Exception("Missing access token for documents API")
+                )
+                val response = api.uploadDocument(authorization, userId, filePart, typePart)
 
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -157,7 +170,10 @@ class DocumentRepository @Inject constructor(
         documentId: String
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val response = api.deleteDocument(userId, documentId)
+            val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
+                Exception("Missing access token for documents API")
+            )
+            val response = api.deleteDocument(authorization, userId, documentId)
             if (response.isSuccessful || response.code() == 204) {
                 Result.success(Unit)
             } else if (response.code() == 404) {
@@ -192,6 +208,12 @@ class DocumentRepository @Inject constructor(
                 if (nameIndex >= 0) it.getString(nameIndex) else null
             } else null
         }
+    }
+
+    private fun buildAuthorizationHeader(): String? {
+        val token = authRepository.getAccessToken()?.takeIf { it.isNotBlank() }
+        android.util.Log.d("DocumentRepository", "Documents auth token present=${token != null}")
+        return token?.let { "Bearer $it" }
     }
 }
 

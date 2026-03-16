@@ -10,33 +10,33 @@
 10
 11    <!-- Permissions -->
 12    <uses-permission android:name="android.permission.INTERNET" />
-12-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:6:5-67
-12-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:6:22-64
+12-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:6:5-67
+12-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:6:22-64
 13    <uses-permission android:name="android.permission.CAMERA" />
-13-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:7:5-65
-13-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:7:22-62
+13-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:7:5-65
+13-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:7:22-62
 14    <uses-permission
-14-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:8:5-9:38
+14-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:8:5-9:38
 15        android:name="android.permission.READ_EXTERNAL_STORAGE"
-15-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:8:22-77
+15-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:8:22-77
 16        android:maxSdkVersion="32" />
-16-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:9:9-35
+16-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:9:9-35
 17    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-17-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:10:5-76
-17-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:10:22-73
+17-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:10:5-76
+17-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:10:22-73
 18
 19    <uses-feature
-19-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:5-85
+19-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:5-85
 20        android:name="android.hardware.camera"
-20-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:19-57
+20-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:19-57
 21        android:required="false" />
-21-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:58-82
+21-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:12:58-82
 22    <uses-feature
-22-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:5-95
+22-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:5-95
 23        android:name="android.hardware.camera.autofocus"
-23-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:19-67
+23-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:19-67
 24        android:required="false" />
-24-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:68-92
+24-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:13:68-92
 25
 26    <permission
 26-->[androidx.core:core:1.15.0] C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\2c31a960c4924a7d3665fd7027502771\transformed\core-1.15.0\AndroidManifest.xml:22:5-24:47
@@ -54,45 +54,45 @@
 32-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\dcec73c6ad47623ee6e306653703bd8f\transformed\transport-backend-cct-2.3.3\AndroidManifest.xml:25:22-76
 33
 34    <application
-34-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:15:5-35:19
+34-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:15:5-35:19
 35        android:name="com.wattson.WattsonApplication"
-35-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:16:9-43
+35-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:16:9-43
 36        android:allowBackup="true"
-36-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:17:9-35
+36-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:17:9-35
 37        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 37-->[androidx.core:core:1.15.0] C:\Users\Amélie BRUN\.gradle\caches\8.13\transforms\2c31a960c4924a7d3665fd7027502771\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
 38        android:debuggable="true"
 39        android:extractNativeLibs="false"
 40        android:icon="@mipmap/ic_launcher"
-40-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:19:9-43
+40-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:19:9-43
 41        android:label="@string/app_name"
-41-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:20:9-41
+41-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:20:9-41
 42        android:roundIcon="@mipmap/ic_launcher_round"
-42-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:21:9-54
+42-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:21:9-54
 43        android:supportsRtl="true"
-43-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:22:9-35
+43-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:22:9-35
 44        android:testOnly="true"
 45        android:theme="@style/Theme.Wattson"
-45-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:23:9-45
+45-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:23:9-45
 46        android:usesCleartextTraffic="true" >
-46-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:18:9-44
+46-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:18:9-44
 47        <activity
-47-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:26:9-34:20
+47-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:26:9-34:20
 48            android:name="com.wattson.MainActivity"
-48-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:27:13-41
+48-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:27:13-41
 49            android:exported="true"
-49-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:28:13-36
+49-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:28:13-36
 50            android:theme="@style/Theme.Wattson" >
-50-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:29:13-49
+50-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:29:13-49
 51            <intent-filter>
-51-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:30:13-33:29
+51-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:30:13-33:29
 52                <action android:name="android.intent.action.MAIN" />
-52-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:31:17-69
-52-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:31:25-66
+52-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:31:17-69
+52-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:31:25-66
 53
 54                <category android:name="android.intent.category.LAUNCHER" />
-54-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:32:17-77
-54-->C:\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:32:27-74
+54-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:32:17-77
+54-->C:\Projet51\Mobile\Wattson-Compose\app\src\main\AndroidManifest.xml:32:27-74
 55            </intent-filter>
 56        </activity>
 57
