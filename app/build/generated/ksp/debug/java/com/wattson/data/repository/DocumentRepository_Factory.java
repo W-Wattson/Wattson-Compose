@@ -27,25 +27,29 @@ import javax.inject.Provider;
 public final class DocumentRepository_Factory implements Factory<DocumentRepository> {
   private final Provider<WattsonApi> apiProvider;
 
+  private final Provider<AuthRepository> authRepositoryProvider;
+
   private final Provider<Context> contextProvider;
 
   public DocumentRepository_Factory(Provider<WattsonApi> apiProvider,
-      Provider<Context> contextProvider) {
+      Provider<AuthRepository> authRepositoryProvider, Provider<Context> contextProvider) {
     this.apiProvider = apiProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
     this.contextProvider = contextProvider;
   }
 
   @Override
   public DocumentRepository get() {
-    return newInstance(apiProvider.get(), contextProvider.get());
+    return newInstance(apiProvider.get(), authRepositoryProvider.get(), contextProvider.get());
   }
 
   public static DocumentRepository_Factory create(Provider<WattsonApi> apiProvider,
-      Provider<Context> contextProvider) {
-    return new DocumentRepository_Factory(apiProvider, contextProvider);
+      Provider<AuthRepository> authRepositoryProvider, Provider<Context> contextProvider) {
+    return new DocumentRepository_Factory(apiProvider, authRepositoryProvider, contextProvider);
   }
 
-  public static DocumentRepository newInstance(WattsonApi api, Context context) {
-    return new DocumentRepository(api, context);
+  public static DocumentRepository newInstance(WattsonApi api, AuthRepository authRepository,
+      Context context) {
+    return new DocumentRepository(api, authRepository, context);
   }
 }

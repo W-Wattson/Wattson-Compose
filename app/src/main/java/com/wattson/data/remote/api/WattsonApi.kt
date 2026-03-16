@@ -104,6 +104,7 @@ interface WattsonApi {
 
     @GET("api/v1/vault/documents")
     suspend fun getDocuments(
+        @Header("Authorization") authorization: String,
         @Header("X-User-Id") userId: String,
         @Query("limit") limit: Int = 50,
         @Query("offset") offset: Int = 0
@@ -111,12 +112,14 @@ interface WattsonApi {
 
     @GET("api/v1/vault/documents/{documentId}")
     suspend fun getDocumentById(
+        @Header("Authorization") authorization: String,
         @Header("X-User-Id") userId: String,
         @Path("documentId") documentId: String
     ): Response<DocumentResponse>
 
     @GET("api/v1/vault/documents/{documentId}/download")
     suspend fun getDocumentDownloadUrl(
+        @Header("Authorization") authorization: String,
         @Header("X-User-Id") userId: String,
         @Path("documentId") documentId: String
     ): Response<DownloadUrlResponse>
@@ -124,6 +127,7 @@ interface WattsonApi {
     @Multipart
     @POST("api/v1/vault/documents")
     suspend fun uploadDocument(
+        @Header("Authorization") authorization: String,
         @Header("X-User-Id") userId: String,
         @Part file: MultipartBody.Part,
         @Part("documentType") documentType: RequestBody
@@ -131,6 +135,7 @@ interface WattsonApi {
 
     @DELETE("api/v1/vault/documents/{documentId}")
     suspend fun deleteDocument(
+        @Header("Authorization") authorization: String,
         @Header("X-User-Id") userId: String,
         @Path("documentId") documentId: String
     ): Response<Unit>
