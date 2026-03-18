@@ -1,10 +1,16 @@
 package com.wattson.di
 
+import android.content.Context
 import com.wattson.BuildConfig
+import com.wattson.data.remote.AuthInterceptor
+import com.wattson.data.remote.TokenAuthenticator
+import com.wattson.data.remote.TokenProvider
+import com.wattson.data.remote.TokenProviderImpl
 import com.wattson.data.remote.api.WattsonApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
@@ -34,7 +40,35 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideTokenProvider(
+        @ApplicationContext context: Context,
+        baseUrl: String
+    ): TokenProvider {
+        return TokenProviderImpl(context, baseUrl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(
+        tokenProvider: TokenProvider
+    ): AuthInterceptor {
+        return AuthInterceptor(tokenProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenAuthenticator(
+        tokenProvider: TokenProvider
+    ): TokenAuthenticator {
+        return TokenAuthenticator(tokenProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             // Use HEADERS instead of BODY to avoid EOFException with chunked responses via ADB reverse
             level = HttpLoggingInterceptor.Level.HEADERS
@@ -56,6 +90,8 @@ object NetworkModule {
                     .build()
                 chain.proceed(request)
             }
+            .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             // Add logging as network interceptor at the end to avoid body reading issues
             .addNetworkInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)

@@ -71,7 +71,6 @@ fun AuthScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginWithGoogle: () -> Unit,
-    onLoginWithApple: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AuthScreen(
@@ -79,7 +78,6 @@ fun AuthScreen(
         onNavigateToLogin = onNavigateToLogin,
         onNavigateToRegister = onNavigateToRegister,
         onLoginWithGoogle = onLoginWithGoogle,
-        onLoginWithApple = onLoginWithApple,
         modifier = modifier
     )
 }
@@ -90,7 +88,6 @@ fun AuthScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginWithGoogle: () -> Unit,
-    onLoginWithApple: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -216,26 +213,13 @@ fun AuthScreen(
                         
                         Spacer(modifier = Modifier.height(20.dp))
                         
-                        // OAuth provider buttons
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            WattsonOAuthButton(
-                                text = stringResource(id = R.string.google),
-                                icon = painterResource(id = R.drawable.ic_google),
-                                onClick = onLoginWithGoogle,
-                                modifier = Modifier.weight(1f)
-                            )
-                            
-                            WattsonOAuthButton(
-                                text = stringResource(id = R.string.apple),
-                                icon = painterResource(id = R.drawable.ic_apple),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                onClick = onLoginWithApple,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        // OAuth provider button
+                        WattsonOAuthButton(
+                            text = stringResource(id = R.string.sign_in_with_google),
+                            icon = painterResource(id = R.drawable.ic_google),
+                            onClick = onLoginWithGoogle,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
                 
@@ -469,8 +453,7 @@ private fun AuthScreenPreview() {
             uiState = AuthUiState(),
             onNavigateToLogin = {},
             onNavigateToRegister = {},
-            onLoginWithGoogle = {},
-            onLoginWithApple = {}
+            onLoginWithGoogle = {}
         )
     }
 }

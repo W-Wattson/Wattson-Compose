@@ -16,10 +16,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.wattson.data.auth.GoogleAuthException
+import com.wattson.data.auth.GoogleAuthManager
 import com.wattson.domain.model.AuthProvider
 import com.wattson.ui.screens.account.AccountViewModel
 import com.wattson.ui.screens.auth.AuthIntent
@@ -97,24 +100,52 @@ fun WattsonNavHost(
     ) {
         // ===== AUTHENTICATION SCREENS =====
         composable<WattsonRoute.Auth> {
+            val viewModel: AuthViewModel = hiltViewModel()
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val googleAuthManager = remember { GoogleAuthManager() }
+
+            // Handle auth events for the Auth screen
+            LaunchedEffect(Unit) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        is com.wattson.ui.screens.auth.AuthEvent.NavigateToMain -> {
+                            navController.navigate(WattsonRoute.History) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                        is com.wattson.ui.screens.auth.AuthEvent.RequestGoogleSignIn -> {
+                            try {
+                                val idToken = googleAuthManager.getGoogleIdToken(context)
+                                viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
+                            } catch (e: GoogleAuthException) {
+                                android.util.Log.w("WattsonNavGraph", "Google Sign-In failed", e)
+                                viewModel.handleGoogleSignInError(e.message ?: "Erreur Google Sign-In")
+                            }
+                        }
+                        else -> { /* Handle other events */ }
+                    }
+                }
+            }
+
             AuthScreen(
-                onNavigateToLogin = { 
-                    navController.navigate(WattsonRoute.Login) 
+                onNavigateToLogin = {
+                    navController.navigate(WattsonRoute.Login)
                 },
-                onNavigateToRegister = { 
-                    navController.navigate(WattsonRoute.Register) 
+                onNavigateToRegister = {
+                    navController.navigate(WattsonRoute.Register)
                 },
-                onLoginWithGoogle = { /* Handle Google OAuth */ },
-                onLoginWithApple = { /* Handle Apple OAuth */ }
+                onLoginWithGoogle = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE)) }
             )
         }
         
         composable<WattsonRoute.Login> {
             val viewModel: AuthViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val googleAuthManager = remember { GoogleAuthManager() }
 
-            // Handle auth events
-            androidx.compose.runtime.LaunchedEffect(Unit) {
+            // Handle auth events (including Google Sign-In trigger)
+            LaunchedEffect(Unit) {
                 viewModel.events.collect { event ->
                     when (event) {
                         is com.wattson.ui.screens.auth.AuthEvent.NavigateToMain -> {
@@ -124,6 +155,15 @@ fun WattsonNavHost(
                         }
                         is com.wattson.ui.screens.auth.AuthEvent.NavigateToRegister -> {
                             navController.navigate(WattsonRoute.Register)
+                        }
+                        is com.wattson.ui.screens.auth.AuthEvent.RequestGoogleSignIn -> {
+                            try {
+                                val idToken = googleAuthManager.getGoogleIdToken(context)
+                                viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
+                            } catch (e: GoogleAuthException) {
+                                viewModel.onIntent(AuthIntent.ClearErrors)
+                                // Error is shown via ShowError event from ViewModel
+                            }
                         }
                         else -> { /* Handle other events */ }
                     }
@@ -140,7 +180,6 @@ fun WattsonNavHost(
                 onNavigateBack = { navController.popBackStack() },
                 onForgotPassword = { viewModel.handleForgotPassword() },
                 onLoginWithGoogle = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE)) },
-                onLoginWithApple = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.APPLE)) },
                 onNavigateToRegister = {
                     navController.navigate(WattsonRoute.Register)
                 },
@@ -151,9 +190,11 @@ fun WattsonNavHost(
         composable<WattsonRoute.Register> {
             val viewModel: AuthViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val googleAuthManager = remember { GoogleAuthManager() }
 
-            // Handle auth events
-            androidx.compose.runtime.LaunchedEffect(Unit) {
+            // Handle auth events (including Google Sign-In trigger)
+            LaunchedEffect(Unit) {
                 viewModel.events.collect { event ->
                     when (event) {
                         is com.wattson.ui.screens.auth.AuthEvent.NavigateToMain -> {
@@ -163,6 +204,15 @@ fun WattsonNavHost(
                         }
                         is com.wattson.ui.screens.auth.AuthEvent.NavigateToLogin -> {
                             navController.navigate(WattsonRoute.Login)
+                        }
+                        is com.wattson.ui.screens.auth.AuthEvent.RequestGoogleSignIn -> {
+                            try {
+                                val idToken = googleAuthManager.getGoogleIdToken(context)
+                                viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
+                            } catch (e: GoogleAuthException) {
+                                android.util.Log.w("WattsonNavGraph", "Google Sign-In failed", e)
+                                viewModel.handleGoogleSignInError(e.message ?: "Erreur Google Sign-In")
+                            }
                         }
                         else -> { /* Handle other events */ }
                     }
@@ -179,7 +229,6 @@ fun WattsonNavHost(
                 onRegister = { viewModel.performRegister() },
                 onNavigateBack = { navController.popBackStack() },
                 onLoginWithGoogle = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE)) },
-                onLoginWithApple = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.APPLE)) },
                 onNavigateToLogin = {
                     navController.navigate(WattsonRoute.Login)
                 }

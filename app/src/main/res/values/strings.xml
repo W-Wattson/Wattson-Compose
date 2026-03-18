@@ -8,7 +8,6 @@
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
     <string name="sign_in_with_google">Sign in with Google</string>
-    <string name="sign_in_with_apple">Sign in with Apple</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm password</string>
@@ -29,7 +28,6 @@
     <string name="req_special">1 special</string>
     <string name="or_divider">or</string>
     <string name="google">Google</string>
-    <string name="apple">Apple</string>
     <string name="clear">Clear</string>
     <string name="terms_and_conditions">By signing in, you agree to our %1$s and our %2$s. Wattson guarantees the security of your invoices and personal data in accordance with %3$s.</string>
     <string name="terms_label">Terms and Conditions</string>
@@ -156,6 +154,10 @@
     <string name="logout_title">Sign out?</string>
     <string name="logout_confirmation">Are you sure you want to sign out of your Wattson account?</string>
     <string name="logout">Logout</string>
+    <string name="delete_account">Delete my account</string>
+    <string name="delete_account_title">Delete your account?</string>
+    <string name="delete_account_confirmation">This action is irreversible. All your data (profile, documents, scan history) will be permanently deleted in accordance with GDPR. You will be logged out immediately.</string>
+    <string name="delete_account_confirm">Delete permanently</string>
     <string name="premium_success">Congratulations! You are now Premium</string>
     <string name="error_prefix">Error: %s</string>
     <string name="processing">Processing…</string>

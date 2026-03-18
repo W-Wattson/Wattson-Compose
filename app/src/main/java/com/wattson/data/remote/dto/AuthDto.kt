@@ -71,3 +71,54 @@ data class AuthErrorResponse(
     @SerializedName("message")
     val message: String
 )
+
+/**
+ * Request for Google OAuth authentication.
+ */
+data class GoogleAuthRequest(
+    @SerializedName("idToken")
+    val idToken: String
+)
+
+/**
+ * Request for forgot password.
+ */
+data class ForgotPasswordRequest(
+    @SerializedName("email")
+    val email: String
+)
+
+/**
+ * Request for password reset.
+ */
+data class ResetPasswordRequest(
+    @SerializedName("token")
+    val token: String,
+    @SerializedName("newPassword")
+    val newPassword: String
+)
+
+/**
+ * Generic message response from backend.
+ * Used by forgot-password and reset-password endpoints.
+ */
+data class MessageResponse(
+    @SerializedName("success")
+    val success: Boolean,
+    @SerializedName("message")
+    val message: String
+)
+
+/**
+ * Response from delete account endpoint (RGPD).
+ */
+data class DeleteAccountResponse(
+    @SerializedName("success")
+    val success: Boolean,
+    @SerializedName("userId")
+    val userId: String?,
+    @SerializedName("deletionType")
+    val deletionType: String?,
+    @SerializedName("message")
+    val message: String
+)

@@ -5,8 +5,11 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
+import com.wattson.data.remote.TokenProvider
 import com.wattson.data.remote.api.WattsonApi
 import com.wattson.data.remote.dto.AuthErrorResponse
+import com.wattson.data.remote.dto.ForgotPasswordRequest
+import com.wattson.data.remote.dto.GoogleAuthRequest
 import com.wattson.data.remote.dto.LoginRequest
 import com.wattson.data.remote.dto.RegisterRequest
 import com.wattson.domain.model.AuthProvider
@@ -14,10 +17,13 @@ import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
 import com.wattson.domain.model.UserPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.util.UUID
@@ -31,7 +37,8 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val api: WattsonApi
+    private val api: WattsonApi,
+    private val tokenProvider: TokenProvider
 ) {
     private val prefs: SharedPreferences by lazy {
         try {
@@ -53,6 +60,7 @@ class AuthRepository @Inject constructor(
     }
 
     private val gson = Gson()
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
@@ -62,6 +70,7 @@ class AuthRepository @Inject constructor(
 
     init {
         loadStoredUser()
+        observeSessionExpiry()
     }
 
     private fun loadStoredUser() {
@@ -88,6 +97,22 @@ class AuthRepository @Inject constructor(
     }
 
     /**
+     * Observe session expiry from TokenProvider (refresh token failed).
+     * Resets the StateFlows to force navigation to auth screen.
+     */
+    private fun observeSessionExpiry() {
+        repositoryScope.launch {
+            tokenProvider.sessionExpired.collect {
+                android.util.Log.d("AuthRepository", "Session expired, resetting auth state")
+                _currentUser.value = null
+                _isLoggedIn.value = false
+            }
+        }
+    }
+
+    // ===== Login (email/password) =====
+
+    /**
      * Login with email and password via backend API.
      */
     suspend fun login(email: String, password: String, rememberMe: Boolean = true): Result<User> = withContext(Dispatchers.IO) {
@@ -105,15 +130,7 @@ class AuthRepository @Inject constructor(
 
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
-                val user = User(
-                    id = authResponse.user.id,
-                    email = authResponse.user.email,
-                    fullName = authResponse.user.fullName,
-                    authProvider = AuthProvider.valueOf(authResponse.user.authProvider),
-                    subscriptionType = SubscriptionType.valueOf(authResponse.user.subscriptionType),
-                    createdAt = Instant.now(),
-                    updatedAt = Instant.now()
-                )
+                val user = mapToUser(authResponse.user)
 
                 // Store session
                 if (rememberMe) {
@@ -126,14 +143,8 @@ class AuthRepository @Inject constructor(
                 android.util.Log.d("AuthRepository", "Login successful via API: ${user.email}")
                 Result.success(user)
             } else {
-                // Parse error response
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = try {
-                    gson.fromJson(errorBody, AuthErrorResponse::class.java)?.message
-                } catch (e: Exception) {
-                    null
-                } ?: "Identifiants incorrects"
-
+                val errorMessage = parseErrorMessage(response.errorBody()?.string())
+                    ?: "Identifiants incorrects"
                 android.util.Log.w("AuthRepository", "Login failed: $errorMessage")
                 Result.failure(AuthException(errorMessage))
             }
@@ -143,12 +154,13 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    // ===== Register =====
+
     /**
      * Register a new user via backend API.
      */
     suspend fun register(email: String, password: String, fullName: String? = null): Result<User> = withContext(Dispatchers.IO) {
         try {
-            // Validate inputs
             if (!isValidEmail(email)) {
                 return@withContext Result.failure(AuthException("Email invalide"))
             }
@@ -156,7 +168,6 @@ class AuthRepository @Inject constructor(
                 return@withContext Result.failure(AuthException("Le mot de passe ne respecte pas les criteres de securite"))
             }
 
-            // Try backend registration
             val response = api.register(RegisterRequest(
                 email = email,
                 password = password,
@@ -165,15 +176,7 @@ class AuthRepository @Inject constructor(
 
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
-                val user = User(
-                    id = authResponse.user.id,
-                    email = authResponse.user.email,
-                    fullName = authResponse.user.fullName,
-                    authProvider = AuthProvider.valueOf(authResponse.user.authProvider),
-                    subscriptionType = SubscriptionType.valueOf(authResponse.user.subscriptionType),
-                    createdAt = Instant.now(),
-                    updatedAt = Instant.now()
-                )
+                val user = mapToUser(authResponse.user)
 
                 saveUserSession(user, authResponse.accessToken, authResponse.refreshToken)
                 _currentUser.value = user
@@ -182,13 +185,8 @@ class AuthRepository @Inject constructor(
                 android.util.Log.d("AuthRepository", "Registration successful via API: ${user.email}")
                 Result.success(user)
             } else {
-                val errorBody = response.errorBody()?.string()
-                val errorMessage = try {
-                    gson.fromJson(errorBody, AuthErrorResponse::class.java)?.message
-                } catch (e: Exception) {
-                    null
-                } ?: "Erreur lors de l'inscription"
-
+                val errorMessage = parseErrorMessage(response.errorBody()?.string())
+                    ?: "Erreur lors de l'inscription"
                 android.util.Log.w("AuthRepository", "Registration failed: $errorMessage")
                 Result.failure(AuthException(errorMessage))
             }
@@ -198,40 +196,64 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    // ===== Google OAuth =====
+
     /**
-     * Login with OAuth provider.
+     * Login with Google OAuth.
+     * Sends the Google ID token to the backend for verification.
      */
-    suspend fun loginWithProvider(provider: AuthProvider): Result<User> = withContext(Dispatchers.IO) {
+    suspend fun loginWithGoogle(idToken: String): Result<User> = withContext(Dispatchers.IO) {
         try {
-            // OAuth would require proper implementation with provider SDK
-            kotlinx.coroutines.delay(1000)
+            val response = api.googleAuth(GoogleAuthRequest(idToken))
 
-            val email = when (provider) {
-                AuthProvider.GOOGLE -> "user@gmail.com"
-                AuthProvider.APPLE -> "user@icloud.com"
-                else -> "user@example.com"
+            if (response.isSuccessful && response.body() != null) {
+                val authResponse = response.body()!!
+                val user = mapToUser(authResponse.user)
+
+                saveUserSession(user, authResponse.accessToken, authResponse.refreshToken)
+                _currentUser.value = user
+                _isLoggedIn.value = true
+
+                android.util.Log.d("AuthRepository", "Google auth successful: ${user.email}")
+                Result.success(user)
+            } else {
+                val errorMessage = parseErrorMessage(response.errorBody()?.string())
+                    ?: "Erreur d'authentification Google"
+                Result.failure(AuthException(errorMessage))
             }
-
-            val user = User(
-                id = generateUserId(email),
-                email = email,
-                fullName = "Utilisateur ${provider.name}",
-                authProvider = provider,
-                subscriptionType = SubscriptionType.FREE,
-                createdAt = Instant.now(),
-                updatedAt = Instant.now()
-            )
-
-            saveUserSession(user, null, null)
-            _currentUser.value = user
-            _isLoggedIn.value = true
-
-            android.util.Log.d("AuthRepository", "OAuth login successful: $provider")
-            Result.success(user)
         } catch (e: Exception) {
-            Result.failure(AuthException("Erreur OAuth: ${e.message}"))
+            android.util.Log.e("AuthRepository", "Google auth error", e)
+            Result.failure(AuthException("Impossible de se connecter au serveur. Verifiez votre connexion."))
         }
     }
+
+    // ===== Forgot Password =====
+
+    /**
+     * Request a password reset email.
+     * Always returns success to not reveal if email exists (backend security).
+     */
+    suspend fun forgotPassword(email: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            if (!isValidEmail(email)) {
+                return@withContext Result.failure(AuthException("Format d'email invalide"))
+            }
+
+            val response = api.forgotPassword(ForgotPasswordRequest(email))
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!.message)
+            } else {
+                // Backend always returns 200 for security, but handle edge cases
+                Result.success("Si un compte existe avec cet email, un lien de reinitialisation a ete envoye.")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Forgot password error", e)
+            Result.failure(AuthException("Impossible de contacter le serveur. Verifiez votre connexion."))
+        }
+    }
+
+    // ===== Logout =====
 
     /**
      * Logout the current user.
@@ -249,26 +271,50 @@ class AuthRepository @Inject constructor(
             }
 
             // Clear stored session
-            prefs.edit()
-                .remove(KEY_USER_ID)
-                .remove(KEY_EMAIL)
-                .remove(KEY_FULL_NAME)
-                .remove(KEY_AUTH_PROVIDER)
-                .remove(KEY_SUBSCRIPTION)
-                .remove(KEY_ACCESS_TOKEN)
-                .remove(KEY_REFRESH_TOKEN)
-                .apply()
-
-            _currentUser.value = null
-            _isLoggedIn.value = false
+            clearLocalSession()
 
             android.util.Log.d("AuthRepository", "Logout successful")
             Result.success(Unit)
         } catch (e: Exception) {
             android.util.Log.e("AuthRepository", "Logout failed", e)
-            Result.failure(AuthException("Erreur de déconnexion: ${e.message}"))
+            Result.failure(AuthException("Erreur de deconnexion: ${e.message}"))
         }
     }
+
+    // ===== Delete Account (RGPD) =====
+
+    /**
+     * Delete user account (RGPD compliance).
+     * Sends the Bearer token to the backend, then clears local session.
+     */
+    suspend fun deleteAccount(): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val token = prefs.getString(KEY_ACCESS_TOKEN, null)
+                ?: return@withContext Result.failure(AuthException("Non authentifie"))
+
+            val response = api.deleteAccount("Bearer $token")
+
+            if (response.isSuccessful && response.body() != null) {
+                val body = response.body()!!
+                if (body.success) {
+                    clearLocalSession()
+                    android.util.Log.d("AuthRepository", "Account deleted: ${body.deletionType}")
+                    Result.success(body.message)
+                } else {
+                    Result.failure(AuthException(body.message))
+                }
+            } else {
+                val errorMessage = parseErrorMessage(response.errorBody()?.string())
+                    ?: "Erreur lors de la suppression du compte"
+                Result.failure(AuthException(errorMessage))
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Delete account error", e)
+            Result.failure(AuthException("Impossible de contacter le serveur"))
+        }
+    }
+
+    // ===== User management =====
 
     /**
      * Get the current user's ID for API calls.
@@ -291,7 +337,7 @@ class AuthRepository @Inject constructor(
      * Get stored access token.
      */
     fun getAccessToken(): String? {
-        return prefs.getString(KEY_ACCESS_TOKEN, null)
+        return tokenProvider.getAccessToken()
     }
 
     /**
@@ -299,7 +345,7 @@ class AuthRepository @Inject constructor(
      */
     suspend fun updatePreferences(preferences: UserPreferences): Result<User> = withContext(Dispatchers.IO) {
         val currentUser = _currentUser.value
-            ?: return@withContext Result.failure(AuthException("Utilisateur non connecté"))
+            ?: return@withContext Result.failure(AuthException("Utilisateur non connecte"))
 
         try {
             kotlinx.coroutines.delay(300)
@@ -314,9 +360,11 @@ class AuthRepository @Inject constructor(
 
             Result.success(updatedUser)
         } catch (e: Exception) {
-            Result.failure(AuthException("Erreur de mise à jour: ${e.message}"))
+            Result.failure(AuthException("Erreur de mise a jour: ${e.message}"))
         }
     }
+
+    // ===== Private helpers =====
 
     private fun saveUserSession(user: User, accessToken: String?, refreshToken: String?) {
         prefs.edit().apply {
@@ -335,6 +383,41 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    private fun clearLocalSession() {
+        prefs.edit()
+            .remove(KEY_USER_ID)
+            .remove(KEY_EMAIL)
+            .remove(KEY_FULL_NAME)
+            .remove(KEY_AUTH_PROVIDER)
+            .remove(KEY_SUBSCRIPTION)
+            .remove(KEY_ACCESS_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .apply()
+
+        _currentUser.value = null
+        _isLoggedIn.value = false
+    }
+
+    private fun mapToUser(dto: com.wattson.data.remote.dto.UserDto): User {
+        return User(
+            id = dto.id,
+            email = dto.email,
+            fullName = dto.fullName,
+            authProvider = AuthProvider.valueOf(dto.authProvider),
+            subscriptionType = SubscriptionType.valueOf(dto.subscriptionType),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now()
+        )
+    }
+
+    private fun parseErrorMessage(errorBody: String?): String? {
+        return try {
+            errorBody?.let { gson.fromJson(it, AuthErrorResponse::class.java)?.message }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
@@ -345,10 +428,6 @@ class AuthRepository @Inject constructor(
         val hasDigit = password.any { it.isDigit() }
         val hasSpecial = password.any { !it.isLetterOrDigit() }
         return hasMinLength && hasUppercase && hasDigit && hasSpecial
-    }
-
-    private fun generateUserId(email: String): String {
-        return "user_${email.lowercase().hashCode().toString(16)}"
     }
 
     private fun extractFullName(email: String): String {

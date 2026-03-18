@@ -2,13 +2,17 @@ package com.wattson.data.remote.api
 
 import com.wattson.BuildConfig
 import com.wattson.data.remote.dto.AuthResponse
+import com.wattson.data.remote.dto.DeleteAccountResponse
 import com.wattson.data.remote.dto.DocumentListResponse
 import com.wattson.data.remote.dto.DocumentResponse
 import com.wattson.data.remote.dto.DownloadUrlResponse
+import com.wattson.data.remote.dto.ForgotPasswordRequest
+import com.wattson.data.remote.dto.GoogleAuthRequest
 import com.wattson.data.remote.dto.LoginRequest
-import com.wattson.data.remote.dto.ProductDto
+import com.wattson.data.remote.dto.MessageResponse
 import com.wattson.data.remote.dto.RefreshTokenRequest
 import com.wattson.data.remote.dto.RegisterRequest
+import com.wattson.data.remote.dto.ResetPasswordRequest
 import com.wattson.data.remote.dto.ScanHistoryResponse
 import com.wattson.data.remote.dto.ScanRequest
 import com.wattson.data.remote.dto.ScanResponse
@@ -54,6 +58,26 @@ interface WattsonApi {
     suspend fun logout(
         @Header("Authorization") token: String
     ): Response<Unit>
+
+    @POST("api/v1/auth/google")
+    suspend fun googleAuth(
+        @Body request: GoogleAuthRequest
+    ): Response<AuthResponse>
+
+    @POST("api/v1/auth/forgot-password")
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordRequest
+    ): Response<MessageResponse>
+
+    @POST("api/v1/auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequest
+    ): Response<MessageResponse>
+
+    @DELETE("api/v1/auth/account")
+    suspend fun deleteAccount(
+        @Header("Authorization") token: String
+    ): Response<DeleteAccountResponse>
 
     // =====================
     // Product Catalog API
