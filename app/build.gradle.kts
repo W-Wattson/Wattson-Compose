@@ -35,6 +35,10 @@ android {
 
         // API base URL from local.properties - defaults to emulator localhost
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+
+        // Google Web Client ID for Credential Manager
+        val googleWebClientId: String = localProperties.getProperty("google.web.client.id", "")
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
     }
 
     buildTypes {
@@ -116,6 +120,11 @@ dependencies {
 
     // Security (Encrypted SharedPreferences)
     implementation(libs.security.crypto)
+
+    // Google Sign-In (Credential Manager)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.google.id)
 
     // Room
     implementation(libs.room.runtime)

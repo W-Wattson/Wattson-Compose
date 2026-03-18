@@ -83,7 +83,6 @@ fun LoginScreen(
     onLogin: () -> Unit,
     onForgotPassword: () -> Unit,
     onLoginWithGoogle: () -> Unit,
-    onLoginWithApple: () -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onAutoFillTestUser: () -> Unit = {},
@@ -241,26 +240,13 @@ fun LoginScreen(
                         
                         Spacer(modifier = Modifier.height(20.dp))
                         
-                        // OAuth buttons
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            WattsonOAuthButton(
-                                text = stringResource(id = R.string.google),
-                                icon = painterResource(id = R.drawable.ic_google),
-                                onClick = onLoginWithGoogle,
-                                modifier = Modifier.weight(1f)
-                            )
-                            
-                            WattsonOAuthButton(
-                                text = stringResource(id = R.string.apple),
-                                icon = painterResource(id = R.drawable.ic_apple),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                onClick = onLoginWithApple,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        // OAuth button
+                        WattsonOAuthButton(
+                            text = stringResource(id = R.string.sign_in_with_google),
+                            icon = painterResource(id = R.drawable.ic_google),
+                            onClick = onLoginWithGoogle,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                         
                         Spacer(modifier = Modifier.height(24.dp))
                         
@@ -487,7 +473,6 @@ private fun LoginScreenPreview() {
             onLogin = {},
             onForgotPassword = {},
             onLoginWithGoogle = {},
-            onLoginWithApple = {},
             onNavigateBack = {},
             onNavigateToRegister = {}
         )
@@ -512,7 +497,6 @@ private fun LoginScreenWithErrorPreview() {
             onLogin = {},
             onForgotPassword = {},
             onLoginWithGoogle = {},
-            onLoginWithApple = {},
             onNavigateBack = {},
             onNavigateToRegister = {}
         )

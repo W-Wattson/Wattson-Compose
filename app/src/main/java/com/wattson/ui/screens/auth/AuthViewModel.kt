@@ -41,6 +41,7 @@ sealed interface AuthEvent {
     data object NavigateToLogin : AuthEvent
     data object NavigateToRegister : AuthEvent
     data object NavigateBack : AuthEvent
+    data object RequestGoogleSignIn : AuthEvent
     data class ShowError(val message: String) : AuthEvent
     data class ShowSnackbar(val message: String) : AuthEvent
 }
@@ -58,6 +59,7 @@ sealed interface AuthIntent {
     data object Login : AuthIntent
     data object Register : AuthIntent
     data class LoginWithProvider(val provider: AuthProvider) : AuthIntent
+    data class GoogleIdTokenReceived(val idToken: String) : AuthIntent
     data object ForgotPassword : AuthIntent
     data object NavigateToLogin : AuthIntent
     data object NavigateToRegister : AuthIntent
@@ -108,6 +110,7 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.Login -> performLogin()
             is AuthIntent.Register -> performRegister()
             is AuthIntent.LoginWithProvider -> loginWithProvider(intent.provider)
+            is AuthIntent.GoogleIdTokenReceived -> handleGoogleIdToken(intent.idToken)
             is AuthIntent.ForgotPassword -> handleForgotPassword()
             is AuthIntent.NavigateToLogin -> emitEvent(AuthEvent.NavigateToLogin)
             is AuthIntent.NavigateToRegister -> emitEvent(AuthEvent.NavigateToRegister)
@@ -130,18 +133,14 @@ class AuthViewModel @Inject constructor(
 
     private fun updateEmail(email: String) {
         _uiState.update { state ->
-            // Real-time email validation: only show error after user has typed enough
             val emailError = when {
-                email.isBlank() -> null // Don't show error while field is empty
+                email.isBlank() -> null
                 email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
                 email.contains("@") && email.contains(".") && !EMAIL_REGEX.matches(email) ->
                     "Format invalide — ex : nom@domaine.com"
                 else -> null
             }
-            state.copy(
-                email = email,
-                emailError = emailError
-            )
+            state.copy(email = email, emailError = emailError)
         }
     }
 
@@ -150,12 +149,9 @@ class AuthViewModel @Inject constructor(
             state.copy(
                 password = password,
                 passwordError = null,
-                // Also re-validate confirm password if it's already filled
                 confirmPasswordError = if (state.confirmPassword.isNotBlank() && state.confirmPassword != password) {
                     "Les mots de passe ne correspondent pas"
-                } else {
-                    null
-                }
+                } else null
             )
         }
     }
@@ -167,26 +163,18 @@ class AuthViewModel @Inject constructor(
                 confirmPassword != state.password -> "Les mots de passe ne correspondent pas"
                 else -> null
             }
-            state.copy(
-                confirmPassword = confirmPassword,
-                confirmPasswordError = confirmError
-            )
+            state.copy(confirmPassword = confirmPassword, confirmPasswordError = confirmError)
         }
     }
 
     private fun updateFullName(fullName: String) {
-        _uiState.update { state ->
-            state.copy(fullName = fullName)
-        }
+        _uiState.update { it.copy(fullName = fullName) }
     }
 
     private fun togglePasswordVisibility(isConfirmField: Boolean) {
         _uiState.update { state ->
-            if (isConfirmField) {
-                state.copy(isConfirmPasswordVisible = !state.isConfirmPasswordVisible)
-            } else {
-                state.copy(isPasswordVisible = !state.isPasswordVisible)
-            }
+            if (isConfirmField) state.copy(isConfirmPasswordVisible = !state.isConfirmPasswordVisible)
+            else state.copy(isPasswordVisible = !state.isPasswordVisible)
         }
     }
 
@@ -196,44 +184,29 @@ class AuthViewModel @Inject constructor(
 
     fun performLogin() {
         val currentState = _uiState.value
-
-        // Validate inputs with detailed feedback
         val emailError = validateEmail(currentState.email)
         val passwordError = validateLoginPassword(currentState.password)
 
         if (emailError != null || passwordError != null) {
-            _uiState.update { state ->
-                state.copy(emailError = emailError, passwordError = passwordError)
-            }
+            _uiState.update { it.copy(emailError = emailError, passwordError = passwordError) }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
             val result = authRepository.login(
                 email = currentState.email,
                 password = currentState.password,
                 rememberMe = currentState.rememberMe
             )
-
             result.fold(
                 onSuccess = { user ->
-                    android.util.Log.d("AuthViewModel", "Login successful: ${user.email}")
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowSnackbar("Bienvenue ${user.fullName}!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
                 onFailure = { error ->
-                    android.util.Log.e("AuthViewModel", "Login failed", error)
-                    val errorMessage = error.message ?: "Erreur de connexion"
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            // Show API error in the appropriate field for clear UX feedback
-                            passwordError = "Email ou mot de passe incorrect"
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = false, passwordError = "Email ou mot de passe incorrect") }
                 }
             )
         }
@@ -241,41 +214,29 @@ class AuthViewModel @Inject constructor(
 
     fun performRegister() {
         val currentState = _uiState.value
-
-        // Validate all inputs
         val emailError = validateEmail(currentState.email)
         val passwordError = validatePassword(currentState.password)
         val confirmPasswordError = validateConfirmPassword(currentState.password, currentState.confirmPassword)
 
         if (emailError != null || passwordError != null || confirmPasswordError != null) {
-            _uiState.update { state ->
-                state.copy(
-                    emailError = emailError,
-                    passwordError = passwordError,
-                    confirmPasswordError = confirmPasswordError
-                )
-            }
+            _uiState.update { it.copy(emailError = emailError, passwordError = passwordError, confirmPasswordError = confirmPasswordError) }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
             val result = authRepository.register(
                 email = currentState.email,
                 password = currentState.password,
                 fullName = currentState.fullName.takeIf { it.isNotBlank() }
             )
-
             result.fold(
                 onSuccess = { user ->
-                    android.util.Log.d("AuthViewModel", "Registration successful: ${user.email}")
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowSnackbar("Compte cree avec succes!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
                 onFailure = { error ->
-                    android.util.Log.e("AuthViewModel", "Registration failed", error)
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowError(error.message ?: "Erreur d'inscription"))
                 }
@@ -283,26 +244,52 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Triggers Google Sign-In flow.
+     * Emits [AuthEvent.RequestGoogleSignIn] so the UI layer can launch
+     * the Credential Manager prompt (which requires an Activity context).
+     */
     fun loginWithProvider(provider: AuthProvider) {
+        when (provider) {
+            AuthProvider.GOOGLE -> emitEvent(AuthEvent.RequestGoogleSignIn)
+            else -> emitEvent(AuthEvent.ShowError("Ce fournisseur n'est pas encore disponible"))
+        }
+    }
+
+    /**
+     * Called by the UI layer when Google Sign-In fails (e.g. missing config, cancellation).
+     */
+    fun handleGoogleSignInError(message: String) {
+        _uiState.update { it.copy(isLoading = false) }
+        emitEvent(AuthEvent.ShowError(message))
+    }
+
+    /**
+     * Called by the UI layer after Google Sign-In returns an ID token.
+     * Sends the token to the backend for verification.
+     */
+    fun handleGoogleIdToken(idToken: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
-            val result = authRepository.loginWithProvider(provider)
-
+            val result = authRepository.loginWithGoogle(idToken)
             result.fold(
                 onSuccess = { user ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowSnackbar("Connexion ${provider.name} reussie!"))
+                    _events.emit(AuthEvent.ShowSnackbar("Connexion Google reussie!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowError("Erreur ${provider.name}: ${error.message}"))
+                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur de connexion Google"))
                 }
             )
         }
     }
 
+    /**
+     * Sends a forgot-password request to the backend API.
+     * Always shows a success message (backend never reveals if email exists).
+     */
     fun handleForgotPassword() {
         val currentState = _uiState.value
         val emailError = validateEmail(currentState.email)
@@ -313,77 +300,59 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _events.emit(AuthEvent.ShowSnackbar("Email de reinitialisation envoye a ${currentState.email}"))
-        }
-    }
-
-    private fun clearErrors() {
-        _uiState.update { state ->
-            state.copy(
-                emailError = null,
-                passwordError = null,
-                confirmPasswordError = null
+            _uiState.update { it.copy(isLoading = true) }
+            val result = authRepository.forgotPassword(currentState.email)
+            result.fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowSnackbar(
+                        "Si un compte existe avec cet email, un lien de reinitialisation a ete envoye."
+                    ))
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur lors de l'envoi"))
+                }
             )
         }
     }
 
+    private fun clearErrors() {
+        _uiState.update { it.copy(emailError = null, passwordError = null, confirmPasswordError = null) }
+    }
+
     private fun emitEvent(event: AuthEvent) {
-        viewModelScope.launch {
-            _events.emit(event)
-        }
+        viewModelScope.launch { _events.emit(event) }
     }
 
     // ===== Validation helpers =====
 
-    /**
-     * Validates email format with detailed user feedback.
-     * Used on both Login and Register screens.
-     */
-    private fun validateEmail(email: String): String? {
-        return when {
-            email.isBlank() -> "Email requis"
-            !email.contains("@") -> "Format invalide — ex : nom@domaine.com"
-            !EMAIL_REGEX.matches(email) -> "Format d'email invalide — ex : nom@domaine.com"
-            email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
-            else -> null
-        }
+    private fun validateEmail(email: String): String? = when {
+        email.isBlank() -> "Email requis"
+        !email.contains("@") -> "Format invalide — ex : nom@domaine.com"
+        !EMAIL_REGEX.matches(email) -> "Format d'email invalide — ex : nom@domaine.com"
+        email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
+        else -> null
     }
 
-    /**
-     * Validates password for LOGIN only — we don't reveal password policy on login
-     * to avoid giving hints to attackers. Just check it's not blank.
-     */
-    private fun validateLoginPassword(password: String): String? {
-        return when {
-            password.isBlank() -> "Mot de passe requis"
-            else -> null
-        }
+    private fun validateLoginPassword(password: String): String? = when {
+        password.isBlank() -> "Mot de passe requis"
+        else -> null
     }
 
-    /**
-     * Validates password for REGISTRATION — full policy feedback.
-     * Returns the FIRST unmet requirement for clear UX guidance.
-     */
-    private fun validatePassword(password: String): String? {
-        return when {
-            password.isBlank() -> "Mot de passe requis"
-            password.length < MIN_PASSWORD_LENGTH -> "$MIN_PASSWORD_LENGTH caracteres minimum"
-            !password.any { it.isUpperCase() } -> "Une majuscule est requise"
-            !password.any { it.isDigit() } -> "Un chiffre est requis"
-            !password.any { !it.isLetterOrDigit() } -> "Un caractere special est requis (!@#\$%...)"
-            else -> null
-        }
+    private fun validatePassword(password: String): String? = when {
+        password.isBlank() -> "Mot de passe requis"
+        password.length < MIN_PASSWORD_LENGTH -> "$MIN_PASSWORD_LENGTH caracteres minimum"
+        !password.any { it.isUpperCase() } -> "Une majuscule est requise"
+        !password.any { it.isDigit() } -> "Un chiffre est requis"
+        !password.any { !it.isLetterOrDigit() } -> "Un caractere special est requis (!@#\$%...)"
+        else -> null
     }
 
-    /**
-     * Validates confirm password matches.
-     */
-    private fun validateConfirmPassword(password: String, confirmPassword: String): String? {
-        return when {
-            confirmPassword.isBlank() -> "Confirmez votre mot de passe"
-            confirmPassword != password -> "Les mots de passe ne correspondent pas"
-            else -> null
-        }
+    private fun validateConfirmPassword(password: String, confirmPassword: String): String? = when {
+        confirmPassword.isBlank() -> "Confirmez votre mot de passe"
+        confirmPassword != password -> "Les mots de passe ne correspondent pas"
+        else -> null
     }
 
     companion object {
