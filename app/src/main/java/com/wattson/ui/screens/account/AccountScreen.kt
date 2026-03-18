@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
@@ -86,6 +87,7 @@ fun AccountScreen(
                 is AccountEvent.NavigateToPremium -> onNavigateToPremium()
                 is AccountEvent.NavigateToLogin -> onNavigateToLogin()
                 is AccountEvent.LogoutSuccess -> { /* Handled by NavigateToLogin */ }
+                is AccountEvent.AccountDeleted -> { /* Handled by NavigateToLogin */ }
                 is AccountEvent.PreferencesUpdated -> { /* Could show snackbar */ }
                 is AccountEvent.ShowError -> { /* Could show snackbar */ }
             }
@@ -108,9 +110,11 @@ fun AccountScreen(
                     isPremium = uiState.isPremium,
                     documentCount = uiState.documentCount,
                     documentLimit = uiState.documentLimit,
+                    isDeletingAccount = uiState.isDeletingAccount,
                     onPreferenceReorder = { onIntent(AccountIntent.UpdatePreferenceOrder(it)) },
                     onPremiumClick = { onIntent(AccountIntent.NavigateToPremium) },
-                    onLogoutClick = { onIntent(AccountIntent.RequestLogout) }
+                    onLogoutClick = { onIntent(AccountIntent.RequestLogout) },
+                    onDeleteAccountClick = { onIntent(AccountIntent.RequestDeleteAccount) }
                 )
             }
         }
@@ -123,6 +127,14 @@ fun AccountScreen(
             onDismiss = { onIntent(AccountIntent.CancelLogout) }
         )
     }
+
+    // Delete account confirmation dialog
+    if (uiState.showDeleteAccountConfirmation) {
+        DeleteAccountConfirmationDialog(
+            onConfirm = { onIntent(AccountIntent.ConfirmDeleteAccount) },
+            onDismiss = { onIntent(AccountIntent.CancelDeleteAccount) }
+        )
+    }
 }
 
 @Composable
@@ -132,9 +144,11 @@ private fun AccountContent(
     isPremium: Boolean,
     documentCount: Int,
     documentLimit: Int?,
+    isDeletingAccount: Boolean,
     onPreferenceReorder: (List<PreferenceType>) -> Unit,
     onPremiumClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -173,6 +187,14 @@ private fun AccountContent(
 
         // Sign out button
         SignOutButton(onClick = onLogoutClick)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Delete account button (RGPD)
+        DeleteAccountButton(
+            onClick = onDeleteAccountClick,
+            isLoading = isDeletingAccount
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -478,6 +500,80 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun DeleteAccountButton(
+    onClick: () -> Unit,
+    isLoading: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = !isLoading, onClick = onClick),
+        shape = WattsonCorners.Card,
+        color = WattsonColors.Error.copy(alpha = 0.08f),
+        shadowElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = WattsonColors.Error,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Filled.DeleteForever,
+                    contentDescription = null,
+                    tint = WattsonColors.Error
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = stringResource(R.string.delete_account),
+                style = MaterialTheme.typography.bodyLarge,
+                color = WattsonColors.Error
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeleteAccountConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.delete_account_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(stringResource(R.string.delete_account_confirmation))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.delete_account_confirm), color = WattsonColors.Error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+@Composable
 private fun LogoutConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -539,9 +635,11 @@ private fun AccountContentPreview() {
             isPremium = false,
             documentCount = 3,
             documentLimit = 5,
+            isDeletingAccount = false,
             onPreferenceReorder = {},
             onPremiumClick = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onDeleteAccountClick = {}
         )
     }
 }

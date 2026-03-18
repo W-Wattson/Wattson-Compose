@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Ir a inicio"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Desplazarse hacia arriba"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Más opciones"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Hecho"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Ver todo"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Seleccionar una aplicación"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"DESACTIVADO"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ACTIVADO"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt +"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl +"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Suprimir"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Intro"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Función +"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta +"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Mayús +"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"Espacio"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym +"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menú +"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Buscar…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Borrar consulta"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Consulta de búsqueda"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Buscar"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Enviar consulta"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Búsqueda por voz"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Compartir con"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Compartir con <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Ocultar"</string>
+    <string name="account_title">Cuenta</string>
+    <string name="active_repairs">Reparaciones en curso</string>
+    <string name="active_warranties">%d garantías activas</string>
+    <string name="active_warranties_label">Garantías activas</string>
+    <string name="add_document">Añadir</string>
+    <string name="add_document_fab">Añadir documento</string>
+    <string name="add_favorite">Añadir a favoritos</string>
+    <string name="advanced_repair_advice">Consejos avanzados de reparabilidad</string>
+    <string name="all_documents">Todos</string>
+    <string name="allow_access">Permitir acceso</string>
+    <string name="already_have_account">¿Ya tienes cuenta? </string>
+    <string msgid="8397015543330865059" name="android.credentials.TYPE_PASSWORD_CREDENTIAL">"Contraseña"</string>
+    <string msgid="3929015085059320822" name="androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL">"Llave de acceso"</string>
+    <string name="app_name">Wattson</string>
+    <string name="apple">Apple</string>
+    <string name="auth_subtitle">Elija dispositivos que sean realmente duraderos y reparables</string>
+    <string name="auth_title">Wattson</string>
+    <string name="autonomy_resistance">Autonomía y resistencia</string>
+    <string name="back">Atrás</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Responder"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Vídeo"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Rechazar"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Colgar"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Llamada entrante"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Llamada en curso"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Filtrando una llamada entrante"</string>
+    <string name="camera_access_description">Para escanear códigos de barras de productos, Wattson necesita acceder a su cámara.</string>
+    <string name="camera_access_required">Acceso a la cámara requerido</string>
+    <string name="camera_permission_rationale">Wattson necesita acceder a la cámara para escanear los códigos de barras de los productos.</string>
+    <string name="camera_permission_required">Se requiere permiso de cámara</string>
+    <string name="cancel">Cancelar</string>
+    <string name="cat_appliances">Electrodomésticos</string>
+    <string name="cat_audio_video">Audio/Vídeo</string>
+    <string name="cat_climatisation">Climatización</string>
+    <string name="cat_electronics">Electrónica</string>
+    <string name="cat_gaming">Gaming</string>
+    <string name="cat_it">Informática</string>
+    <string name="cat_other">Otro</string>
+    <string name="cat_telephony">Telefonía</string>
+    <string name="class_label">Clase</string>
+    <string name="class_prefix">Clase: %s</string>
+    <string name="clear">Limpiar</string>
+    <string name="close">Cerrar</string>
+    <string msgid="406453423630273620" name="close_drawer">"Cerrar menú de navegación"</string>
+    <string msgid="7573152094250666567" name="close_sheet">"Cerrar hoja"</string>
+    <string name="collapse">Contraer</string>
+    <string msgid="2523291102206661146" name="common_google_play_services_enable_button">Habilitar</string>
+    <string msgid="227660514972886228" name="common_google_play_services_enable_text">%1$s no funcionará hasta que no habilites Servicios de Google Play.</string>
+    <string msgid="5122002158466380389" name="common_google_play_services_enable_title">Habilita Servicios de Google Play</string>
+    <string msgid="7153882981874058840" name="common_google_play_services_install_button">Instalar</string>
+    <string name="common_google_play_services_install_text">%1$s no se ejecutará si los Servicios de Google Play no están instalados en tu dispositivo.</string>
+    <string msgid="7215213145546190223" name="common_google_play_services_install_title">Descargar Servicios de Google Play</string>
+    <string name="common_google_play_services_notification_channel_name">Disponibilidad Servicios de Google Play</string>
+    <string name="common_google_play_services_notification_ticker">Error de Servicios de Google Play</string>
+    <string name="common_google_play_services_unknown_issue">La aplicación %1$s tiene problemas con los Servicios de Google Play. Vuelve a intentarlo.</string>
+    <string name="common_google_play_services_unsupported_text">No es posible ejecutar la aplicación %1$s sin los Servicios de Google Play, que no son compatibles con tu dispositivo.</string>
+    <string msgid="6556509956452265614" name="common_google_play_services_update_button">Actualizar</string>
+    <string msgid="9053896323427875356" name="common_google_play_services_update_text">%1$s no funcionará hasta que no actualices Servicios de Google Play.</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">Actualiza Servicios de Google Play</string>
+    <string name="common_google_play_services_updating_text">%1$s no se ejecutará hasta que finalice la actualización en curso de Servicios de Google Play.</string>
+    <string name="common_google_play_services_wear_update_text">Se necesita una nueva versión de Servicios de Google Play. Se actualizará en breve.</string>
+    <string name="common_open_on_phone">Abrir en teléfono</string>
+    <string name="common_signin_button_text">Iniciar sesión</string>
+    <string name="common_signin_button_text_long">Iniciar sesión con Google</string>
+    <string name="completed_repairs">Reparaciones finalizadas</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"Usar contraseña"</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="continue_button">Continuar</string>
+    <string name="current_plan">Plan actual</string>
+    <string name="data_export">Exportación de datos</string>
+    <string msgid="8038256446254964252" name="default_error_message">"Entrada no válida"</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"Error desconocido"</string>
+    <string msgid="6312721426453364202" name="default_popup_window_title">"Ventana emergente"</string>
+    <string name="delete">Eliminar</string>
+    <string name="delete_document">Eliminar documento</string>
+    <string name="delete_document_confirmation">¿Está seguro de que desea eliminar \"%s\"? Esta acción est irreversible.</string>
+    <string name="delete_document_confirmation_detail">El documento \"%s\" se eliminará permanentemente. Esta acción es irreversible.</string>
+    <string name="delete_document_title">¿Eliminar documento?</string>
+    <string name="devices_count">%d dispositivos</string>
+    <string name="devices_label">Dispositivos</string>
+    <string name="document_added_success">%s añadido con éxito</string>
+    <string name="document_deleted_success">%s eliminado</string>
+    <string name="document_preview">Vista previa del documento</string>
+    <string name="documents_count">%d documentos</string>
+    <string name="documents_label">Documentos</string>
+    <string name="documents_subtitle">Gestione sus recibos y garantías</string>
+    <string name="documents_suffix">documentos</string>
+    <string name="documents_title">Documentos</string>
+    <string name="download">Descargar</string>
+    <string name="drop_resistance">Resistencia a caídas</string>
+    <string msgid="1890207353314751437" name="dropdown_menu">"Menú desplegable"</string>
+    <string name="ecology">Ecología</string>
+    <string name="economy">Económico</string>
+    <string name="email">Correo electrónico</string>
+    <string name="empty_repair_instruction">Escanee un producto para iniciar un diagnóstico asistido por IA</string>
+    <string name="endurance">Resistencia</string>
+    <string name="endurance_label">Resistencia:</string>
+    <string name="energy_kwh_year">%d kWh/año</string>
+    <string name="energy_performance">Eficiencia energética</string>
+    <string name="error">Error</string>
+    <string name="error_generic">Ha ocurrido un error</string>
+    <string name="error_invalid_email">Correo electrónico no válido</string>
+    <string name="error_invalid_password">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="error_network">Error de conexión de red</string>
+    <string name="error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <string name="error_prefix">Error: %s</string>
+    <string name="excellent">Excelente</string>
+    <string name="expand">Expandir</string>
+    <string name="fair">Regular</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"Toca sensor huellas digitales"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"El hardware de huella digital no está disponible."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"El dispositivo no tiene ningún sensor de huellas digitales"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"Has realizado demasiados intentos. Vuelve a probar más tarde."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"No se ha registrado ninguna huella digital."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"El usuario ha cancelado la operación de huella digital."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"No se reconoce"</string>
+    <string name="first_choice">1ª elección</string>
+    <string name="flash_off">Desactivar flash</string>
+    <string name="flash_on">Activar flash</string>
+    <string name="forgot_password">¿Olvidó su contraseña?</string>
+    <string name="gdpr_label">RGPD</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"No se ha definido el PIN, el patrón o la contraseña."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"Este dispositivo no admite PINs, patrones ni contraseñas."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"El usuario ha cancelado la autenticación."</string>
+    <string name="go_premium_subtitle">Desbloquea todas las funciones de Wattson</string>
+    <string name="go_premium_title">Pásate a Premium</string>
+    <string name="good">Bueno</string>
+    <string name="google">Google</string>
+    <string name="grant_permission">Permitir cámara</string>
+    <string name="history_subtitle">Tus productos escaneados</string>
+    <string name="history_title">Historial</string>
+    <string name="hours_suffix">%dh00</string>
+    <string msgid="6827826412747255547" name="in_progress">"En curso"</string>
+    <string msgid="7933458017204019916" name="indeterminate">"Marcado parcialmente"</string>
+    <string name="index_label">Índice</string>
+    <string name="index_prefix">Índice: %s/10</string>
+    <string name="login_subtitle">Accede a tu espacio Wattson</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="logout_confirmation">¿Está seguro de que desea cerrar sesión en su cuenta de Wattson?</string>
+    <string name="logout_title">¿Cerrar sesión?</string>
+    <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Contrae la hoja inferior"</string>
+    <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"Cierra la hoja inferior"</string>
+    <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"Controlador de arrastre"</string>
+    <string msgid="6670819569745899763" name="m3c_bottom_sheet_expand_description">"Despliega la hoja inferior"</string>
+    <string msgid="3010635850035863127" name="m3c_bottom_sheet_pane_title">"Hoja inferior"</string>
+    <string msgid="8166741421776570875" name="m3c_date_input_headline">"Fecha introducida"</string>
+    <string msgid="229313757840775812" name="m3c_date_input_headline_description">"Fecha introducida: %1$s"</string>
+    <string msgid="6116910750161463197" name="m3c_date_input_invalid_for_pattern">"La fecha no coincide con el patrón esperado: %1$s"</string>
+    <string msgid="2521768508935305279" name="m3c_date_input_invalid_not_allowed">"Fecha no permitida: %1$s"</string>
+    <string msgid="7052898923934555305" name="m3c_date_input_invalid_year_range">"Fecha fuera del intervalo de años previsto: %1$s - %2$s"</string>
+    <string msgid="2895559812010326913" name="m3c_date_input_label">"Fecha"</string>
+    <string msgid="1237013946323089826" name="m3c_date_input_no_input_description">"No hay datos"</string>
+    <string msgid="7306227249789210568" name="m3c_date_input_title">"Seleccionar fecha"</string>
+    <string msgid="7605002211875882969" name="m3c_date_picker_headline">"Fecha seleccionada"</string>
+    <string msgid="3664277305226978227" name="m3c_date_picker_headline_description">"Seleccionado: %1$s"</string>
+    <string msgid="8436650776581492840" name="m3c_date_picker_navigate_to_year_description">"Ir al año %1$s"</string>
+    <string msgid="5811000998184572395" name="m3c_date_picker_no_selection_description">"No hay datos"</string>
+    <string msgid="7813882352367152251" name="m3c_date_picker_scroll_to_earlier_years">"Desplázate para ver los años anteriores"</string>
+    <string msgid="5727367015496556177" name="m3c_date_picker_scroll_to_later_years">"Desplázate para ver los años posteriores"</string>
+    <string msgid="1804346892470238807" name="m3c_date_picker_switch_to_calendar_mode">"Cambiar al modo de introducción de calendario"</string>
+    <string msgid="395627960681594326" name="m3c_date_picker_switch_to_day_selection">"Desliza para seleccionar un año o toca para volver a seleccionar un día"</string>
+    <string msgid="2219746470065162704" name="m3c_date_picker_switch_to_input_mode">"Cambiar al modo de introducción de texto"</string>
+    <string msgid="7142101321095356500" name="m3c_date_picker_switch_to_next_month">"Cambiar al mes siguiente"</string>
+    <string msgid="228438865139394590" name="m3c_date_picker_switch_to_previous_month">"Cambiar al mes anterior"</string>
+    <string msgid="791651718641787594" name="m3c_date_picker_switch_to_year_selection">"Cambiar para seleccionar un año"</string>
+    <string msgid="7430790972741451689" name="m3c_date_picker_title">"Seleccionar fecha"</string>
+    <string msgid="3199387177749801575" name="m3c_date_picker_today_description">"Hoy"</string>
+    <string msgid="2068382232816991922" name="m3c_date_picker_year_picker_pane_title">"Selector de año visible"</string>
+    <string msgid="3190049423327661366" name="m3c_date_range_input_invalid_range_input">"El intervalo de fechas no es válido"</string>
+    <string msgid="3148384720560189467" name="m3c_date_range_input_title">"Introducir fechas"</string>
+    <string msgid="2138321128465719402" name="m3c_date_range_picker_day_in_range">"Dentro del intervalo"</string>
+    <string msgid="4947636797751277713" name="m3c_date_range_picker_end_headline">"Fecha de finalización"</string>
+    <string msgid="602077859540990149" name="m3c_date_range_picker_scroll_to_next_month">"Desplázate para ver el mes siguiente"</string>
+    <string msgid="4592174524846109496" name="m3c_date_range_picker_scroll_to_previous_month">"Desplázate para ver el mes anterior"</string>
+    <string msgid="4665981448952749820" name="m3c_date_range_picker_start_headline">"Fecha de inicio"</string>
+    <string msgid="3134165431120340385" name="m3c_date_range_picker_title">"Seleccionar fechas"</string>
+    <string msgid="7617233117134790350" name="m3c_dialog">"Cuadro de diálogo"</string>
+    <string msgid="3177828188723359358" name="m3c_dropdown_menu_collapsed">"Contraído"</string>
+    <string msgid="2360841780724299882" name="m3c_dropdown_menu_expanded">"Desplegado"</string>
+    <string msgid="8687821690726149911" name="m3c_dropdown_menu_toggle">"Mostrar/ocultar menú desplegable"</string>
+    <string msgid="6152806324422087846" name="m3c_search_bar_search">"Buscar"</string>
+    <string msgid="6152755701819882931" name="m3c_snackbar_dismiss">"Cerrar"</string>
+    <string msgid="7655536806087401899" name="m3c_suggestions_available">"Sugerencias a continuación"</string>
+    <string msgid="2786685010796619560" name="m3c_time_picker_am">"a. m."</string>
+    <string msgid="2349193472625211372" name="m3c_time_picker_hour">"Hora"</string>
+    <string msgid="9179527532316922345" name="m3c_time_picker_hour_24h_suffix">"%1$d horas"</string>
+    <string msgid="8876759303332837035" name="m3c_time_picker_hour_selection">"Seleccionar hora"</string>
+    <string msgid="3458167507790628988" name="m3c_time_picker_hour_suffix">"%1$d en punto"</string>
+    <string msgid="6973808109666874069" name="m3c_time_picker_hour_text_field">"para la hora"</string>
+    <string msgid="4313071914266462005" name="m3c_time_picker_minute">"Minutos"</string>
+    <string msgid="4699133535056739733" name="m3c_time_picker_minute_selection">"Seleccionar minutos"</string>
+    <string msgid="5064177921781937179" name="m3c_time_picker_minute_suffix">"%1$d minutos"</string>
+    <string msgid="7661234488295443182" name="m3c_time_picker_minute_text_field">"para los minutos"</string>
+    <string msgid="5865171949528594571" name="m3c_time_picker_period_toggle_description">"Selecciona AM o PM"</string>
+    <string msgid="6616362054113087709" name="m3c_time_picker_pm">"p. m."</string>
+    <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"Mostrar descripción emergente"</string>
+    <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"Descripción emergente"</string>
+    <string name="nav_account">Cuenta</string>
+    <string name="nav_account_desc">Mi cuenta</string>
+    <string name="nav_documents">Documentos</string>
+    <string name="nav_documents_desc">Documentos y garantías</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_history_desc">Historial de escaneos</string>
+    <string name="nav_repair">Reparación</string>
+    <string name="nav_repair_desc">Asistencia de reparación</string>
+    <string msgid="542007171693138492" name="navigation_menu">"Menú de navegación"</string>
+    <string name="new_repair">Nueva reparación</string>
+    <string name="no_account">¿Aún no tienes cuenta? </string>
+    <string name="no_active_repairs">No hay reparaciones en curso</string>
+    <string name="no_documents">Sin documentos</string>
+    <string name="no_documents_description">Añada sus facturas y garantías para encontrarlas fácilmente</string>
+    <string name="no_results">Sin resultados</string>
+    <string name="no_results_description">Ningún documento coincide con \"%s\"</string>
+    <string name="not_rated_yet">Aún no calificado</string>
+    <string msgid="6610465462668679431" name="not_selected">"No seleccionado"</string>
+    <string name="open_settings">Abrir ajustes</string>
+    <string name="options">Opciones</string>
+    <string name="or_divider">o</string>
+    <string name="password">Contraseña</string>
+    <string name="password_requirements_title">La contraseña debe contener:</string>
+    <string name="per_month">/mes</string>
+    <string name="place_barcode">Coloque el código de barras en el marco</string>
+    <string name="poor">Deficiente</string>
+    <string name="popular">Popular</string>
+    <string name="preferences">Preferencias</string>
+    <string name="preferences_explanation">El orden de sus preferencias ajusta el algoritmo de Wattson Score. Sus criterios prioritarios tendrán más peso en la calificación final de los productos escaneados.</string>
+    <string name="premium_member">Miembro Premium</string>
+    <string name="premium_subtitle">Cámbiate a Premium para disfrutar de todas las ventajas</string>
+    <string name="premium_success">¡Felicidades! Ahora eres Premium</string>
+    <string name="premium_title">Premium</string>
+    <string name="priority_support">Soporte prioritario</string>
+    <string name="privacy_policy_label">Política de Privacidad</string>
+    <string name="processing">Procesando…</string>
+    <string name="product_details">Detalles del producto</string>
+    <string name="quota_exceeded">Límite de documentos alcanzado. ¡Pásate a Premium!</string>
+    <string msgid="5941395253238309765" name="range_end">"Fin del intervalo"</string>
+    <string msgid="7097486360902471446" name="range_start">"Inicio del intervalo"</string>
+    <string name="register_subtitle">Únete a Wattson para gestionar tus electrodomésticos</string>
+    <string name="register_title">Crear Cuenta</string>
+    <string name="remember_me">Recordarme</string>
+    <string name="remove_favorite">Eliminar de favoritos</string>
+    <string name="repair_case_created">Caso de reparación creado</string>
+    <string name="repair_subtitle">Diagnostique y repare sus dispositivos con la ayuda de nuestro asistente de IA</string>
+    <string name="repair_tips">Consejos de mantenimiento</string>
+    <string name="repair_title">Reparación</string>
+    <string name="repairability">Reparabilidad</string>
+    <string name="repairability_index">Índice de reparabilidad</string>
+    <string name="repairability_pref">Reparabilidad</string>
+    <string name="req_digit">1 número</string>
+    <string name="req_length">8+ caracteres</string>
+    <string name="req_special">1 especial</string>
+    <string name="req_uppercase">1 mayúscula</string>
+    <string name="results_count_plural">%d resultados</string>
+    <string name="results_count_singular">%d resultado</string>
+    <string name="retry">Reintentar</string>
+    <string name="scan_button">Escanear</string>
+    <string name="scan_instruction">Coloque el código de barras en el marco</string>
+    <string name="scan_product">Escanear un producto</string>
+    <string name="scan_title">Escanear</string>
+    <string name="score_label">Puntuación</string>
+    <string name="score_prefix">Puntuación:</string>
+    <string name="search_hint">Buscar</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Buscar"</string>
+    <string name="search_placeholder">Buscar</string>
+    <string name="searching_product">Buscando producto...</string>
+    <string name="second_choice">2ª elección</string>
+    <string name="select">Seleccionar</string>
+    <string msgid="6043586758067023" name="selected">"Seleccionado"</string>
+    <string name="sign_in">Iniciar sesión</string>
+    <string name="sign_in_with_apple">Iniciar sesión con Apple</string>
+    <string name="sign_in_with_google">Iniciar sesión con Google</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="start_repair_dialog_message">Para iniciar un diagnóstico asistido por IA, primero escanee el código de barras de su producto.</string>
+    <string name="start_repair_dialog_title">Nueva reparación</string>
+    <string msgid="4139871816613051306" name="state_empty">"Vacío"</string>
+    <string msgid="5834637030682409883" name="state_off">"Desactivado"</string>
+    <string msgid="1490883874751719580" name="state_on">"Activado"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="status_completed">Finalizado</string>
+    <string name="status_diagnosing">Diagnóstico</string>
+    <string name="status_in_repair">En reparación</string>
+    <string name="status_open">Abierto</string>
+    <string name="status_waiting_parts">Esperando piezas</string>
+    <string msgid="2561197295334830845" name="switch_role">"Interruptor"</string>
+    <string name="symptoms_label">Síntomas: %s</string>
+    <string msgid="1672349317127674378" name="tab">"Pestaña"</string>
+    <string msgid="5946805113151406391" name="template_percent">"<ns1:g id="PERCENTAGE">%1$d</ns1:g> por cien."</string>
+    <string name="terms_and_conditions">Al iniciar sesión, acepta nuestros %1$s y nuestra %2$s. Wattson garantiza la seguridad de sus facturas y datos personales de acuerdo con el %3$s.</string>
+    <string name="terms_label">Términos y Condiciones de Uso</string>
+    <string name="terms_subscription">Al suscribirte, aceptas nuestras condiciones de suscripción. Puedes cancelar en cualquier momento.</string>
+    <string name="third_choice">3ª elección</string>
+    <string msgid="3765533235322692011" name="tooltip_description">"descripción emergente"</string>
+    <string msgid="3124740595719787496" name="tooltip_label">"mostrar descripción emergente"</string>
+    <string name="type_invoice">Factura</string>
+    <string name="type_manual">Manual</string>
+    <string name="type_other">Otro</string>
+    <string name="type_warranty">Garantía</string>
+    <string name="unlimited_documents">Documentos ilimitados</string>
+    <string name="unlimited_history">Historial ilimitado</string>
+    <string name="uploading">Subiendo…</string>
+    <string name="user_reviews">Opiniones de usuarios</string>
+    <string name="very_poor">Muy deficiente</string>
+    <string name="warranty_alerts">Alertas de garantía</string>
+    <string name="warranty_commercial">Garantía comercial</string>
+    <string name="warranty_extended">Extensión de garantía</string>
+    <string name="warranty_legal">Garantía legal</string>
+    <string name="warranty_manufacturer">Garantía del fabricante</string>
+    <string name="wattson_user_rating">Valoración de usuarios de Wattson</string>
+</resources>

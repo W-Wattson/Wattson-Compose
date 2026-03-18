@@ -32,6 +32,8 @@ data class AccountUiState(
     val scanCount: Int = 0,
     val errorMessage: String? = null,
     val showLogoutConfirmation: Boolean = false,
+    val showDeleteAccountConfirmation: Boolean = false,
+    val isDeletingAccount: Boolean = false,
     val isUpdatingPreferences: Boolean = false
 )
 
@@ -43,6 +45,7 @@ sealed interface AccountEvent {
     data object NavigateToLogin : AccountEvent
     data class ShowError(val message: String) : AccountEvent
     data object LogoutSuccess : AccountEvent
+    data object AccountDeleted : AccountEvent
     data object PreferencesUpdated : AccountEvent
 }
 
@@ -57,6 +60,9 @@ sealed interface AccountIntent {
     data object RequestLogout : AccountIntent
     data object ConfirmLogout : AccountIntent
     data object CancelLogout : AccountIntent
+    data object RequestDeleteAccount : AccountIntent
+    data object ConfirmDeleteAccount : AccountIntent
+    data object CancelDeleteAccount : AccountIntent
     data object DismissError : AccountIntent
 }
 
@@ -110,6 +116,9 @@ class AccountViewModel @Inject constructor(
             is AccountIntent.RequestLogout -> requestLogout()
             is AccountIntent.ConfirmLogout -> confirmLogout()
             is AccountIntent.CancelLogout -> cancelLogout()
+            is AccountIntent.RequestDeleteAccount -> requestDeleteAccount()
+            is AccountIntent.ConfirmDeleteAccount -> confirmDeleteAccount()
+            is AccountIntent.CancelDeleteAccount -> cancelDeleteAccount()
             is AccountIntent.DismissError -> dismissError()
         }
     }
@@ -271,6 +280,55 @@ class AccountViewModel @Inject constructor(
 
     private fun cancelLogout() {
         _uiState.update { it.copy(showLogoutConfirmation = false) }
+    }
+
+    // ===== Delete Account (RGPD) =====
+
+    private fun requestDeleteAccount() {
+        _uiState.update { it.copy(showDeleteAccountConfirmation = true) }
+    }
+
+    private fun confirmDeleteAccount() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(showDeleteAccountConfirmation = false, isDeletingAccount = true)
+            }
+
+            try {
+                val result = authRepository.deleteAccount()
+
+                result.fold(
+                    onSuccess = { message ->
+                        android.util.Log.d("AccountViewModel", "Account deleted: $message")
+                        _uiState.update {
+                            it.copy(isDeletingAccount = false, user = null)
+                        }
+                        _events.emit(AccountEvent.AccountDeleted)
+                        _events.emit(AccountEvent.NavigateToLogin)
+                    },
+                    onFailure = { error ->
+                        android.util.Log.e("AccountViewModel", "Delete account failed", error)
+                        _uiState.update {
+                            it.copy(
+                                isDeletingAccount = false,
+                                errorMessage = error.message ?: "Erreur lors de la suppression"
+                            )
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isDeletingAccount = false,
+                        errorMessage = e.message ?: "Erreur lors de la suppression"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun cancelDeleteAccount() {
+        _uiState.update { it.copy(showDeleteAccountConfirmation = false) }
     }
 
     private fun dismissError() {
