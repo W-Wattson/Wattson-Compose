@@ -70,6 +70,16 @@ import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.OpenableColumns
 
 /**
  * Documents screen for managing receipts and warranties.
@@ -88,12 +98,26 @@ fun DocumentsScreen(
 
     // File picker launcher
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            val fileName = uri.lastPathSegment ?: "document"
-            onIntent(DocumentsIntent.UploadDocument(uri.toString(), fileName))
+            val fileName = getDisplayName(context, uri)
+            val mimeType = context.contentResolver.getType(uri)
+            val fileSize = getFileSize(context, uri)
+            onIntent(DocumentsIntent.UploadDocument(uri.toString(), fileName, mimeType, fileSize))
         }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                onIntent(DocumentsIntent.RefreshDocuments)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     // Handle events
@@ -102,7 +126,7 @@ fun DocumentsScreen(
             when (event) {
                 is DocumentsEvent.NavigateToDocumentDetail -> onNavigateToDocument(event.documentId)
                 is DocumentsEvent.ShowUploadPicker -> {
-                    filePickerLauncher.launch("*/*")
+                    filePickerLauncher.launch(arrayOf("application/pdf", "image/jpeg", "image/png"))
                 }
                 is DocumentsEvent.ShowUploadSuccess -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.document_added_success, event.fileName))
@@ -116,6 +140,36 @@ fun DocumentsScreen(
                 is DocumentsEvent.NavigateToPremium -> onNavigateToPremium()
                 is DocumentsEvent.ShowQuotaExceeded -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.quota_exceeded))
+                }
+                is DocumentsEvent.StartDownload -> {
+                    try {
+                        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+                        val request = DownloadManager.Request(Uri.parse(event.url)).apply {
+                            setTitle(event.filename)
+                            setDescription("Wattson — Téléchargement")
+                            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, event.filename)
+                            setAllowedOverMetered(true)
+                            setAllowedOverRoaming(true)
+                        }
+
+                        dm.enqueue(request)
+                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                    } catch (e: Exception) {
+                        // fallback navigateur
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.url)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                    }
+                }
+
+                is DocumentsEvent.ShowDownloadError -> {
+                    snackbarHostState.showSnackbar("${context.getString(R.string.error)}: ${event.message}")
                 }
             }
         }
@@ -174,6 +228,13 @@ fun DocumentsScreen(
                     onYearSelected = { onIntent(DocumentsIntent.FilterByYear(it)) }
                 )
 
+                Text(
+                    text = stringResource(R.string.documents_upload_help),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                )
+
                 // Content
                 when {
                     uiState.isLoading -> {
@@ -197,7 +258,8 @@ fun DocumentsScreen(
                             expandedYears = uiState.expandedYears,
                             onToggleYear = { onIntent(DocumentsIntent.ToggleYearExpanded(it)) },
                             onDocumentClick = { onIntent(DocumentsIntent.OpenDocument(it)) },
-                            onDocumentDelete = { onIntent(DocumentsIntent.DeleteDocument(it)) }
+                            onDocumentDelete = { onIntent(DocumentsIntent.DeleteDocument(it)) },
+                            onDocumentDownload = { doc -> onIntent(DocumentsIntent.DownloadDocument(doc)) }
                         )
                     }
                 }
@@ -223,7 +285,27 @@ fun DocumentsScreen(
         )
     }
 }
+private fun getDisplayName(context: android.content.Context, uri: Uri): String {
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (nameIndex >= 0 && it.moveToFirst()) {
+            return it.getString(nameIndex) ?: "document"
+        }
+    }
+    return "document"
+}
 
+private fun getFileSize(context: android.content.Context, uri: Uri): Long {
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+        if (sizeIndex >= 0 && it.moveToFirst()) {
+            return it.getLong(sizeIndex)
+        }
+    }
+    return -1L
+}
 @Composable
 private fun DocumentsHeader(
     searchQuery: String,
@@ -339,6 +421,7 @@ private fun DocumentsList(
     onToggleYear: (Int) -> Unit,
     onDocumentClick: (String) -> Unit,
     onDocumentDelete: (Document) -> Unit,
+    onDocumentDownload: (Document) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -381,7 +464,7 @@ private fun DocumentsList(
                         DocumentCard(
                             document = document,
                             onClick = { onDocumentClick(document.id) },
-                            onDownload = { /* TODO */ },
+                            onDownload = { onDocumentDownload(document) },
                             onDelete = { onDocumentDelete(document) },
                             modifier = Modifier.fillMaxWidth()
                         )

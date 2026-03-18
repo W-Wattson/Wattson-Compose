@@ -5,6 +5,7 @@ import com.wattson.domain.model.Document
 import com.wattson.domain.model.DocumentMetadata
 import com.wattson.domain.model.DocumentType
 import com.wattson.domain.model.OcrData
+import com.wattson.domain.model.OcrStatus
 import com.wattson.domain.model.ProductCategory
 import java.time.Instant
 import java.time.LocalDate
@@ -20,29 +21,44 @@ data class DocumentResponse(
     @SerializedName("fileSize") val fileSize: Long,
     @SerializedName("documentType") val documentType: String?,
     @SerializedName("ocrData") val ocrData: OcrDataDto?,
-    @SerializedName("uploadedAt") val uploadedAt: String?
+    @SerializedName("uploadedAt") val uploadedAt: String?,
+    @SerializedName("ocrStatus") val ocrStatus: String?
 ) {
     fun toDomain(userId: String): Document {
         val uploadInstant = uploadedAt?.let { parseInstant(it) } ?: Instant.now()
         val uploadDate = uploadInstant.atZone(ZoneId.systemDefault()).toLocalDate()
 
+        val mappedType = mapDocumentType(documentType)
+        val purchaseDate = ocrData?.purchaseDate?.let { parseLocalDate(it) }
+
+        val warrantyStartDate = if (mappedType == DocumentType.GARANTIE) {
+            purchaseDate
+        } else null
+
+        val warrantyEndDate = if (mappedType == DocumentType.GARANTIE && purchaseDate != null) {
+            purchaseDate.plusMonths(24)
+        } else null
+
         return Document(
             id = id,
             userId = userId,
-            type = mapDocumentType(documentType),
+            type = mappedType,
             productName = ocrData?.merchantName ?: filename ?: "Document sans nom",
             productCategory = ProductCategory.OTHER,
             gtin = ocrData?.extractedGtin,
-            fileUrl = "", // URL obtained separately via download endpoint
+            fileUrl = "",
             thumbnailUrl = null,
-            documentDate = ocrData?.purchaseDate?.let { parseLocalDate(it) } ?: uploadDate,
+            documentDate = purchaseDate ?: uploadDate,
             metadata = DocumentMetadata(
                 merchant = ocrData?.merchantName,
-                purchaseDate = ocrData?.purchaseDate?.let { parseLocalDate(it) },
+                purchaseDate = purchaseDate,
                 totalAmount = ocrData?.totalAmount,
-                currency = ocrData?.currency ?: "EUR"
+                currency = ocrData?.currency ?: "EUR",
+                warrantyStartDate = warrantyStartDate,
+                warrantyEndDate = warrantyEndDate
             ),
             ocrData = ocrData?.toDomain(),
+            ocrStatus = mapOcrStatus(ocrStatus),
             uploadedAt = uploadInstant,
             filename = filename,
             mimeType = mimeType,
@@ -56,6 +72,18 @@ data class DocumentResponse(
             "WARRANTY" -> DocumentType.GARANTIE
             "MANUAL" -> DocumentType.MANUEL
             else -> DocumentType.OTHER
+        }
+    }
+
+    private fun mapOcrStatus(status: String?): OcrStatus? {
+        return when (status?.uppercase()) {
+            null -> null
+            "PENDING", "QUEUED", "WAITING" -> OcrStatus.PENDING
+            "PROCESSING", "IN_PROGRESS", "RUNNING" -> OcrStatus.PROCESSING
+            "COMPLETED", "DONE", "SUCCESS" -> OcrStatus.COMPLETED
+            "PARTIAL", "PARTIALLY_COMPLETED" -> OcrStatus.PARTIAL
+            "FAILED", "ERROR" -> OcrStatus.FAILED
+            else -> OcrStatus.UNKNOWN
         }
     }
 
