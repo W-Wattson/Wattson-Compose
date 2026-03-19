@@ -12,8 +12,8 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.wattson.BuildConfig
+import android.util.Log
 import kotlinx.coroutines.delay
-import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,9 +47,8 @@ import javax.inject.Singleton
 @Singleton
 class GoogleAuthManager @Inject constructor() {
 
-    private val log = LoggerFactory.getLogger(GoogleAuthManager::class.java)
-
     companion object {
+        private const val TAG = "GoogleAuthManager"
         private const val MAX_RETRIES = 1
         private const val RETRY_DELAY_MS = 500L
     }
@@ -92,7 +91,7 @@ class GoogleAuthManager @Inject constructor() {
         for (attempt in 0..MAX_RETRIES) {
             try {
                 if (attempt > 0) {
-                    log.info("Google Sign-In retry attempt {}/{}", attempt, MAX_RETRIES)
+                    Log.i(TAG, "Google Sign-In retry attempt $attempt/$MAX_RETRIES")
                     delay(RETRY_DELAY_MS)
                 }
 
@@ -101,27 +100,27 @@ class GoogleAuthManager @Inject constructor() {
                     request = request
                 )
 
-                log.info("Google Sign-In successful on attempt {}", attempt + 1)
+                Log.i(TAG, "Google Sign-In successful on attempt ${attempt + 1}")
                 return extractIdToken(response)
 
             } catch (e: GetCredentialCancellationException) {
                 // User canceled — don't retry
-                log.warn("Google Sign-In canceled by user")
+                Log.w(TAG, "Google Sign-In canceled by user")
                 throw GoogleAuthException("Connexion Google annulee", e)
 
             } catch (e: NoCredentialException) {
                 // Often happens on first attempt (cold start) — retry
-                log.warn("Google Sign-In NoCredentialException on attempt {} — {}", attempt + 1, e.message)
+                Log.w(TAG, "Google Sign-In NoCredentialException on attempt ${attempt + 1} — ${e.message}")
                 lastException = e
 
             } catch (e: GetCredentialException) {
-                log.error("Google Sign-In failed on attempt {}: {}", attempt + 1, e.message)
+                Log.e(TAG, "Google Sign-In failed on attempt ${attempt + 1}: ${e.message}")
                 lastException = e
             }
         }
 
         // All retries exhausted
-        log.error("Google Sign-In failed after {} attempts", MAX_RETRIES + 1)
+        Log.e(TAG, "Google Sign-In failed after ${MAX_RETRIES + 1} attempts")
         throw GoogleAuthException(
             "Aucun compte Google disponible. Ajoutez un compte Google dans les parametres.",
             lastException
