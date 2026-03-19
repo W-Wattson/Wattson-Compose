@@ -131,9 +131,12 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    // Stripe PaymentSheet
+    implementation(libs.stripe.android)
+
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-    
+
     // Serialization (for type-safe navigation)
     implementation(libs.kotlinx.serialization.json)
 }

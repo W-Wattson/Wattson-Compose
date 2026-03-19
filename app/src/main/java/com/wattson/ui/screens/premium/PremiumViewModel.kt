@@ -2,6 +2,8 @@ package com.wattson.ui.screens.premium
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.SubscriptionRepository
 import com.wattson.domain.model.SubscriptionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,13 +16,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Subscription plan data.
+ * Subscription plan data displayed in the Premium screen.
+ *
+ * @property type          the [SubscriptionType] enum value.
+ * @property name          display name (e.g. "Premium").
+ * @property price         formatted price string (e.g. "5,99 EUR/mois").
+ * @property priceValue    numeric price for sorting/comparison.
+ * @property stripePriceId the Stripe Price ID used for checkout.
+ * @property features      list of feature descriptions for the plan card.
+ * @property isPopular     whether to show the "Populaire" badge.
  */
 data class SubscriptionPlan(
     val type: SubscriptionType,
     val name: String,
     val price: String,
     val priceValue: Double,
+    val stripePriceId: String = "",
     val features: List<String>,
     val isPopular: Boolean = false
 )
@@ -38,17 +49,27 @@ data class PremiumUiState(
 )
 
 /**
- * One-shot events for premium screen.
+ * One-shot events emitted by the ViewModel.
  */
 sealed interface PremiumEvent {
     data object NavigateBack : PremiumEvent
     data object SubscriptionSuccess : PremiumEvent
     data class ShowError(val message: String) : PremiumEvent
-    data object OpenPaymentSheet : PremiumEvent
+
+    /**
+     * Emitted when the backend returns PaymentSheet data.
+     * The Screen composable should present the Stripe PaymentSheet.
+     */
+    data class OpenPaymentSheet(
+        val clientSecret: String,
+        val ephemeralKey: String,
+        val customerId: String,
+        val publishableKey: String
+    ) : PremiumEvent
 }
 
 /**
- * User intents for premium screen.
+ * User intents for the Premium screen.
  */
 sealed interface PremiumIntent {
     data object LoadPlans : PremiumIntent
@@ -57,18 +78,29 @@ sealed interface PremiumIntent {
     data object CancelSubscription : PremiumIntent
     data object NavigateBack : PremiumIntent
     data object DismissError : PremiumIntent
+
+    /** Called from the Screen after PaymentSheet completes successfully. */
+    data object PaymentCompleted : PremiumIntent
+
+    /** Called from the Screen after PaymentSheet fails or is canceled. */
+    data class PaymentFailed(val message: String) : PremiumIntent
 }
 
 /**
  * ViewModel for the Premium screen.
- * Manages subscription plans and payment flow.
+ *
+ * Manages subscription plans and the Stripe PaymentSheet flow:
+ * 1. User selects a plan and taps "Subscribe"
+ * 2. ViewModel calls backend [POST /mobile/subscribe] to get PaymentSheet data
+ * 3. ViewModel emits [PremiumEvent.OpenPaymentSheet]
+ * 4. Screen presents the Stripe PaymentSheet
+ * 5. Screen calls [PremiumIntent.PaymentCompleted] or [PremiumIntent.PaymentFailed]
+ * 6. Webhook on the backend activates the subscription asynchronously
  */
 @HiltViewModel
 class PremiumViewModel @Inject constructor(
-    // TODO: Inject use cases when implemented
-    // private val getCurrentSubscriptionUseCase: GetCurrentSubscriptionUseCase,
-    // private val getAvailablePlansUseCase: GetAvailablePlansUseCase,
-    // private val subscribeUseCase: SubscribeUseCase
+    private val subscriptionRepository: SubscriptionRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PremiumUiState())
@@ -82,7 +114,7 @@ class PremiumViewModel @Inject constructor(
     }
 
     /**
-     * Process user intents.
+     * Dispatches user intents to the appropriate handler.
      */
     fun onIntent(intent: PremiumIntent) {
         when (intent) {
@@ -92,22 +124,22 @@ class PremiumViewModel @Inject constructor(
             is PremiumIntent.CancelSubscription -> cancelSubscription()
             is PremiumIntent.NavigateBack -> navigateBack()
             is PremiumIntent.DismissError -> dismissError()
+            is PremiumIntent.PaymentCompleted -> handlePaymentCompleted()
+            is PremiumIntent.PaymentFailed -> handlePaymentFailed(intent.message)
         }
     }
 
+    /**
+     * Loads available subscription plans and the user's current subscription.
+     */
     private fun loadPlans() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
-                // TODO: Replace with actual use cases
-                // val currentSub = getCurrentSubscriptionUseCase()
-                // val plans = getAvailablePlansUseCase()
-                
-                kotlinx.coroutines.delay(300)
-                
+                val currentUser = authRepository.currentUser.value
+                val currentSub = currentUser?.subscriptionType ?: SubscriptionType.FREE
                 val plans = getAvailablePlans()
-                val currentSub = SubscriptionType.FREE
 
                 _uiState.update {
                     it.copy(
@@ -117,7 +149,6 @@ class PremiumViewModel @Inject constructor(
                         selectedPlan = plans.find { p -> p.isPopular }
                     )
                 }
-                
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -129,32 +160,39 @@ class PremiumViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates the selected plan in the UI state.
+     */
     private fun selectPlan(plan: SubscriptionPlan) {
         _uiState.update { it.copy(selectedPlan = plan) }
     }
 
+    /**
+     * Initiates the Stripe PaymentSheet flow:
+     * 1. Calls the backend to create a subscription with incomplete payment
+     * 2. Emits [PremiumEvent.OpenPaymentSheet] with the PaymentSheet configuration data
+     */
     private fun confirmSubscription() {
         val plan = _uiState.value.selectedPlan ?: return
-        
+
         viewModelScope.launch {
-            _uiState.update { it.copy(isProcessingPayment = true) }
+            _uiState.update { it.copy(isProcessingPayment = true, errorMessage = null) }
 
             try {
-                // TODO: Replace with actual payment flow
-                // subscribeUseCase(plan.type)
-                
-                // Simulate payment processing
-                kotlinx.coroutines.delay(2000)
-                
-                _uiState.update {
-                    it.copy(
-                        isProcessingPayment = false,
-                        currentSubscription = plan.type
+                val response = subscriptionRepository.createMobileSubscription(plan.stripePriceId)
+
+                _uiState.update { it.copy(isProcessingPayment = false) }
+
+                // Emit event for the Screen to present PaymentSheet
+                _events.emit(
+                    PremiumEvent.OpenPaymentSheet(
+                        clientSecret = response.clientSecret,
+                        ephemeralKey = response.ephemeralKey,
+                        customerId = response.customerId,
+                        publishableKey = response.publishableKey
                     )
-                }
-                
-                _events.emit(PremiumEvent.SubscriptionSuccess)
-                
+                )
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -167,9 +205,34 @@ class PremiumViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Called when the Stripe PaymentSheet completes successfully.
+     * The actual subscription activation is done server-side via the Stripe webhook.
+     */
+    private fun handlePaymentCompleted() {
+        viewModelScope.launch {
+            val plan = _uiState.value.selectedPlan ?: return@launch
+
+            _uiState.update {
+                it.copy(currentSubscription = plan.type)
+            }
+
+            _events.emit(PremiumEvent.SubscriptionSuccess)
+        }
+    }
+
+    /**
+     * Called when the Stripe PaymentSheet fails or is canceled by the user.
+     */
+    private fun handlePaymentFailed(message: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isProcessingPayment = false) }
+            _events.emit(PremiumEvent.ShowError(message))
+        }
+    }
+
     private fun cancelSubscription() {
         viewModelScope.launch {
-            // TODO: Implement subscription cancellation
             _events.emit(PremiumEvent.NavigateBack)
         }
     }
@@ -184,32 +247,38 @@ class PremiumViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    /**
+     * Returns the available premium plans with Stripe Price IDs.
+     * Price IDs are configured for Stripe test mode.
+     */
     private fun getAvailablePlans(): List<SubscriptionPlan> = listOf(
         SubscriptionPlan(
             type = SubscriptionType.PREMIUM,
             name = "Premium",
-            price = "5,99 €/mois",
+            price = "5,99 \u20AC/mois",
             priceValue = 5.99,
+            stripePriceId = "price_1TCTn0HPNKboKHLrDPXNM547",
             features = listOf(
                 "Conciergerie 15 documents",
-                "Conseil de réparabilité basique",
-                "Historique illimité",
+                "Conseil de r\u00E9parabilit\u00E9 basique",
+                "Historique illimit\u00E9",
                 "Support prioritaire"
             ),
             isPopular = false
         ),
         SubscriptionPlan(
             type = SubscriptionType.PREMIUM_UNLIMITED,
-            name = "Premium Illimité",
-            price = "9,95 €/mois",
+            name = "Premium Illimit\u00E9",
+            price = "9,95 \u20AC/mois",
             priceValue = 9.95,
+            stripePriceId = "price_1TCTnyHPNKboKHLrBRvlqzZp",
             features = listOf(
                 "Conciergerie 1000 documents",
-                "Conseil de réparabilité avancé",
-                "Historique illimité",
+                "Conseil de r\u00E9parabilit\u00E9 avanc\u00E9",
+                "Historique illimit\u00E9",
                 "Support prioritaire",
                 "Alertes de garantie",
-                "Export des données"
+                "Export des donn\u00E9es"
             ),
             isPopular = true
         )
