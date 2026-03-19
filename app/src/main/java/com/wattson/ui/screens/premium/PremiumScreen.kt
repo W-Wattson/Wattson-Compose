@@ -56,6 +56,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.stripe.android.PaymentConfiguration
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
 import com.wattson.R
 import com.wattson.domain.model.SubscriptionType
 import com.wattson.ui.components.WattsonButton
@@ -81,6 +85,23 @@ fun PremiumScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Initialize Stripe PaymentSheet
+    val paymentSheet = rememberPaymentSheet { result ->
+        when (result) {
+            is PaymentSheetResult.Completed -> {
+                onIntent(PremiumIntent.PaymentCompleted)
+            }
+            is PaymentSheetResult.Canceled -> {
+                onIntent(PremiumIntent.PaymentFailed("Paiement annulé"))
+            }
+            is PaymentSheetResult.Failed -> {
+                onIntent(PremiumIntent.PaymentFailed(
+                    result.error.localizedMessage ?: "Erreur de paiement"
+                ))
+            }
+        }
+    }
+
     // Handle events
     LaunchedEffect(Unit) {
         events.collectLatest { event ->
@@ -92,7 +113,22 @@ fun PremiumScreen(
                 is PremiumEvent.ShowError -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.error_prefix, event.message))
                 }
-                is PremiumEvent.OpenPaymentSheet -> { /* Handle payment sheet */ }
+                is PremiumEvent.OpenPaymentSheet -> {
+                    // Configure and present the Stripe PaymentSheet
+                    PaymentConfiguration.init(context, event.publishableKey)
+                    paymentSheet.presentWithPaymentIntent(
+                        paymentIntentClientSecret = event.clientSecret,
+                        configuration = PaymentSheet.Configuration.Builder("Wattson")
+                            .customer(
+                                PaymentSheet.CustomerConfiguration(
+                                    id = event.customerId,
+                                    ephemeralKeySecret = event.ephemeralKey
+                                )
+                            )
+                            .allowsDelayedPaymentMethods(false)
+                            .build()
+                    )
+                }
             }
         }
     }

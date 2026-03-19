@@ -6,6 +6,8 @@ import com.wattson.data.remote.dto.DeleteAccountResponse
 import com.wattson.data.remote.dto.DocumentListResponse
 import com.wattson.data.remote.dto.DocumentResponse
 import com.wattson.data.remote.dto.DownloadUrlResponse
+import com.wattson.data.remote.dto.MobileSubscribeRequest
+import com.wattson.data.remote.dto.MobileSubscriptionResponse
 import com.wattson.data.remote.dto.ForgotPasswordRequest
 import com.wattson.data.remote.dto.GoogleAuthRequest
 import com.wattson.data.remote.dto.LoginRequest
@@ -78,6 +80,20 @@ interface WattsonApi {
     suspend fun deleteAccount(
         @Header("Authorization") token: String
     ): Response<DeleteAccountResponse>
+
+    // =====================
+    // Subscription API
+    // =====================
+
+    /**
+     * Creates a mobile subscription for Stripe PaymentSheet.
+     * Returns clientSecret, ephemeralKey, customerId, and publishableKey.
+     */
+    @POST("api/v1/auth/mobile/subscribe")
+    suspend fun createMobileSubscription(
+        @Header("Authorization") token: String,
+        @Body request: MobileSubscribeRequest
+    ): Response<MobileSubscriptionResponse>
 
     // =====================
     // Product Catalog API
