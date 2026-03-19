@@ -145,8 +145,8 @@ class AccountViewModel @Inject constructor(
                     if (!token.isNullOrBlank()) {
                         val docResponse = api.getDocuments("Bearer $token", user.id, limit = 1, offset = 0)
                         if (docResponse.isSuccessful) {
-                            // Get total from response
-                            documentCount = docResponse.body()?.documents?.size ?: 0
+                            // Use total field from API response (not documents.size which is limited by limit param)
+                            documentCount = docResponse.body()?.total?.toInt() ?: 0
                         }
                     } else {
                         android.util.Log.w("AccountViewModel", "Missing access token for document count")

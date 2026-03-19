@@ -59,7 +59,13 @@ data class UserDto(
     @SerializedName("authProvider")
     val authProvider: String,
     @SerializedName("subscriptionType")
-    val subscriptionType: String
+    val subscriptionType: String,
+    @SerializedName("subscriptionStatus")
+    val subscriptionStatus: String? = null,
+    @SerializedName("cancelAtPeriodEnd")
+    val cancelAtPeriodEnd: Boolean? = null,
+    @SerializedName("currentPeriodEnd")
+    val currentPeriodEnd: String? = null
 )
 
 /**

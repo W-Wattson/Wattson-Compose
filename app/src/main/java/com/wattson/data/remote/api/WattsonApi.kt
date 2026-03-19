@@ -2,6 +2,7 @@ package com.wattson.data.remote.api
 
 import com.wattson.BuildConfig
 import com.wattson.data.remote.dto.AuthResponse
+import com.wattson.data.remote.dto.UserDto
 import com.wattson.data.remote.dto.DeleteAccountResponse
 import com.wattson.data.remote.dto.DocumentListResponse
 import com.wattson.data.remote.dto.DocumentResponse
@@ -80,6 +81,15 @@ interface WattsonApi {
     suspend fun deleteAccount(
         @Header("Authorization") token: String
     ): Response<DeleteAccountResponse>
+
+    /**
+     * Returns the current user's profile with up-to-date subscription info.
+     * Used after Stripe payment to refresh subscription data.
+     */
+    @GET("api/v1/auth/me")
+    suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): Response<UserDto>
 
     // =====================
     // Subscription API

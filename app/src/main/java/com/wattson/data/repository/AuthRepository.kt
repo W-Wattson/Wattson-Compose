@@ -341,6 +341,55 @@ class AuthRepository @Inject constructor(
     }
 
     /**
+     * Refreshes user profile from the backend /me endpoint.
+     * Used after Stripe payment to get updated subscription data.
+     * Updates the local user session with fresh data from MongoDB.
+     */
+    suspend fun refreshProfile(): Result<User> = withContext(Dispatchers.IO) {
+        val token = getAccessToken()
+            ?: return@withContext Result.failure(AuthException("Pas de token d'acces"))
+
+        try {
+            android.util.Log.d("AuthRepository", "Refreshing profile from /me endpoint")
+            val response = api.getProfile("Bearer $token")
+
+            if (response.isSuccessful) {
+                val userDto = response.body()
+                    ?: return@withContext Result.failure(AuthException("Reponse vide du serveur"))
+
+                val currentUser = _currentUser.value
+                val subscriptionType = try {
+                    SubscriptionType.valueOf(userDto.subscriptionType)
+                } catch (e: IllegalArgumentException) {
+                    SubscriptionType.FREE
+                }
+
+                val updatedUser = (currentUser ?: User(
+                    id = userDto.id,
+                    email = userDto.email,
+                    fullName = userDto.fullName,
+                    authProvider = AuthProvider.EMAIL
+                )).copy(
+                    subscriptionType = subscriptionType,
+                    updatedAt = Instant.now()
+                )
+
+                _currentUser.value = updatedUser
+                saveUserSession(updatedUser, token, prefs.getString(KEY_REFRESH_TOKEN, null))
+
+                android.util.Log.d("AuthRepository", "Profile refreshed: subscription=${subscriptionType.name}")
+                Result.success(updatedUser)
+            } else {
+                android.util.Log.e("AuthRepository", "Failed to refresh profile: ${response.code()}")
+                Result.failure(AuthException("Erreur serveur: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Failed to refresh profile", e)
+            Result.failure(AuthException("Erreur de connexion: ${e.message}"))
+        }
+    }
+
+    /**
      * Update user preferences.
      */
     suspend fun updatePreferences(preferences: UserPreferences): Result<User> = withContext(Dispatchers.IO) {
