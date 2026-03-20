@@ -8,6 +8,7 @@ import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
 import com.wattson.domain.model.DocumentConstraints
 import com.wattson.domain.model.OcrStatus
+import com.wattson.domain.model.getDocumentLimit
 import com.wattson.domain.model.isAllowedMimeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -255,6 +256,16 @@ class DocumentsViewModel @Inject constructor(
     }
 
     private fun startUpload() {
+        val currentUser = authRepository.currentUser.value
+        val documentLimit = currentUser?.subscriptionType?.getDocumentLimit()
+
+        if (documentLimit != null && _uiState.value.totalDocuments >= documentLimit) {
+            viewModelScope.launch {
+                _events.emit(DocumentsEvent.ShowQuotaExceeded)
+            }
+            return
+        }
+
         viewModelScope.launch {
             _events.emit(DocumentsEvent.ShowUploadPicker)
         }
@@ -287,12 +298,24 @@ class DocumentsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-                        _events.emit(DocumentsEvent.ShowUploadError(mapUploadErrorMessage(error.message)))
+
+                        val message = mapUploadErrorMessage(error.message)
+                        if (message.contains("Limite de documents", ignoreCase = true)) {
+                            viewModelScope.launch { _events.emit(DocumentsEvent.ShowQuotaExceeded) }
+                        } else {
+                            viewModelScope.launch { _events.emit(DocumentsEvent.ShowUploadError(message)) }
+                        }
                     }
                 )
             } catch (e: Exception) {
                 _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-                _events.emit(DocumentsEvent.ShowUploadError(mapUploadErrorMessage(e.message)))
+
+                val message = mapUploadErrorMessage(e.message)
+                if (message.contains("Limite de documents", ignoreCase = true)) {
+                    _events.emit(DocumentsEvent.ShowQuotaExceeded)
+                } else {
+                    _events.emit(DocumentsEvent.ShowUploadError(message))
+                }
             }
         }
     }
@@ -409,7 +432,7 @@ class DocumentsViewModel @Inject constructor(
 
     private fun mapUploadErrorMessage(raw: String?): String {
         val source = raw.orEmpty()
-        val code = Regex("\\b(400|401|403|404|413|429)\\b").find(source)?.value
+        val code = Regex("\\b(400|401|402|403|404|413|429)\\b").find(source)?.value
 
         if (source.contains("quota", ignoreCase = true) || source.contains("limit", ignoreCase = true)) {
             return "Limite de documents atteinte."
@@ -418,6 +441,7 @@ class DocumentsViewModel @Inject constructor(
         return when (code) {
             "400" -> "Format invalide ou document non pris en charge."
             "401" -> "Session expirée, reconnecte-toi."
+            "402" -> "Limite de documents atteinte."
             "403" -> "Accès refusé."
             "404" -> "Document introuvable."
             "413" -> "Fichier trop volumineux."
