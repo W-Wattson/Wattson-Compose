@@ -217,6 +217,14 @@ class PremiumViewModel @Inject constructor(
                 it.copy(currentSubscription = plan.type)
             }
 
+            // Refresh user profile from backend to get updated subscription data
+            try {
+                authRepository.refreshProfile()
+                android.util.Log.i("PremiumViewModel", "Profile refreshed after payment: plan=${plan.type}")
+            } catch (e: Exception) {
+                android.util.Log.w("PremiumViewModel", "Failed to refresh profile after payment", e)
+            }
+
             _events.emit(PremiumEvent.SubscriptionSuccess)
         }
     }

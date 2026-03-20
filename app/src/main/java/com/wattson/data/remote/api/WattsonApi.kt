@@ -2,6 +2,7 @@ package com.wattson.data.remote.api
 
 import com.wattson.BuildConfig
 import com.wattson.data.remote.dto.AuthResponse
+import com.wattson.data.remote.dto.UserDto
 import com.wattson.data.remote.dto.DeleteAccountResponse
 import com.wattson.data.remote.dto.DocumentListResponse
 import com.wattson.data.remote.dto.DocumentResponse
@@ -80,6 +81,15 @@ interface WattsonApi {
     suspend fun deleteAccount(
         @Header("Authorization") token: String
     ): Response<DeleteAccountResponse>
+
+    /**
+     * Returns the current user's profile with up-to-date subscription info.
+     * Used after Stripe payment to refresh subscription data.
+     */
+    @GET("api/v1/auth/me")
+    suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): Response<UserDto>
 
     // =====================
     // Subscription API
@@ -180,7 +190,64 @@ interface WattsonApi {
         @Path("documentId") documentId: String
     ): Response<Unit>
 
+    // =====================
+    // Repair Chat API
+    // =====================
+
+    @POST("api/v1/repair/conversations")
+    suspend fun createRepairConversation(
+        @Header("X-User-Id") userId: String,
+        @Body request: CreateConversationRequest
+    ): Response<ConversationResponse>
+
+    @GET("api/v1/repair/conversations")
+    suspend fun getRepairConversations(
+        @Header("X-User-Id") userId: String
+    ): Response<List<ConversationResponse>>
+
+    @GET("api/v1/repair/conversations/{conversationId}/messages")
+    suspend fun getRepairMessages(
+        @Header("X-User-Id") userId: String,
+        @Path("conversationId") conversationId: String
+    ): Response<List<RepairMessageResponse>>
+
+    @POST("api/v1/repair/conversations/{conversationId}/messages")
+    suspend fun sendRepairMessage(
+        @Header("X-User-Id") userId: String,
+        @Header("X-Subscription") subscription: String,
+        @Path("conversationId") conversationId: String,
+        @Body request: SendRepairMessageRequest
+    ): Response<RepairMessageResponse>
+
+    @DELETE("api/v1/repair/conversations/{conversationId}")
+    suspend fun deleteRepairConversation(
+        @Header("X-User-Id") userId: String,
+        @Path("conversationId") conversationId: String
+    ): Response<Unit>
+
     companion object {
         val BASE_URL_DEFAULT = com.wattson.BuildConfig.API_BASE_URL
     }
 }
+
+// =====================
+// Repair Chat DTOs
+// =====================
+
+data class CreateConversationRequest(val title: String?)
+data class SendRepairMessageRequest(val content: String)
+
+data class ConversationResponse(
+    val id: String,
+    val title: String,
+    val lastMessagePreview: String?,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+data class RepairMessageResponse(
+    val id: String,
+    val role: String,
+    val content: String,
+    val createdAt: String
+)
