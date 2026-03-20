@@ -81,6 +81,8 @@ class RepairViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val userId = authRepository.getCurrentUserId()
+                // Fetch from server then observe the StateFlow
+                repairChatRepository.refreshConversations(userId)
                 repairChatRepository.getConversations(userId).collect { conversations ->
                     _uiState.update {
                         it.copy(isLoading = false, conversations = conversations)
@@ -118,7 +120,8 @@ class RepairViewModel @Inject constructor(
     private fun deleteConversation(conversationId: String) {
         viewModelScope.launch {
             try {
-                repairChatRepository.deleteConversation(conversationId)
+                val userId = authRepository.getCurrentUserId()
+                repairChatRepository.deleteConversation(conversationId, userId)
             } catch (e: Exception) {
                 _events.emit(RepairEvent.ShowError(e.message ?: "Erreur de suppression"))
             }
