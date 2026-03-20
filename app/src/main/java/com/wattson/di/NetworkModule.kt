@@ -94,9 +94,9 @@ object NetworkModule {
             .authenticator(tokenAuthenticator)
             // Add logging as network interceptor at the end to avoid body reading issues
             .addNetworkInterceptor(loggingInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS) // Longer timeout for uploads
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS) // 180s for AI repair chat (Ollama can take 50s+)
+            .writeTimeout(120, TimeUnit.SECONDS) // Longer timeout for uploads
             .retryOnConnectionFailure(true)
             // Shorter keep-alive to avoid "unexpected end of stream" on stale connections
             .connectionPool(ConnectionPool(5, 15, TimeUnit.SECONDS))
