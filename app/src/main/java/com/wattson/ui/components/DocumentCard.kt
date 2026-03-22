@@ -180,17 +180,19 @@ fun DocumentTypeTag(
     modifier: Modifier = Modifier
 ) {
     val (backgroundColor, textColor) = when (type) {
-        DocumentType.FACTURE -> WattsonColors.TagFacture to WattsonColors.White
+        DocumentType.FACTURE  -> WattsonColors.TagFacture to WattsonColors.White
+        DocumentType.TICKET   -> WattsonColors.TagFacture to WattsonColors.White
         DocumentType.GARANTIE -> WattsonColors.TagGarantie to WattsonColors.White
-        DocumentType.MANUEL -> WattsonColors.Info to WattsonColors.White
-        DocumentType.OTHER -> MaterialTheme.colorScheme.onSurfaceVariant to WattsonColors.White
+        DocumentType.MANUEL   -> WattsonColors.Info to WattsonColors.White
+        DocumentType.OTHER    -> MaterialTheme.colorScheme.onSurfaceVariant to WattsonColors.White
     }
 
     val label = when (type) {
-        DocumentType.FACTURE -> stringResource(R.string.type_invoice)
-        DocumentType.GARANTIE -> stringResource(R.string.type_warranty)
-        DocumentType.MANUEL -> stringResource(R.string.type_manual)
-        DocumentType.OTHER -> stringResource(R.string.type_other)
+        DocumentType.FACTURE  -> stringResource(id = R.string.type_invoice)
+        DocumentType.TICKET   -> stringResource(id = R.string.type_receipt) // nouveau
+        DocumentType.GARANTIE -> stringResource(id = R.string.type_warranty)
+        DocumentType.MANUEL   -> stringResource(id = R.string.type_manual)
+        DocumentType.OTHER    -> stringResource(id = R.string.type_other)
     }
 
     Surface(

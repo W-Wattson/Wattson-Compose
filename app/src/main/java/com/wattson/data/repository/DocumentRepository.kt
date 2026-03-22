@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.wattson.data.remote.api.WattsonApi
 import com.wattson.domain.model.Document
+import com.wattson.domain.model.DocumentType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -121,6 +122,15 @@ class DocumentRepository @Inject constructor(
     /**
      * Uploads a document from a content URI.
      */
+
+    private fun DocumentType.toApiType(): String = when (this) {
+        DocumentType.FACTURE  -> "INVOICE"
+        DocumentType.TICKET   -> "RECEIPT"
+        DocumentType.GARANTIE -> "WARRANTY"
+        DocumentType.MANUEL   -> "MANUAL"
+        DocumentType.OTHER    -> "OTHER"
+    }
+
     suspend fun uploadDocument(
         userId: String,
         uri: Uri,

@@ -58,9 +58,10 @@ data class Document(
  * Document types handled by the app.
  */
 enum class DocumentType {
-    FACTURE,  // Invoice/Receipt
-    GARANTIE, // Warranty certificate
-    MANUEL,   // User manual
+    FACTURE,
+    TICKET,
+    GARANTIE,
+    MANUEL,
     OTHER
 }
 

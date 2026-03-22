@@ -68,7 +68,8 @@ data class DocumentResponse(
 
     private fun mapDocumentType(type: String?): DocumentType {
         return when (type?.uppercase()) {
-            "INVOICE", "RECEIPT" -> DocumentType.FACTURE
+            "INVOICE" -> DocumentType.FACTURE
+            "RECEIPT" -> DocumentType.TICKET
             "WARRANTY" -> DocumentType.GARANTIE
             "MANUAL" -> DocumentType.MANUEL
             else -> DocumentType.OTHER

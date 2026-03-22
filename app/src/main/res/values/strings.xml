@@ -123,6 +123,7 @@
     <string name="download">Download</string>
     <string name="options">Options</string>
     <string name="type_invoice">Invoice</string>
+    <string name="type_receipt">Receipt</string>
     <string name="type_warranty">Warranty</string>
     <string name="type_manual">Manual</string>
     <string name="type_other">Other</string>

@@ -809,10 +809,11 @@ private fun formatInstant(instant: Instant): String {
 @Composable
 private fun getDocumentTypeLabel(type: DocumentType): String {
     return when (type) {
-        DocumentType.FACTURE -> stringResource(R.string.type_invoice)
+        DocumentType.FACTURE  -> stringResource(R.string.type_invoice)
+        DocumentType.TICKET   -> stringResource(R.string.type_receipt)
         DocumentType.GARANTIE -> stringResource(R.string.type_warranty)
-        DocumentType.MANUEL -> stringResource(R.string.type_manual)
-        DocumentType.OTHER -> stringResource(R.string.type_other)
+        DocumentType.MANUEL   -> stringResource(R.string.type_manual)
+        DocumentType.OTHER    -> stringResource(R.string.type_other)
     }
 }
 
