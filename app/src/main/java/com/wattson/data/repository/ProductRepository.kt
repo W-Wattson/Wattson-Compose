@@ -5,7 +5,9 @@ import com.wattson.data.remote.api.WattsonApi
 import com.wattson.data.remote.dto.ProductDto
 import com.wattson.data.remote.dto.ScanRequest
 import com.wattson.data.remote.dto.ScanResponse
+import com.wattson.domain.model.DEFAULT_EPREL_CATEGORY_IDS
 import com.wattson.domain.model.Product
+import com.wattson.domain.model.ResolvedEprelProduct
 import com.wattson.domain.model.Scan
 import com.wattson.domain.model.ScanResult
 import kotlinx.coroutines.Dispatchers
@@ -210,6 +212,12 @@ class ProductRepository @Inject constructor(
             val response = api.getProductByEprelId(category, registrationNumber)
             if (response.isSuccessful) {
                 parseProductResponse(response.body(), "$category/$registrationNumber")
+                    .mapCatching { product ->
+                        if (product.isInvalidEprelPlaceholder()) {
+                            throw ProductNotFoundException("$category/$registrationNumber")
+                        }
+                        product
+                    }
             } else if (response.code() == 404) {
                 Result.failure(ProductNotFoundException("$category/$registrationNumber"))
             } else {
@@ -219,6 +227,34 @@ class ProductRepository @Inject constructor(
             android.util.Log.e("ProductRepository", "getProductByEprelId error", e)
             Result.failure(e)
         }
+    }
+
+    suspend fun resolveProductByEprelRegistrationNumber(
+        registrationNumber: String,
+        preferredCategories: List<String> = emptyList()
+    ): Result<ResolvedEprelProduct> = withContext(Dispatchers.IO) {
+        val orderedCategories = (preferredCategories + DEFAULT_EPREL_CATEGORY_IDS).distinct()
+        var lastError: Throwable? = null
+
+        for (category in orderedCategories) {
+            val result = getProductByEprelId(category, registrationNumber)
+            result.fold(
+                onSuccess = { product ->
+                    return@withContext Result.success(
+                        ResolvedEprelProduct(
+                            category = category,
+                            registrationNumber = registrationNumber,
+                            product = product
+                        )
+                    )
+                },
+                onFailure = { error ->
+                    lastError = error
+                }
+            )
+        }
+
+        Result.failure(lastError ?: ProductNotFoundException(registrationNumber))
     }
 
     /**
@@ -345,3 +381,18 @@ private fun normalizeToEan13(barcode: String): String? {
  * Exception thrown when a product is not found.
  */
 class ProductNotFoundException(val identifier: String) : Exception("Product not found: $identifier")
+
+private fun Product.isInvalidEprelPlaceholder(): Boolean {
+    val detailCode = eprelDetails["code"]?.toString()
+    val detailMessage = eprelDetails["message"]?.toString()
+
+    if (detailCode.equals("NOT_FOUND", ignoreCase = true)) {
+        return true
+    }
+
+    if (detailMessage?.contains("not found", ignoreCase = true) == true) {
+        return true
+    }
+
+    return name.equals("Unknown", ignoreCase = true) || name.equals("Unknown Product", ignoreCase = true)
+}

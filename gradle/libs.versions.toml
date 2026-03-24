@@ -22,6 +22,7 @@ room = "2.6.1"
 credentialsManager = "1.5.0-beta01"
 googleId = "1.1.1"
 stripeAndroid = "21.5.1"
+tesseract4android = "4.9.0"
 
 [libraries]
 # AndroidX Core
@@ -65,6 +66,7 @@ camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "
 
 # ML Kit
 mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcodeScanning" }
+tesseract4android = { group = "cz.adaptech.tesseract4android", name = "tesseract4android", version.ref = "tesseract4android" }
 
 # DataStore
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }

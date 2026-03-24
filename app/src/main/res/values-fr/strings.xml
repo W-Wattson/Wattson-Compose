@@ -56,7 +56,13 @@
     <string name="flash_on">Activer le flash</string>
     <string name="flash_off">Désactiver le flash</string>
     <string name="place_barcode">Placez le code-barres dans le cadre</string>
+    <string name="scan_label_hint">Cadrez toute l\'etiquette energie puis touchez Lire l\'etiquette</string>
     <string name="searching_product">Recherche du produit...</string>
+    <string name="reading_energy_label">Lecture de l\'etiquette energie...</string>
+    <string name="label_scan_instruction">Cadrez toute l\'etiquette EPREL dans le guide</string>
+    <string name="label_scan_not_ready">L\'etiquette n\'est pas encore assez lisible</string>
+    <string name="label_scan_ready">Etiquette detectee, ne bougez plus</string>
+    <string name="label_scan_helper">Gardez toute l\'etiquette visible, bien droite et assez proche pour que le QR code et le texte du bas restent nets</string>
     <string name="camera_access_required">Accès à la caméra requis</string>
     <string name="camera_access_description">Pour scanner les codes-barres des produits, Wattson a besoin d\'accéder à votre caméra.</string>
     <string name="allow_access">Autoriser l\'accès</string>
@@ -233,6 +239,8 @@
 
     <!-- EPREL Search -->
     <string name="eprel_search">EPREL ID</string>
+    <string name="read_energy_label">Lire l\'etiquette</string>
+    <string name="cancel_label_scan">Annuler le scan etiquette</string>
     <string name="eprel_search_title">Recherche par ID EPREL</string>
     <string name="eprel_search_subtitle">Entrez la catégorie et le numéro d\'enregistrement EPREL pour consulter l\'étiquette énergie.</string>
     <string name="eprel_category">Catégorie de produit</string>

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +36,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Search
@@ -57,6 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -147,16 +151,25 @@ fun ScanScreen(
                 // Camera preview
                 CameraPreviewContent(
                     isScanning = uiState.isScanning,
+                    scanMode = uiState.scanMode,
                     isTorchEnabled = uiState.isTorchEnabled,
                     onBarcodeDetected = { barcode, format ->
                         onIntent(ScanIntent.OnBarcodeDetected(barcode, format))
+                    },
+                    onLabelPreviewFrame = { bitmap ->
+                        onIntent(ScanIntent.OnEprelLabelPreviewFrame(bitmap))
+                    },
+                    onLabelCaptureFailed = { message ->
+                        onIntent(ScanIntent.OnEprelLabelCaptureFailed(message))
                     },
                     onToggleTorch = { onIntent(ScanIntent.ToggleTorch) }
                 )
 
                 // Scan frame overlay
                 ScanFrameOverlay(
-                    isProcessing = uiState.isProcessing
+                    isProcessing = uiState.isProcessing,
+                    scanMode = uiState.scanMode,
+                    labelGuidance = uiState.labelGuidance
                 )
 
                 // Processing indicator
@@ -166,7 +179,7 @@ fun ScanScreen(
                     exit = fadeOut(),
                     modifier = Modifier.align(Alignment.Center)
                 ) {
-                    ProcessingOverlay()
+                    ProcessingOverlay(stage = uiState.processingStage)
                 }
 
                 // EPREL search button (bottom-left)
@@ -195,6 +208,58 @@ fun ScanScreen(
                                 text = stringResource(R.string.eprel_search),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
+
+                    Surface(
+                        onClick = {
+                            if (uiState.scanMode == ScanMode.EPREL_LABEL) {
+                                onIntent(ScanIntent.CancelEprelLabelGuidance)
+                            } else {
+                                onIntent(ScanIntent.StartEprelLabelGuidance)
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(20.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        color = if (uiState.scanMode == ScanMode.EPREL_LABEL) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.secondary
+                        },
+                        shadowElevation = 6.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = if (uiState.scanMode == ScanMode.EPREL_LABEL) Icons.Filled.Close else Icons.Filled.CameraAlt,
+                                contentDescription = null,
+                                tint = if (uiState.scanMode == ScanMode.EPREL_LABEL) {
+                                    MaterialTheme.colorScheme.onError
+                                } else {
+                                    MaterialTheme.colorScheme.onSecondary
+                                },
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(
+                                    if (uiState.scanMode == ScanMode.EPREL_LABEL) {
+                                        R.string.cancel_label_scan
+                                    } else {
+                                        R.string.read_energy_label
+                                    }
+                                ),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if (uiState.scanMode == ScanMode.EPREL_LABEL) {
+                                    MaterialTheme.colorScheme.onError
+                                } else {
+                                    MaterialTheme.colorScheme.onSecondary
+                                }
                             )
                         }
                     }
@@ -233,25 +298,54 @@ fun ScanScreen(
 @Composable
 private fun CameraPreviewContent(
     isScanning: Boolean,
+    scanMode: ScanMode,
     isTorchEnabled: Boolean,
     onBarcodeDetected: (String, com.wattson.domain.model.BarcodeFormat) -> Unit,
+    onLabelPreviewFrame: (android.graphics.Bitmap) -> Unit,
+    onLabelCaptureFailed: (String) -> Unit,
     onToggleTorch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val currentOnBarcodeDetected by rememberUpdatedState(onBarcodeDetected)
+    val currentOnLabelPreviewFrame by rememberUpdatedState(onLabelPreviewFrame)
+    val currentOnLabelCaptureFailed by rememberUpdatedState(onLabelCaptureFailed)
 
     var camera by remember { mutableStateOf<androidx.camera.core.Camera?>(null) }
+    val scanAnalyzer = remember {
+        ScanFrameAnalyzer(
+            onBarcodeDetected = { barcode, format ->
+                currentOnBarcodeDetected(barcode, format)
+            },
+            onLabelPreviewFrame = { bitmap ->
+                currentOnLabelPreviewFrame(bitmap)
+            },
+            onLabelCaptureFailed = { error ->
+                currentOnLabelCaptureFailed(error.message ?: "Label capture failed")
+            },
+            onError = { /* Ignore camera analysis errors silently */ }
+        )
+    }
 
     // Update torch state
     LaunchedEffect(isTorchEnabled) {
         camera?.cameraControl?.enableTorch(isTorchEnabled)
     }
 
+    LaunchedEffect(isScanning, scanMode) {
+        scanAnalyzer.setBarcodeScanningEnabled(isScanning && scanMode == ScanMode.BARCODE)
+    }
+
+    LaunchedEffect(scanMode) {
+        scanAnalyzer.setLabelPreviewEnabled(scanMode == ScanMode.EPREL_LABEL)
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             cameraExecutor.shutdown()
+            scanAnalyzer.close()
         }
     }
 
@@ -275,18 +369,12 @@ private fun CameraPreviewContent(
                             it.setSurfaceProvider(previewView.surfaceProvider)
                         }
 
-                    val barcodeAnalyzer = BarcodeAnalyzer(
-                        onBarcodeDetected = { barcode, format ->
-                            onBarcodeDetected(barcode, format)
-                        },
-                        onError = { /* Ignore errors silently */ }
-                    )
-
                     val imageAnalysis = ImageAnalysis.Builder()
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also { analysis ->
-                            analysis.setAnalyzer(cameraExecutor, barcodeAnalyzer)
+                            analysis.setAnalyzer(cameraExecutor, scanAnalyzer)
                         }
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -325,6 +413,8 @@ private fun CameraPreviewContent(
 @Composable
 private fun ScanFrameOverlay(
     isProcessing: Boolean,
+    scanMode: ScanMode,
+    labelGuidance: LabelGuidanceState,
     modifier: Modifier = Modifier
 ) {
     val overlayAlpha by animateFloatAsState(
@@ -342,39 +432,85 @@ private fun ScanFrameOverlay(
                 .background(Color.Black.copy(alpha = 0.4f))
         )
 
+        val frameColor = when {
+            isProcessing -> MaterialTheme.colorScheme.primary
+            scanMode == ScanMode.EPREL_LABEL && labelGuidance == LabelGuidanceState.Ready -> Color(0xFF35C759)
+            scanMode == ScanMode.EPREL_LABEL -> MaterialTheme.colorScheme.error
+            else -> Color.White
+        }
+
+        val frameSizeModifier = if (scanMode == ScanMode.EPREL_LABEL) {
+            Modifier.size(width = 250.dp, height = 470.dp)
+        } else {
+            Modifier.size(280.dp, 200.dp)
+        }
+
         // Scan frame (clear area)
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(280.dp, 200.dp)
+                .then(frameSizeModifier)
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.Transparent)
                 .border(
                     width = 3.dp,
-                    color = if (isProcessing) MaterialTheme.colorScheme.primary else Color.White,
+                    color = frameColor,
                     shape = RoundedCornerShape(16.dp)
                 )
         )
 
         // Instructions text
         if (!isProcessing) {
-            Text(
-                text = stringResource(R.string.place_barcode),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White,
-                textAlign = TextAlign.Center,
+            val instructionText = when (scanMode) {
+                ScanMode.BARCODE -> stringResource(R.string.place_barcode)
+                ScanMode.EPREL_LABEL -> when (labelGuidance) {
+                    LabelGuidanceState.Ready -> stringResource(R.string.label_scan_ready)
+                    LabelGuidanceState.Searching -> stringResource(R.string.label_scan_instruction)
+                    LabelGuidanceState.NotScannable -> stringResource(R.string.label_scan_not_ready)
+                    LabelGuidanceState.Hidden -> stringResource(R.string.label_scan_instruction)
+                }
+            }
+
+            val helperText = when (scanMode) {
+                ScanMode.BARCODE -> stringResource(R.string.scan_label_hint)
+                ScanMode.EPREL_LABEL -> stringResource(R.string.label_scan_helper)
+            }
+
+            Column(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(top = 280.dp)
-            )
+                    .padding(top = if (scanMode == ScanMode.EPREL_LABEL) 560.dp else 300.dp)
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = instructionText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = helperText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.88f),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun ProcessingOverlay(
+    stage: ScanProcessingStage?,
     modifier: Modifier = Modifier
 ) {
+    val messageRes = when (stage) {
+        ScanProcessingStage.OCR_LABEL -> R.string.reading_energy_label
+        ScanProcessingStage.SEARCH_PRODUCT, null -> R.string.searching_product
+    }
+
     Column(
         modifier = modifier
             .clip(WattsonCorners.Card)
@@ -391,7 +527,7 @@ private fun ProcessingOverlay(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.searching_product),
+            text = stringResource(messageRes),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White
         )
@@ -649,7 +785,7 @@ private fun ProcessingOverlayPreview() {
                 .background(Color.DarkGray),
             contentAlignment = Alignment.Center
         ) {
-            ProcessingOverlay()
+            ProcessingOverlay(stage = ScanProcessingStage.SEARCH_PRODUCT)
         }
     }
 }
