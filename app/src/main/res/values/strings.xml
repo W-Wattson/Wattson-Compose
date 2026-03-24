@@ -54,7 +54,13 @@
     <string name="flash_on">Turn on flash</string>
     <string name="flash_off">Turn off flash</string>
     <string name="place_barcode">Place barcode in the frame</string>
+    <string name="scan_label_hint">Or frame the full energy label and tap Read label</string>
     <string name="searching_product">Searching for product...</string>
+    <string name="reading_energy_label">Reading energy label...</string>
+    <string name="label_scan_instruction">Frame the full EPREL label inside the guide</string>
+    <string name="label_scan_not_ready">Label not fully readable yet</string>
+    <string name="label_scan_ready">Label detected, hold steady</string>
+    <string name="label_scan_helper">Keep the whole label visible, upright, and close enough for the QR and bottom text to stay sharp</string>
     <string name="camera_access_required">Camera access required</string>
     <string name="camera_access_description">To scan product barcodes, Wattson needs to access your camera.</string>
     <string name="allow_access">Allow access</string>
@@ -262,6 +268,8 @@
 
     <!-- EPREL Search -->
     <string name="eprel_search">EPREL ID</string>
+    <string name="read_energy_label">Read label</string>
+    <string name="cancel_label_scan">Cancel label scan</string>
     <string name="eprel_search_title">Search by EPREL ID</string>
     <string name="eprel_search_subtitle">Enter the EPREL product category and registration number to look up the energy label.</string>
     <string name="eprel_category">Product category</string>

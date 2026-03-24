@@ -1,9 +1,14 @@
 package com.wattson.ui.screens.scan
 
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.data.ocr.EprelIdParser
+import com.wattson.data.ocr.EprelLabelOcrService
 import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.BarcodeFormat
+import com.wattson.domain.model.ResolvedEprelProduct
 import com.wattson.domain.model.ScanResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,12 +20,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * UI State for the Scan screen.
- */
 data class ScanUiState(
     val isScanning: Boolean = false,
     val isProcessing: Boolean = false,
+    val processingStage: ScanProcessingStage? = null,
+    val scanMode: ScanMode = ScanMode.BARCODE,
+    val labelGuidance: LabelGuidanceState = LabelGuidanceState.Hidden,
     val hasCameraPermission: Boolean = false,
     val isTorchEnabled: Boolean = false,
     val lastScannedCode: String? = null,
@@ -30,9 +35,23 @@ data class ScanUiState(
     val showEprelDialog: Boolean = false
 )
 
-/**
- * One-shot events for scan screen.
- */
+enum class ScanProcessingStage {
+    OCR_LABEL,
+    SEARCH_PRODUCT
+}
+
+enum class ScanMode {
+    BARCODE,
+    EPREL_LABEL
+}
+
+sealed interface LabelGuidanceState {
+    data object Hidden : LabelGuidanceState
+    data object Searching : LabelGuidanceState
+    data object NotScannable : LabelGuidanceState
+    data object Ready : LabelGuidanceState
+}
+
 sealed interface ScanEvent {
     data class NavigateToProductDetail(val productId: String) : ScanEvent
     data object NavigateBack : ScanEvent
@@ -42,9 +61,6 @@ sealed interface ScanEvent {
     data object OpenAppSettings : ScanEvent
 }
 
-/**
- * User intents for scan screen.
- */
 sealed interface ScanIntent {
     data object StartScanning : ScanIntent
     data object StopScanning : ScanIntent
@@ -59,16 +75,17 @@ sealed interface ScanIntent {
     data object ShowEprelDialog : ScanIntent
     data object DismissEprelDialog : ScanIntent
     data class SearchByEprelId(val category: String, val registrationNumber: String) : ScanIntent
+    data object StartEprelLabelGuidance : ScanIntent
+    data object CancelEprelLabelGuidance : ScanIntent
+    data class OnEprelLabelPreviewFrame(val bitmap: Bitmap) : ScanIntent
+    data class OnEprelLabelCaptureFailed(val message: String) : ScanIntent
 }
 
-/**
- * ViewModel for the Scan screen.
- * Manages camera state and barcode detection.
- */
 @HiltViewModel
 class ScanViewModel @Inject constructor(
     private val productRepository: com.wattson.data.repository.ProductRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val eprelLabelOcrService: EprelLabelOcrService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScanUiState())
@@ -77,9 +94,9 @@ class ScanViewModel @Inject constructor(
     private val _events = MutableSharedFlow<ScanEvent>()
     val events = _events.asSharedFlow()
 
-    /**
-     * Process user intents.
-     */
+    private var lastRetryRequest: RetryRequest? = null
+    private var isEvaluatingLabelFrame = false
+
     fun onIntent(intent: ScanIntent) {
         when (intent) {
             is ScanIntent.StartScanning -> startScanning()
@@ -95,17 +112,25 @@ class ScanViewModel @Inject constructor(
             is ScanIntent.ShowEprelDialog -> showEprelDialog()
             is ScanIntent.DismissEprelDialog -> dismissEprelDialog()
             is ScanIntent.SearchByEprelId -> searchByEprelId(intent.category, intent.registrationNumber)
+            is ScanIntent.StartEprelLabelGuidance -> startEprelLabelGuidance()
+            is ScanIntent.CancelEprelLabelGuidance -> cancelEprelLabelGuidance()
+            is ScanIntent.OnEprelLabelPreviewFrame -> onEprelLabelPreviewFrame(intent.bitmap)
+            is ScanIntent.OnEprelLabelCaptureFailed -> onEprelLabelCaptureFailed(intent.message)
         }
     }
 
     private fun startScanning() {
         if (_uiState.value.hasCameraPermission) {
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
-                    isScanning = true, 
+                    isScanning = true,
+                    isProcessing = false,
+                    processingStage = null,
+                    scanMode = ScanMode.BARCODE,
+                    labelGuidance = LabelGuidanceState.Hidden,
                     errorMessage = null,
                     scanResult = null
-                ) 
+                )
             }
         } else {
             viewModelScope.launch {
@@ -119,82 +144,271 @@ class ScanViewModel @Inject constructor(
     }
 
     private fun onBarcodeDetected(barcode: String, format: BarcodeFormat) {
-        // Avoid processing the same barcode multiple times
+        if (_uiState.value.scanMode != ScanMode.BARCODE) {
+            return
+        }
+
         if (_uiState.value.isProcessing || _uiState.value.lastScannedCode == barcode) {
             return
         }
 
-        viewModelScope.launch {
-            _uiState.update { 
-                it.copy(
-                    isProcessing = true,
-                    lastScannedCode = barcode,
-                    isScanning = false
-                ) 
+        if (format == BarcodeFormat.QR_CODE) {
+            val eprelRegistrationNumber = EprelIdParser.extractFromQrPayload(barcode)
+            if (eprelRegistrationNumber != null) {
+                viewModelScope.launch {
+                    resolveAndNavigateEprel(
+                        registrationNumbers = listOf(eprelRegistrationNumber),
+                        preferredCategories = emptyList()
+                    )
+                }
+                return
             }
+        }
 
+        lastRetryRequest = RetryRequest.Barcode(barcode)
+        processBarcode(barcode)
+    }
+
+    private fun processBarcode(barcode: String) {
+        beginSearch(lastScannedCode = barcode)
+
+        viewModelScope.launch {
             try {
-                // Call real API via ProductRepository
                 val userId = authRepository.getCurrentUserId()
                 val scanResult = productRepository.scanProduct(userId, barcode)
 
-                if (scanResult is ScanResult.Success) {
-                    _uiState.update {
-                        it.copy(
-                            isProcessing = false,
-                            scanResult = scanResult
-                        )
+                when (scanResult) {
+                    is ScanResult.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                processingStage = null,
+                                scanResult = scanResult
+                            )
+                        }
+                        _events.emit(ScanEvent.NavigateToProductDetail(scanResult.product.gtin))
                     }
-                    // Navigate using GTIN (EAN) instead of internal ID for API lookup
-                    _events.emit(ScanEvent.NavigateToProductDetail(scanResult.product.gtin))
-                }
-                else if (scanResult is ScanResult.ProductNotFound) {
-                    _uiState.update {
-                        it.copy(
-                            isProcessing = false,
-                            errorMessage = "Produit non trouvé: $barcode",
-                            scanResult = scanResult
-                        )
-                    }
-                    _events.emit(ScanEvent.ShowProductNotFound(barcode))
-                }
-                else if (scanResult is ScanResult.NetworkError) {
-                    _uiState.update {
-                        it.copy(
-                            isProcessing = false,
-                            errorMessage = scanResult.message ?: "Erreur réseau",
-                            scanResult = scanResult
-                        )
-                    }
-                    _events.emit(ScanEvent.ShowError(scanResult.message ?: "Erreur réseau"))
-                }
-                else {
-                    // Handle other ScanResult types (DecodingFailed, CameraError)
-                    _uiState.update {
-                        it.copy(
-                            isProcessing = false,
-                            errorMessage = "Erreur inattendue: ${scanResult::class.simpleName}",
-                            scanResult = scanResult
-                        )
-                    }
-                }
 
+                    is ScanResult.ProductNotFound -> {
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                processingStage = null,
+                                errorMessage = "Produit non trouve: $barcode",
+                                scanResult = scanResult,
+                                isScanning = true
+                            )
+                        }
+                        _events.emit(ScanEvent.ShowProductNotFound(barcode))
+                    }
+
+                    is ScanResult.NetworkError -> {
+                        val errorMessage = scanResult.message ?: "Erreur reseau"
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                processingStage = null,
+                                errorMessage = errorMessage,
+                                scanResult = scanResult,
+                                isScanning = true
+                            )
+                        }
+                        _events.emit(ScanEvent.ShowError(errorMessage))
+                    }
+
+                    else -> {
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                processingStage = null,
+                                errorMessage = "Erreur inattendue",
+                                scanResult = scanResult,
+                                isScanning = true
+                            )
+                        }
+                    }
+                }
             } catch (e: Exception) {
-                android.util.Log.e("ScanViewModel", "Scan exception", e)
-                val errorMsg = e.message ?: e.javaClass.simpleName
+                Log.e("ScanViewModel", "Scan exception", e)
+                val errorMessage = e.message ?: e.javaClass.simpleName
                 _uiState.update {
                     it.copy(
                         isProcessing = false,
-                        errorMessage = errorMsg,
+                        processingStage = null,
+                        errorMessage = errorMessage,
                         scanResult = ScanResult.NetworkError(
                             gtin = barcode,
-                            message = errorMsg
-                        )
+                            message = errorMessage
+                        ),
+                        isScanning = true
                     )
                 }
-                _events.emit(ScanEvent.ShowError(errorMsg))
+                _events.emit(ScanEvent.ShowError(errorMessage))
             }
         }
+    }
+
+    private fun startEprelLabelGuidance() {
+        if (!_uiState.value.hasCameraPermission) {
+            requestPermission()
+            return
+        }
+
+        _uiState.update {
+            it.copy(
+                isScanning = true,
+                isProcessing = false,
+                processingStage = null,
+                scanMode = ScanMode.EPREL_LABEL,
+                labelGuidance = LabelGuidanceState.Searching,
+                errorMessage = null,
+                scanResult = null,
+                lastScannedCode = null
+            )
+        }
+    }
+
+    private fun cancelEprelLabelGuidance() {
+        isEvaluatingLabelFrame = false
+        _uiState.update {
+            it.copy(
+                scanMode = ScanMode.BARCODE,
+                labelGuidance = LabelGuidanceState.Hidden,
+                isProcessing = false,
+                processingStage = null,
+                errorMessage = null,
+                isScanning = it.hasCameraPermission
+            )
+        }
+    }
+
+    private fun onEprelLabelPreviewFrame(bitmap: Bitmap) {
+        if (_uiState.value.scanMode != ScanMode.EPREL_LABEL || _uiState.value.isProcessing || isEvaluatingLabelFrame) {
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+            return
+        }
+
+        isEvaluatingLabelFrame = true
+        viewModelScope.launch {
+            try {
+                val extractionResult = eprelLabelOcrService.extractRegistrationNumber(bitmap)
+                extractionResult.fold(
+                    onSuccess = { result ->
+                        _uiState.update { state ->
+                            state.copy(labelGuidance = LabelGuidanceState.Ready)
+                        }
+                        resolveAndNavigateEprel(
+                            registrationNumbers = result.candidateRegistrationNumbers,
+                            preferredCategories = result.preferredCategories
+                        )
+                    },
+                    onFailure = {
+                        if (_uiState.value.scanMode == ScanMode.EPREL_LABEL && !_uiState.value.isProcessing) {
+                            _uiState.update { state ->
+                                state.copy(labelGuidance = LabelGuidanceState.NotScannable)
+                            }
+                        }
+                    }
+                )
+            } finally {
+                isEvaluatingLabelFrame = false
+                if (!bitmap.isRecycled) {
+                    bitmap.recycle()
+                }
+            }
+        }
+    }
+
+    private fun onEprelLabelCaptureFailed(message: String) {
+        if (_uiState.value.scanMode == ScanMode.EPREL_LABEL) {
+            _uiState.update {
+                it.copy(
+                    labelGuidance = LabelGuidanceState.NotScannable,
+                    errorMessage = message
+                )
+            }
+        }
+    }
+
+    private suspend fun resolveAndNavigateEprel(
+        registrationNumbers: List<String>,
+        preferredCategories: List<String>
+    ) {
+        val normalizedCandidates = registrationNumbers
+            .mapNotNull { candidate -> candidate.filter(Char::isDigit).takeIf(EprelIdParser::isPlausibleRegistrationNumber) }
+            .distinct()
+
+        if (normalizedCandidates.isEmpty()) {
+            if (_uiState.value.scanMode == ScanMode.EPREL_LABEL) {
+                _uiState.update { it.copy(labelGuidance = LabelGuidanceState.NotScannable) }
+            } else {
+                showLabelReadError()
+            }
+            return
+        }
+
+        lastRetryRequest = RetryRequest.UnresolvedEprel(normalizedCandidates, preferredCategories)
+        beginSearch(lastScannedCode = normalizedCandidates.first())
+
+        var resolvedProduct: ResolvedEprelProduct? = null
+        for (registrationNumber in normalizedCandidates) {
+            val result = productRepository.resolveProductByEprelRegistrationNumber(
+                registrationNumber = registrationNumber,
+                preferredCategories = preferredCategories
+            )
+
+            if (result.isSuccess) {
+                resolvedProduct = result.getOrNull()
+                break
+            }
+        }
+
+        val resolved = resolvedProduct
+        if (resolved == null) {
+            _uiState.update {
+                it.copy(
+                    isProcessing = false,
+                    processingStage = null,
+                    errorMessage = "Produit EPREL non trouve",
+                    scanMode = ScanMode.EPREL_LABEL,
+                    labelGuidance = LabelGuidanceState.NotScannable,
+                    isScanning = it.hasCameraPermission
+                )
+            }
+            _events.emit(ScanEvent.ShowError("Produit EPREL non trouve"))
+            return
+        }
+
+        handleResolvedEprelProduct(resolved)
+    }
+
+    private suspend fun handleResolvedEprelProduct(resolved: ResolvedEprelProduct) {
+        lastRetryRequest = RetryRequest.ResolvedEprel(
+            category = resolved.category,
+            registrationNumber = resolved.registrationNumber
+        )
+
+        _uiState.update {
+            it.copy(
+                isProcessing = false,
+                processingStage = null,
+                scanMode = ScanMode.BARCODE,
+                labelGuidance = LabelGuidanceState.Hidden,
+                scanResult = ScanResult.Success(product = resolved.product, isNewProduct = false)
+            )
+        }
+
+        try {
+            val userId = authRepository.getCurrentUserId()
+            productRepository.registerEprelScan(userId, resolved.category, resolved.registrationNumber)
+        } catch (e: Exception) {
+            Log.w("ScanViewModel", "Failed to register EPREL scan in history", e)
+        }
+
+        val productId = "eprel:${resolved.category}/${resolved.registrationNumber}"
+        _events.emit(ScanEvent.NavigateToProductDetail(productId))
     }
 
     private fun onCameraPermissionResult(granted: Boolean) {
@@ -212,12 +426,15 @@ class ScanViewModel @Inject constructor(
     }
 
     private fun dismissError() {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 errorMessage = null,
                 scanResult = null,
-                lastScannedCode = null
-            ) 
+                lastScannedCode = null,
+                isProcessing = false,
+                processingStage = null,
+                isScanning = it.hasCameraPermission
+            )
         }
     }
 
@@ -240,12 +457,41 @@ class ScanViewModel @Inject constructor(
     }
 
     private fun retryLastScan() {
-        val lastCode = _uiState.value.lastScannedCode
-        if (lastCode != null) {
-            _uiState.update { it.copy(lastScannedCode = null) }
-            onBarcodeDetected(lastCode, BarcodeFormat.EAN_13)
-        } else {
-            startScanning()
+        when (val retryRequest = lastRetryRequest) {
+            is RetryRequest.Barcode -> {
+                _uiState.update { it.copy(lastScannedCode = null) }
+                processBarcode(retryRequest.barcode)
+            }
+
+            is RetryRequest.ResolvedEprel -> {
+                _uiState.update { it.copy(lastScannedCode = null) }
+                searchByEprelId(retryRequest.category, retryRequest.registrationNumber)
+            }
+
+            is RetryRequest.UnresolvedEprel -> {
+                _uiState.update { it.copy(lastScannedCode = null) }
+                beginSearch()
+                viewModelScope.launch {
+                    resolveAndNavigateEprel(
+                        registrationNumbers = retryRequest.registrationNumbers,
+                        preferredCategories = retryRequest.preferredCategories
+                    )
+                }
+            }
+
+            null -> {
+                if (_uiState.value.scanMode == ScanMode.EPREL_LABEL) {
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = null,
+                            labelGuidance = LabelGuidanceState.Searching,
+                            isScanning = it.hasCameraPermission
+                        )
+                    }
+                } else {
+                    startScanning()
+                }
+            }
         }
     }
 
@@ -260,53 +506,42 @@ class ScanViewModel @Inject constructor(
     private fun searchByEprelId(category: String, registrationNumber: String) {
         if (_uiState.value.isProcessing) return
 
-        _uiState.update {
-            it.copy(
-                showEprelDialog = false,
-                isProcessing = true,
-                errorMessage = null,
-                lastScannedCode = "$category/$registrationNumber"
-            )
-        }
+        lastRetryRequest = RetryRequest.ResolvedEprel(category, registrationNumber)
+        beginSearch(lastScannedCode = "$category/$registrationNumber", closeDialog = true)
 
         viewModelScope.launch {
             try {
                 val result = productRepository.getProductByEprelId(category, registrationNumber)
                 result.fold(
                     onSuccess = { product ->
-                        _uiState.update {
-                            it.copy(
-                                isProcessing = false,
-                                scanResult = ScanResult.Success(product = product, isNewProduct = false)
+                        handleResolvedEprelProduct(
+                            ResolvedEprelProduct(
+                                category = category,
+                                registrationNumber = registrationNumber,
+                                product = product
                             )
-                        }
-                        // Register the EPREL scan in history
-                        try {
-                            val userId = authRepository.getCurrentUserId()
-                            productRepository.registerEprelScan(userId, category, registrationNumber)
-                        } catch (e: Exception) {
-                            android.util.Log.w("ScanViewModel", "Failed to register EPREL scan in history", e)
-                        }
-                        // Navigate using EPREL identifier (gtin is synthetic "0000000000000")
-                        val productId = "eprel:$category/$registrationNumber"
-                        _events.emit(ScanEvent.NavigateToProductDetail(productId))
+                        )
                     },
-                    onFailure = { error ->
+                    onFailure = {
                         _uiState.update {
                             it.copy(
                                 isProcessing = false,
-                                errorMessage = "Produit EPREL non trouvé: $category/$registrationNumber"
+                                processingStage = null,
+                                errorMessage = "Produit EPREL non trouve: $category/$registrationNumber",
+                                isScanning = it.hasCameraPermission
                             )
                         }
-                        _events.emit(ScanEvent.ShowError("Produit EPREL non trouvé"))
+                        _events.emit(ScanEvent.ShowError("Produit EPREL non trouve"))
                     }
                 )
             } catch (e: Exception) {
-                android.util.Log.e("ScanViewModel", "EPREL search error", e)
+                Log.e("ScanViewModel", "EPREL search error", e)
                 _uiState.update {
                     it.copy(
                         isProcessing = false,
-                        errorMessage = e.message ?: "Erreur de recherche EPREL"
+                        processingStage = null,
+                        errorMessage = e.message ?: "Erreur de recherche EPREL",
+                        isScanning = it.hasCameraPermission
                     )
                 }
                 _events.emit(ScanEvent.ShowError(e.message ?: "Erreur de recherche EPREL"))
@@ -314,11 +549,40 @@ class ScanViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Called when the screen is first displayed.
-     * Checks camera permission status.
-     */
-    fun onScreenVisible() {
-        // Permission will be checked by the composable and result sent via intent
+    private fun beginSearch(
+        lastScannedCode: String? = null,
+        closeDialog: Boolean = false
+    ) {
+        _uiState.update {
+            it.copy(
+                showEprelDialog = if (closeDialog) false else it.showEprelDialog,
+                isScanning = false,
+                isProcessing = true,
+                processingStage = if (it.scanMode == ScanMode.EPREL_LABEL) ScanProcessingStage.OCR_LABEL else ScanProcessingStage.SEARCH_PRODUCT,
+                errorMessage = null,
+                scanResult = null,
+                lastScannedCode = lastScannedCode ?: it.lastScannedCode
+            )
+        }
+    }
+
+    private fun showLabelReadError() {
+        _uiState.update {
+            it.copy(
+                isProcessing = false,
+                processingStage = null,
+                errorMessage = "Impossible de lire l'identifiant EPREL. Recadrez l'etiquette ou utilisez la recherche manuelle.",
+                isScanning = it.hasCameraPermission
+            )
+        }
+    }
+
+    sealed interface RetryRequest {
+        data class Barcode(val barcode: String) : RetryRequest
+        data class ResolvedEprel(val category: String, val registrationNumber: String) : RetryRequest
+        data class UnresolvedEprel(
+            val registrationNumbers: List<String>,
+            val preferredCategories: List<String>
+        ) : RetryRequest
     }
 }
