@@ -10,6 +10,8 @@ import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
 import com.wattson.domain.model.UserPreferences
 import com.wattson.domain.model.getDocumentLimit
+import com.wattson.ui.i18n.AppLanguage
+import com.wattson.ui.i18n.AppLanguageManager
 import com.wattson.ui.i18n.UiText
 import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +36,8 @@ data class AccountUiState(
     val showLogoutConfirmation: Boolean = false,
     val showDeleteAccountConfirmation: Boolean = false,
     val isDeletingAccount: Boolean = false,
-    val isUpdatingPreferences: Boolean = false
+    val isUpdatingPreferences: Boolean = false,
+    val currentLanguage: AppLanguage = AppLanguage.ENGLISH
 )
 
 sealed interface AccountEvent {
@@ -57,13 +60,15 @@ sealed interface AccountIntent {
     data object RequestDeleteAccount : AccountIntent
     data object ConfirmDeleteAccount : AccountIntent
     data object CancelDeleteAccount : AccountIntent
+    data class ChangeLanguage(val language: AppLanguage) : AccountIntent
     data object DismissError : AccountIntent
 }
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val api: WattsonApi
+    private val api: WattsonApi,
+    private val appLanguageManager: AppLanguageManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -75,6 +80,7 @@ class AccountViewModel @Inject constructor(
     init {
         loadProfile()
         observeUserChanges()
+        observeCurrentLanguage()
     }
 
     private fun observeUserChanges() {
@@ -106,7 +112,16 @@ class AccountViewModel @Inject constructor(
             is AccountIntent.RequestDeleteAccount -> requestDeleteAccount()
             is AccountIntent.ConfirmDeleteAccount -> confirmDeleteAccount()
             is AccountIntent.CancelDeleteAccount -> cancelDeleteAccount()
+            is AccountIntent.ChangeLanguage -> changeLanguage(intent.language)
             is AccountIntent.DismissError -> dismissError()
+        }
+    }
+
+    private fun observeCurrentLanguage() {
+        viewModelScope.launch {
+            appLanguageManager.currentLanguage.collect { language ->
+                _uiState.update { it.copy(currentLanguage = language) }
+            }
         }
     }
 
@@ -322,6 +337,10 @@ class AccountViewModel @Inject constructor(
 
     private fun cancelDeleteAccount() {
         _uiState.update { it.copy(showDeleteAccountConfirmation = false) }
+    }
+
+    private fun changeLanguage(language: AppLanguage) {
+        appLanguageManager.setLanguage(language)
     }
 
     private fun dismissError() {
