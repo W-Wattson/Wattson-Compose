@@ -61,6 +61,7 @@
     <string name="label_scan_not_ready">Label not fully readable yet</string>
     <string name="label_scan_ready">Label detected, hold steady</string>
     <string name="label_scan_helper">Keep the whole label visible, upright, and close enough for the QR and bottom text to stay sharp</string>
+    <string name="label_scan_capture_failed">Unable to read the EPREL label. Reframe it or use manual search.</string>
     <string name="camera_access_required">Camera access required</string>
     <string name="camera_access_description">To scan product barcodes, Wattson needs to access your camera.</string>
     <string name="allow_access">Allow access</string>

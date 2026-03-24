@@ -119,7 +119,7 @@ fun WattsonNavHost(
                                 viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
                             } catch (e: GoogleAuthException) {
                                 android.util.Log.w("WattsonNavGraph", "Google Sign-In failed", e)
-                                viewModel.handleGoogleSignInError(e.message ?: "Erreur Google Sign-In")
+                                viewModel.handleGoogleSignInError(e.uiText)
                             }
                         }
                         else -> { /* Handle other events */ }
@@ -161,8 +161,7 @@ fun WattsonNavHost(
                                 val idToken = googleAuthManager.getGoogleIdToken(context)
                                 viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
                             } catch (e: GoogleAuthException) {
-                                viewModel.onIntent(AuthIntent.ClearErrors)
-                                // Error is shown via ShowError event from ViewModel
+                                viewModel.handleGoogleSignInError(e.uiText)
                             }
                         }
                         else -> { /* Handle other events */ }
@@ -182,8 +181,7 @@ fun WattsonNavHost(
                 onLoginWithGoogle = { viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE)) },
                 onNavigateToRegister = {
                     navController.navigate(WattsonRoute.Register)
-                },
-                onAutoFillTestUser = { viewModel.onIntent(AuthIntent.AutoFillTestUser) }
+                }
             )
         }
         
@@ -211,7 +209,7 @@ fun WattsonNavHost(
                                 viewModel.onIntent(AuthIntent.GoogleIdTokenReceived(idToken))
                             } catch (e: GoogleAuthException) {
                                 android.util.Log.w("WattsonNavGraph", "Google Sign-In failed", e)
-                                viewModel.handleGoogleSignInError(e.message ?: "Erreur Google Sign-In")
+                                viewModel.handleGoogleSignInError(e.uiText)
                             }
                         }
                         else -> { /* Handle other events */ }

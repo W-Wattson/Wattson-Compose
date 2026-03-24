@@ -2,16 +2,14 @@ package com.wattson.ui.screens.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.ProductRepository
-import com.wattson.domain.model.EnergyClass
 import com.wattson.domain.model.HistoryEntry
 import com.wattson.domain.model.HistoryFilter
 import com.wattson.domain.model.HistorySortOrder
-import com.wattson.domain.model.Product
-import com.wattson.domain.model.ProductCategory
-import com.wattson.domain.model.Scan
-import com.wattson.domain.model.ScanSnapshot
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,12 +18,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 import javax.inject.Inject
 
-/**
- * UI State for the History screen.
- */
 data class HistoryUiState(
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
@@ -34,26 +28,20 @@ data class HistoryUiState(
     val filteredEntries: List<HistoryEntry> = emptyList(),
     val filter: HistoryFilter = HistoryFilter(),
     val sortOrder: HistorySortOrder = HistorySortOrder.DATE_DESC,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val isEmpty: Boolean = false,
     val currentPage: Int = 0,
     val hasMorePages: Boolean = false,
     val totalScans: Long = 0
 )
 
-/**
- * One-shot events for history screen.
- */
 sealed interface HistoryEvent {
     data class NavigateToProductDetail(val productId: String) : HistoryEvent
     data object NavigateToScan : HistoryEvent
-    data class ShowError(val message: String) : HistoryEvent
-    data class ShowSnackbar(val message: String) : HistoryEvent
+    data class ShowError(val message: UiText) : HistoryEvent
+    data class ShowSnackbar(val message: UiText) : HistoryEvent
 }
 
-/**
- * User intents for history screen.
- */
 sealed interface HistoryIntent {
     data class UpdateSearchQuery(val query: String) : HistoryIntent
     data object ClearSearch : HistoryIntent
@@ -65,10 +53,6 @@ sealed interface HistoryIntent {
     data class UpdateSortOrder(val sortOrder: HistorySortOrder) : HistoryIntent
 }
 
-/**
- * ViewModel for the History screen.
- * Manages the list of scanned products and search/filter functionality.
- */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val productRepository: ProductRepository,
@@ -87,9 +71,6 @@ class HistoryViewModel @Inject constructor(
         loadHistory()
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: HistoryIntent) {
         when (intent) {
             is HistoryIntent.UpdateSearchQuery -> updateSearchQuery(intent.query)
@@ -120,15 +101,18 @@ class HistoryViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { scans ->
                         android.util.Log.d("HistoryViewModel", "Loaded ${scans.size} scans from API")
-                        val entries = scans.map { scan ->
-                            HistoryEntry(scan = scan, product = null)
-                        }
+                        val entries = scans.map { scan -> HistoryEntry(scan = scan, product = null) }
 
                         _uiState.update { state ->
                             state.copy(
                                 isLoading = false,
                                 historyEntries = entries,
-                                filteredEntries = applyFilters(entries, state.searchQuery, state.filter, state.sortOrder),
+                                filteredEntries = applyFilters(
+                                    entries,
+                                    state.searchQuery,
+                                    state.filter,
+                                    state.sortOrder
+                                ),
                                 isEmpty = entries.isEmpty(),
                                 currentPage = 0,
                                 hasMorePages = scans.size >= pageSize,
@@ -136,15 +120,14 @@ class HistoryViewModel @Inject constructor(
                             )
                         }
                     },
-                    onFailure = { error ->
-                        android.util.Log.e("HistoryViewModel", "Failed to load history", error)
+                    onFailure = {
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 historyEntries = emptyList(),
                                 filteredEntries = emptyList(),
                                 isEmpty = true,
-                                errorMessage = null // Don't show error, just empty list
+                                errorMessage = null
                             )
                         }
                     }
@@ -164,7 +147,9 @@ class HistoryViewModel @Inject constructor(
 
     private fun loadMoreHistory() {
         val currentState = _uiState.value
-        if (currentState.isLoadingMore || !currentState.hasMorePages) return
+        if (currentState.isLoadingMore || !currentState.hasMorePages) {
+            return
+        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingMore = true) }
@@ -181,16 +166,19 @@ class HistoryViewModel @Inject constructor(
 
                 result.fold(
                     onSuccess = { scans ->
-                        val newEntries = scans.map { scan ->
-                            HistoryEntry(scan = scan, product = null)
-                        }
+                        val newEntries = scans.map { scan -> HistoryEntry(scan = scan, product = null) }
                         val allEntries = currentState.historyEntries + newEntries
 
                         _uiState.update { state ->
                             state.copy(
                                 isLoadingMore = false,
                                 historyEntries = allEntries,
-                                filteredEntries = applyFilters(allEntries, state.searchQuery, state.filter, state.sortOrder),
+                                filteredEntries = applyFilters(
+                                    allEntries,
+                                    state.searchQuery,
+                                    state.filter,
+                                    state.sortOrder
+                                ),
                                 currentPage = nextPage,
                                 hasMorePages = scans.size >= pageSize
                             )
@@ -198,10 +186,14 @@ class HistoryViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(isLoadingMore = false) }
-                        _events.emit(HistoryEvent.ShowError("Erreur: ${error.message}"))
+                        _events.emit(
+                            HistoryEvent.ShowError(
+                                error.toUiTextOr(UiText.StringResource(R.string.error_loading_generic))
+                            )
+                        )
                     }
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.update { it.copy(isLoadingMore = false) }
             }
         }
@@ -237,20 +229,14 @@ class HistoryViewModel @Inject constructor(
     private fun updateFilter(filter: HistoryFilter) {
         _uiState.update { state ->
             val filtered = applyFilters(state.historyEntries, state.searchQuery, filter, state.sortOrder)
-            state.copy(
-                filter = filter,
-                filteredEntries = filtered
-            )
+            state.copy(filter = filter, filteredEntries = filtered)
         }
     }
 
     private fun updateSortOrder(sortOrder: HistorySortOrder) {
         _uiState.update { state ->
             val filtered = applyFilters(state.historyEntries, state.searchQuery, state.filter, sortOrder)
-            state.copy(
-                sortOrder = sortOrder,
-                filteredEntries = filtered
-            )
+            state.copy(sortOrder = sortOrder, filteredEntries = filtered)
         }
     }
 
@@ -262,31 +248,27 @@ class HistoryViewModel @Inject constructor(
     ): List<HistoryEntry> {
         var result = entries
 
-        // Apply search query
         if (query.isNotBlank()) {
             val lowerQuery = query.lowercase()
             result = result.filter { entry ->
                 entry.displayName.lowercase().contains(lowerQuery) ||
-                entry.displayBrand.lowercase().contains(lowerQuery) ||
-                entry.displayModel?.lowercase()?.contains(lowerQuery) == true ||
-                entry.scan.gtin.contains(lowerQuery)
+                    entry.displayBrand.lowercase().contains(lowerQuery) ||
+                    entry.displayModel?.lowercase()?.contains(lowerQuery) == true ||
+                    entry.scan.gtin.contains(lowerQuery)
             }
         }
 
-        // Apply category filter
         if (filter.categories.isNotEmpty()) {
             result = result.filter { it.scan.snapshotData.category in filter.categories }
         }
 
-        // Apply energy class filter
         if (filter.energyClasses.isNotEmpty()) {
             result = result.filter { entry ->
                 entry.displayEnergyClass?.let { it in filter.energyClasses } ?: false
             }
         }
 
-        // Apply sorting
-        result = when (sortOrder) {
+        return when (sortOrder) {
             HistorySortOrder.DATE_DESC -> result.sortedByDescending { it.scannedAt }
             HistorySortOrder.DATE_ASC -> result.sortedBy { it.scannedAt }
             HistorySortOrder.NAME_ASC -> result.sortedBy { it.displayName }
@@ -294,7 +276,5 @@ class HistoryViewModel @Inject constructor(
             HistorySortOrder.ENERGY_BEST -> result.sortedBy { it.displayEnergyClass?.ordinal ?: Int.MAX_VALUE }
             HistorySortOrder.REPAIRABILITY -> result.sortedByDescending { it.displayRepairabilityIndex ?: 0.0 }
         }
-
-        return result
     }
 }

@@ -30,20 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wattson.ui.theme.WattsonColors
+import com.wattson.R
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 
-/**
- * Standard Wattson text field with consistent styling
- * Follows Material 3 OutlinedTextField with custom Wattson colors
- */
 @Composable
 fun WattsonTextField(
     value: String,
@@ -71,7 +68,9 @@ fun WattsonTextField(
             label = { Text(label) },
             placeholder = if (placeholder.isNotEmpty()) {
                 { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            } else null,
+            } else {
+                null
+            },
             enabled = enabled,
             isError = isError,
             leadingIcon = leadingIcon?.let { icon ->
@@ -79,7 +78,11 @@ fun WattsonTextField(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isError) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                 }
             },
@@ -92,7 +95,11 @@ fun WattsonTextField(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (isError) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
                     }
                 }
@@ -121,19 +128,16 @@ fun WattsonTextField(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier
-                )
+                .then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier)
         )
 
-        // Error message
         AnimatedVisibility(
             visible = isError && !errorMessage.isNullOrBlank(),
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             Text(
-                text = errorMessage ?: "",
+                text = errorMessage.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -142,10 +146,6 @@ fun WattsonTextField(
     }
 }
 
-/**
- * Password text field with visibility toggle
- * Used for login and registration forms
- */
 @Composable
 fun WattsonPasswordField(
     value: String,
@@ -169,7 +169,9 @@ fun WattsonPasswordField(
             label = { Text(label) },
             placeholder = if (placeholder.isNotEmpty()) {
                 { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            } else null,
+            } else {
+                null
+            },
             enabled = enabled,
             isError = isError,
             visualTransformation = if (passwordVisible) {
@@ -189,11 +191,15 @@ fun WattsonPasswordField(
                             Icons.Default.Visibility
                         },
                         contentDescription = if (passwordVisible) {
-                            "Masquer le mot de passe"
+                            stringResource(R.string.hide_password)
                         } else {
-                            "Afficher le mot de passe"
+                            stringResource(R.string.show_password)
                         },
-                        tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isError) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                 }
             },
@@ -201,9 +207,7 @@ fun WattsonPasswordField(
                 keyboardType = KeyboardType.Password,
                 imeAction = imeAction
             ),
-            keyboardActions = KeyboardActions(
-                onDone = { onImeAction() }
-            ),
+            keyboardActions = KeyboardActions(onDone = { onImeAction() }),
             singleLine = true,
             shape = WattsonCorners.TextField,
             colors = OutlinedTextFieldDefaults.colors(
@@ -218,19 +222,16 @@ fun WattsonPasswordField(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier
-                )
+                .then(focusRequester?.let { Modifier.focusRequester(it) } ?: Modifier)
         )
 
-        // Error message
         AnimatedVisibility(
             visible = isError && !errorMessage.isNullOrBlank(),
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             Text(
-                text = errorMessage ?: "",
+                text = errorMessage.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -239,33 +240,29 @@ fun WattsonPasswordField(
     }
 }
 
-/**
- * Search bar with clear button
- * Used in History and Documents screens
- */
 @Composable
 fun WattsonSearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Rechercher",
+    placeholder: String = "",
     onSearch: () -> Unit = {},
     enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { 
+        placeholder = {
             Text(
                 text = placeholder,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
-            ) 
+            )
         },
         enabled = enabled,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Rechercher",
+                contentDescription = stringResource(R.string.search_hint),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
@@ -274,19 +271,19 @@ fun WattsonSearchBar(
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = "Effacer",
+                        contentDescription = stringResource(R.string.clear),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-        } else null,
+        } else {
+            null
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
         ),
-        keyboardActions = KeyboardActions(
-            onSearch = { onSearch() }
-        ),
+        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
         singleLine = true,
         shape = WattsonCorners.SearchBar,
         colors = OutlinedTextFieldDefaults.colors(
@@ -301,8 +298,6 @@ fun WattsonSearchBar(
     )
 }
 
-// ===== PREVIEWS =====
-
 @Preview(showBackground = true)
 @Composable
 private fun WattsonTextFieldPreview() {
@@ -310,8 +305,8 @@ private fun WattsonTextFieldPreview() {
         WattsonTextField(
             value = "",
             onValueChange = {},
-            label = "Email",
-            placeholder = "exemple@email.com"
+            label = stringResource(R.string.email),
+            placeholder = stringResource(R.string.placeholder_email_example)
         )
     }
 }
@@ -321,9 +316,9 @@ private fun WattsonTextFieldPreview() {
 private fun WattsonPasswordFieldPreview() {
     WattsonPreviewTheme {
         WattsonPasswordField(
-            value = "password123",
+            value = stringResource(R.string.placeholder_password_example),
             onValueChange = {},
-            label = "Mot de passe"
+            label = stringResource(R.string.password)
         )
     }
 }
@@ -335,7 +330,7 @@ private fun WattsonSearchBarPreview() {
         WattsonSearchBar(
             value = "",
             onValueChange = {},
-            placeholder = "Rechercher un produit"
+            placeholder = stringResource(R.string.search_product_placeholder)
         )
     }
 }
@@ -347,9 +342,9 @@ private fun WattsonTextFieldErrorPreview() {
         WattsonTextField(
             value = "invalid",
             onValueChange = {},
-            label = "Email",
+            label = stringResource(R.string.email),
             isError = true,
-            errorMessage = "Format d'email invalide"
+            errorMessage = stringResource(R.string.validation_email_format_invalid)
         )
     }
 }

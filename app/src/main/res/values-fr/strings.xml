@@ -63,6 +63,7 @@
     <string name="label_scan_not_ready">L\'etiquette n\'est pas encore assez lisible</string>
     <string name="label_scan_ready">Etiquette detectee, ne bougez plus</string>
     <string name="label_scan_helper">Gardez toute l\'etiquette visible, bien droite et assez proche pour que le QR code et le texte du bas restent nets</string>
+    <string name="label_scan_capture_failed">Impossible de lire l\'identifiant EPREL. Recadrez l\'etiquette ou utilisez la recherche manuelle.</string>
     <string name="camera_access_required">Accès à la caméra requis</string>
     <string name="camera_access_description">Pour scanner les codes-barres des produits, Wattson a besoin d\'accéder à votre caméra.</string>
     <string name="allow_access">Autoriser l\'accès</string>

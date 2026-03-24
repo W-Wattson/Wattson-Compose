@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="history_results_count">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
+
+    <plurals name="doc_detail_warranty_days_remaining">
+        <item quantity="one">%1$d day remaining</item>
+        <item quantity="other">%1$d days remaining</item>
+    </plurals>
+</resources>

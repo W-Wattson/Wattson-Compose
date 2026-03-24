@@ -33,10 +33,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wattson.R
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.wattson.domain.model.EnergyClass
@@ -45,10 +47,13 @@ import com.wattson.domain.model.Product
 import com.wattson.domain.model.ProductCategory
 import com.wattson.domain.model.Scan
 import com.wattson.domain.model.ScanSnapshot
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
+import java.text.NumberFormat
 import java.time.Instant
+import java.util.Locale
 
 /**
  * Card used in the history list that shows product brand/model with repairability and energy indicators.
@@ -179,8 +184,12 @@ fun ProductCardCompact(
                 }
 
                 repairabilityIndex?.let {
+                    val scoreText = NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+                        minimumFractionDigits = 1
+                        maximumFractionDigits = 1
+                    }.format(it)
                     Text(
-                        text = "Réparabilité: ${String.format("%.1f", it)}/10",
+                        text = stringResource(R.string.repairability_inline_value, scoreText),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -217,7 +226,7 @@ fun ProductThumbnail(
                     .data(imageUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Image produit",
+                contentDescription = stringResource(R.string.product_image_content_description),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
             )
@@ -225,7 +234,10 @@ fun ProductThumbnail(
             // Fallback to category icon
             Icon(
                 imageVector = getCategoryIcon(category),
-                contentDescription = category.name,
+                contentDescription = stringResource(
+                    R.string.product_category_content_description,
+                    stringResource(category.labelResId())
+                ),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(28.dp)
             )
@@ -253,8 +265,8 @@ fun getCategoryIcon(category: ProductCategory): ImageVector {
  */
 @Composable
 fun ProductListEmptyState(
-    message: String = "Aucun produit scanné",
-    subMessage: String = "Scannez un produit pour commencer",
+    message: String = stringResource(R.string.product_empty_state_title),
+    subMessage: String = stringResource(R.string.product_empty_state_subtitle),
     modifier: Modifier = Modifier
 ) {
     Column(

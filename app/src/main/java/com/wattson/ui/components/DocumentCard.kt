@@ -50,11 +50,14 @@ import com.wattson.domain.model.Document
 import com.wattson.domain.model.DocumentMetadata
 import com.wattson.domain.model.DocumentType
 import com.wattson.domain.model.ProductCategory
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 /**
  * Card component displaying a document thumbnail, metadata, and quick actions for the documents list.
@@ -101,7 +104,9 @@ fun DocumentCard(
                 // Category label
                 if (document.productCategory.name != "OTHER") {
                     Text(
-                        text = document.productCategory.name.uppercase(),
+                        text = stringResource(document.productCategory.labelResId()).uppercase(
+                            Locale.getDefault()
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -125,7 +130,8 @@ fun DocumentCard(
                 // Date
                 Text(
                     text = document.documentDate.format(
-                        DateTimeFormatter.ofPattern("dd MMM yyyy")
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                            .withLocale(Locale.getDefault())
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -186,12 +192,7 @@ fun DocumentTypeTag(
         DocumentType.OTHER -> MaterialTheme.colorScheme.onSurfaceVariant to WattsonColors.White
     }
 
-    val label = when (type) {
-        DocumentType.FACTURE -> stringResource(R.string.type_invoice)
-        DocumentType.GARANTIE -> stringResource(R.string.type_warranty)
-        DocumentType.MANUEL -> stringResource(R.string.type_manual)
-        DocumentType.OTHER -> stringResource(R.string.type_other)
-    }
+    val label = stringResource(type.labelResId())
 
     Surface(
         modifier = modifier,
@@ -306,9 +307,9 @@ fun DocumentYearHeader(
             }
 
             Text(
-                text = if (isExpanded) "−" else "+",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Light,
+                text = if (isExpanded) stringResource(R.string.collapse) else stringResource(R.string.expand),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
                 color = if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

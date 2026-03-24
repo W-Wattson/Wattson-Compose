@@ -66,6 +66,8 @@ import com.wattson.ui.components.WattsonOAuthButton
 import com.wattson.ui.components.WattsonPageTitle
 import com.wattson.ui.components.WattsonPasswordField
 import com.wattson.ui.components.WattsonTextField
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonTheme
 import kotlinx.coroutines.delay
@@ -85,7 +87,6 @@ fun LoginScreen(
     onLoginWithGoogle: () -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onAutoFillTestUser: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -141,9 +142,9 @@ fun LoginScreen(
                             value = uiState.email,
                             onValueChange = onEmailChange,
                             label = stringResource(id = R.string.email),
-                            placeholder = "test@wattson.com",
+                            placeholder = stringResource(R.string.placeholder_email_example),
                             isError = uiState.emailError != null,
-                            errorMessage = uiState.emailError,
+                            errorMessage = uiState.emailError?.asString(),
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next,
                             modifier = Modifier.fillMaxWidth()
@@ -156,9 +157,9 @@ fun LoginScreen(
                             value = uiState.password,
                             onValueChange = onPasswordChange,
                             label = stringResource(id = R.string.password),
-                            placeholder = "Password123!",
+                            placeholder = stringResource(R.string.placeholder_password_example),
                             isError = uiState.passwordError != null,
-                            errorMessage = uiState.passwordError,
+                            errorMessage = uiState.passwordError?.asString(),
                             imeAction = ImeAction.Done,
                             onImeAction = onLogin,
                             modifier = Modifier.fillMaxWidth()
@@ -486,9 +487,12 @@ private fun LoginScreenWithErrorPreview() {
         LoginScreen(
             uiState = AuthUiState(
                 email = "invalid-email",
-                emailError = "Invalid email format",
+                emailError = UiText.StringResource(R.string.validation_email_format_invalid),
                 password = "123",
-                passwordError = "Password must be at least 8 characters"
+                passwordError = UiText.StringResource(
+                    R.string.validation_password_min_length,
+                    AuthViewModel.MIN_PASSWORD_LENGTH
+                )
             ),
             onEmailChange = {},
             onPasswordChange = {},

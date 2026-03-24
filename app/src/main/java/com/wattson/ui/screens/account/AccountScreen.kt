@@ -34,12 +34,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +65,8 @@ import com.wattson.domain.model.PreferenceType
 import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
 import com.wattson.domain.model.UserPreferences
+import com.wattson.ui.i18n.asString
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
@@ -80,6 +86,9 @@ fun AccountScreen(
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
     // Handle events
     LaunchedEffect(Unit) {
         events.collectLatest { event ->
@@ -89,33 +98,41 @@ fun AccountScreen(
                 is AccountEvent.LogoutSuccess -> { /* Handled by NavigateToLogin */ }
                 is AccountEvent.AccountDeleted -> { /* Handled by NavigateToLogin */ }
                 is AccountEvent.PreferencesUpdated -> { /* Could show snackbar */ }
-                is AccountEvent.ShowError -> { /* Could show snackbar */ }
+                is AccountEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
             }
         }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        when {
-            uiState.isLoading && uiState.user == null -> {
-                LoadingState()
-            }
-            uiState.user != null -> {
-                AccountContent(
-                    user = uiState.user,
-                    preferences = uiState.preferences,
-                    isPremium = uiState.isPremium,
-                    documentCount = uiState.documentCount,
-                    documentLimit = uiState.documentLimit,
-                    isDeletingAccount = uiState.isDeletingAccount,
-                    onPreferenceReorder = { onIntent(AccountIntent.UpdatePreferenceOrder(it)) },
-                    onPremiumClick = { onIntent(AccountIntent.NavigateToPremium) },
-                    onLogoutClick = { onIntent(AccountIntent.RequestLogout) },
-                    onDeleteAccountClick = { onIntent(AccountIntent.RequestDeleteAccount) }
-                )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
+        ) {
+            when {
+                uiState.isLoading && uiState.user == null -> {
+                    LoadingState()
+                }
+                uiState.user != null -> {
+                    AccountContent(
+                        user = uiState.user,
+                        preferences = uiState.preferences,
+                        isPremium = uiState.isPremium,
+                        documentCount = uiState.documentCount,
+                        documentLimit = uiState.documentLimit,
+                        isDeletingAccount = uiState.isDeletingAccount,
+                        onPreferenceReorder = { onIntent(AccountIntent.UpdatePreferenceOrder(it)) },
+                        onPremiumClick = { onIntent(AccountIntent.NavigateToPremium) },
+                        onLogoutClick = { onIntent(AccountIntent.RequestLogout) },
+                        onDeleteAccountClick = { onIntent(AccountIntent.RequestDeleteAccount) }
+                    )
+                }
             }
         }
     }
@@ -260,7 +277,11 @@ private fun ProfileSection(
             if (documentLimit != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "$documentCount / $documentLimit ${stringResource(R.string.documents_suffix)}",
+                    text = stringResource(
+                        R.string.account_document_quota,
+                        documentCount,
+                        documentLimit
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = if (documentCount >= documentLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
@@ -320,9 +341,9 @@ private fun PreferenceCard(
     modifier: Modifier = Modifier
 ) {
     val (icon, label, color) = when (preferenceType) {
-        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, stringResource(R.string.ecology), WattsonColors.EnergyClassA)
-        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, stringResource(R.string.economy), WattsonColors.Info)
-        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, stringResource(R.string.repairability_pref), WattsonColors.Warning)
+        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, stringResource(preferenceType.labelResId()), WattsonColors.EnergyClassA)
+        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, stringResource(preferenceType.labelResId()), WattsonColors.Info)
+        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, stringResource(preferenceType.labelResId()), WattsonColors.Warning)
     }
 
     val rankLabel = when (rank) {
