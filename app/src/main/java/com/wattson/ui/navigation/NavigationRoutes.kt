@@ -1,5 +1,6 @@
 package com.wattson.ui.navigation
 
+import com.wattson.R
 import kotlinx.serialization.Serializable
 
 /**
@@ -101,31 +102,31 @@ enum class BottomNavItem(
     val route: WattsonRoute,
     val labelRes: Int, // String resource ID
     val iconRes: Int,  // Drawable resource ID
-    val contentDescription: String
+    val contentDescriptionRes: Int
 ) {
     HISTORY(
         route = WattsonRoute.History,
-        labelRes = 0, // Will be replaced with actual resource
+        labelRes = R.string.nav_history,
         iconRes = 0,
-        contentDescription = "Historique"
+        contentDescriptionRes = R.string.nav_history_desc
     ),
     REPAIR(
         route = WattsonRoute.Repair,
-        labelRes = 0,
+        labelRes = R.string.nav_repair,
         iconRes = 0,
-        contentDescription = "Réparation"
+        contentDescriptionRes = R.string.nav_repair_desc
     ),
     DOCUMENTS(
         route = WattsonRoute.Documents,
-        labelRes = 0,
+        labelRes = R.string.nav_documents,
         iconRes = 0,
-        contentDescription = "Documents"
+        contentDescriptionRes = R.string.nav_documents_desc
     ),
     ACCOUNT(
         route = WattsonRoute.Account,
-        labelRes = 0,
+        labelRes = R.string.nav_account,
         iconRes = 0,
-        contentDescription = "Compte"
+        contentDescriptionRes = R.string.nav_account_desc
     )
 }
 

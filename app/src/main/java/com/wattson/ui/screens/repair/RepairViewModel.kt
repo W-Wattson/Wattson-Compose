@@ -1,11 +1,16 @@
 package com.wattson.ui.screens.repair
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.RepairChatRepository
 import com.wattson.domain.model.RepairConversation
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,26 +20,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * UI State for the Repair screen (conversation list).
- */
 data class RepairUiState(
     val isLoading: Boolean = false,
     val conversations: List<RepairConversation> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: UiText? = null
 )
 
-/**
- * One-shot events for repair screen.
- */
 sealed interface RepairEvent {
     data class NavigateToChat(val conversationId: String) : RepairEvent
-    data class ShowError(val message: String) : RepairEvent
+    data class ShowError(val message: UiText) : RepairEvent
 }
 
-/**
- * User intents for repair screen.
- */
 sealed interface RepairIntent {
     data object LoadConversations : RepairIntent
     data object CreateNewConversation : RepairIntent
@@ -43,14 +39,11 @@ sealed interface RepairIntent {
     data object DismissError : RepairIntent
 }
 
-/**
- * ViewModel for the Repair screen.
- * Manages the conversation list for the AI repair assistant.
- */
 @HiltViewModel
 class RepairViewModel @Inject constructor(
     private val repairChatRepository: RepairChatRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RepairUiState())
@@ -63,9 +56,6 @@ class RepairViewModel @Inject constructor(
         loadConversations()
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: RepairIntent) {
         when (intent) {
             is RepairIntent.LoadConversations -> loadConversations()
@@ -81,7 +71,6 @@ class RepairViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val userId = authRepository.getCurrentUserId()
-                // Fetch from server then observe the StateFlow
                 repairChatRepository.refreshConversations(userId)
                 repairChatRepository.getConversations(userId).collect { conversations ->
                     _uiState.update {
@@ -90,7 +79,12 @@ class RepairViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(isLoading = false, errorMessage = e.message ?: "Erreur de chargement")
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_loading_generic)
+                        )
+                    )
                 }
             }
         }
@@ -102,11 +96,15 @@ class RepairViewModel @Inject constructor(
                 val userId = authRepository.getCurrentUserId()
                 val conversation = repairChatRepository.createConversation(
                     userId = userId,
-                    title = "Nouvelle conversation"
+                    title = appContext.getString(R.string.repair_new_conversation)
                 )
                 _events.emit(RepairEvent.NavigateToChat(conversation.id))
             } catch (e: Exception) {
-                _events.emit(RepairEvent.ShowError(e.message ?: "Erreur de creation"))
+                _events.emit(
+                    RepairEvent.ShowError(
+                        e.toUiTextOr(UiText.StringResource(R.string.error_create_generic))
+                    )
+                )
             }
         }
     }
@@ -123,7 +121,11 @@ class RepairViewModel @Inject constructor(
                 val userId = authRepository.getCurrentUserId()
                 repairChatRepository.deleteConversation(conversationId, userId)
             } catch (e: Exception) {
-                _events.emit(RepairEvent.ShowError(e.message ?: "Erreur de suppression"))
+                _events.emit(
+                    RepairEvent.ShowError(
+                        e.toUiTextOr(UiText.StringResource(R.string.error_delete_generic))
+                    )
+                )
             }
         }
     }

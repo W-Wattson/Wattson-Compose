@@ -3,6 +3,7 @@ package com.wattson.ui.screens.account
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -34,12 +36,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +70,9 @@ import com.wattson.domain.model.PreferenceType
 import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
 import com.wattson.domain.model.UserPreferences
+import com.wattson.ui.i18n.AppLanguage
+import com.wattson.ui.i18n.asString
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
@@ -80,6 +92,9 @@ fun AccountScreen(
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
     // Handle events
     LaunchedEffect(Unit) {
         events.collectLatest { event ->
@@ -89,33 +104,43 @@ fun AccountScreen(
                 is AccountEvent.LogoutSuccess -> { /* Handled by NavigateToLogin */ }
                 is AccountEvent.AccountDeleted -> { /* Handled by NavigateToLogin */ }
                 is AccountEvent.PreferencesUpdated -> { /* Could show snackbar */ }
-                is AccountEvent.ShowError -> { /* Could show snackbar */ }
+                is AccountEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
             }
         }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        when {
-            uiState.isLoading && uiState.user == null -> {
-                LoadingState()
-            }
-            uiState.user != null -> {
-                AccountContent(
-                    user = uiState.user,
-                    preferences = uiState.preferences,
-                    isPremium = uiState.isPremium,
-                    documentCount = uiState.documentCount,
-                    documentLimit = uiState.documentLimit,
-                    isDeletingAccount = uiState.isDeletingAccount,
-                    onPreferenceReorder = { onIntent(AccountIntent.UpdatePreferenceOrder(it)) },
-                    onPremiumClick = { onIntent(AccountIntent.NavigateToPremium) },
-                    onLogoutClick = { onIntent(AccountIntent.RequestLogout) },
-                    onDeleteAccountClick = { onIntent(AccountIntent.RequestDeleteAccount) }
-                )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
+        ) {
+            when {
+                uiState.isLoading && uiState.user == null -> {
+                    LoadingState()
+                }
+                uiState.user != null -> {
+                    AccountContent(
+                        user = uiState.user,
+                        preferences = uiState.preferences,
+                        isPremium = uiState.isPremium,
+                        documentCount = uiState.documentCount,
+                        documentLimit = uiState.documentLimit,
+                        isDeletingAccount = uiState.isDeletingAccount,
+                        currentLanguage = uiState.currentLanguage,
+                        onPreferenceReorder = { onIntent(AccountIntent.UpdatePreferenceOrder(it)) },
+                        onPremiumClick = { onIntent(AccountIntent.NavigateToPremium) },
+                        onLogoutClick = { onIntent(AccountIntent.RequestLogout) },
+                        onLanguageChange = { onIntent(AccountIntent.ChangeLanguage(it)) },
+                        onDeleteAccountClick = { onIntent(AccountIntent.RequestDeleteAccount) }
+                    )
+                }
             }
         }
     }
@@ -145,12 +170,16 @@ private fun AccountContent(
     documentCount: Int,
     documentLimit: Int?,
     isDeletingAccount: Boolean,
+    currentLanguage: AppLanguage,
     onPreferenceReorder: (List<PreferenceType>) -> Unit,
     onPremiumClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onLanguageChange: (AppLanguage) -> Unit,
     onDeleteAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -183,20 +212,33 @@ private fun AccountContent(
             onClick = onPremiumClick
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Sign out button
-        SignOutButton(onClick = onLogoutClick)
+        AccountSettingsSection(
+            currentLanguage = currentLanguage,
+            onLanguageClick = { showLanguageDialog = true },
+            onLogoutClick = onLogoutClick
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Delete account button (RGPD)
-        DeleteAccountButton(
+        DangerZoneSection(
             onClick = onDeleteAccountClick,
             isLoading = isDeletingAccount
         )
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+
+    if (showLanguageDialog) {
+        AppLanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onSelect = { language ->
+                showLanguageDialog = false
+                onLanguageChange(language)
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
     }
 }
 
@@ -260,7 +302,11 @@ private fun ProfileSection(
             if (documentLimit != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "$documentCount / $documentLimit ${stringResource(R.string.documents_suffix)}",
+                    text = stringResource(
+                        R.string.account_document_quota,
+                        documentCount,
+                        documentLimit
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = if (documentCount >= documentLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
@@ -320,9 +366,9 @@ private fun PreferenceCard(
     modifier: Modifier = Modifier
 ) {
     val (icon, label, color) = when (preferenceType) {
-        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, stringResource(R.string.ecology), WattsonColors.EnergyClassA)
-        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, stringResource(R.string.economy), WattsonColors.Info)
-        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, stringResource(R.string.repairability_pref), WattsonColors.Warning)
+        PreferenceType.ECOLOGY -> Triple(Icons.Filled.Eco, stringResource(preferenceType.labelResId()), WattsonColors.EnergyClassA)
+        PreferenceType.ECONOMY -> Triple(Icons.Filled.AttachMoney, stringResource(preferenceType.labelResId()), WattsonColors.Info)
+        PreferenceType.REPAIRABILITY -> Triple(Icons.Filled.Build, stringResource(preferenceType.labelResId()), WattsonColors.Warning)
     }
 
     val rankLabel = when (rank) {
@@ -490,12 +536,127 @@ private fun SignOutButton(
 }
 
 @Composable
-private fun LoadingState(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+private fun AccountSettingsSection(
+    currentLanguage: AppLanguage,
+    onLanguageClick: () -> Unit,
+    onLogoutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.account_settings_title),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LanguageSettingButton(
+            currentLanguage = currentLanguage,
+            onClick = onLanguageClick
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SignOutButton(onClick = onLogoutClick)
+    }
+}
+
+@Composable
+private fun LanguageSettingButton(
+    currentLanguage: AppLanguage,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = WattsonCorners.Card,
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp
     ) {
-        CircularProgressIndicator(color = WattsonColors.Primary)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Language,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.account_language_label),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.account_language_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Text(
+                text = stringResource(currentLanguage.labelResId),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun DangerZoneSection(
+    onClick: () -> Unit,
+    isLoading: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.account_danger_zone_title),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = WattsonColors.Error
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = WattsonCorners.Large,
+            color = WattsonColors.Error.copy(alpha = 0.06f),
+            border = BorderStroke(1.dp, WattsonColors.Error.copy(alpha = 0.18f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.account_danger_zone_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                DeleteAccountButton(
+                    onClick = onClick,
+                    isLoading = isLoading
+                )
+            }
+        }
     }
 }
 
@@ -510,7 +671,7 @@ private fun DeleteAccountButton(
             .fillMaxWidth()
             .clickable(enabled = !isLoading, onClick = onClick),
         shape = WattsonCorners.Card,
-        color = WattsonColors.Error.copy(alpha = 0.08f),
+        color = WattsonColors.Error.copy(alpha = 0.1f),
         shadowElevation = 0.dp
     ) {
         Row(
@@ -542,6 +703,56 @@ private fun DeleteAccountButton(
             )
         }
     }
+}
+
+@Composable
+private fun AppLanguageSelectionDialog(
+    currentLanguage: AppLanguage,
+    onSelect: (AppLanguage) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.account_language_dialog_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AppLanguage.entries.forEach { language ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(WattsonCorners.Card)
+                            .clickable { onSelect(language) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = language == currentLanguage,
+                            onClick = { onSelect(language) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(language.labelResId),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -602,6 +813,16 @@ private fun LogoutConfirmationDialog(
     )
 }
 
+@Composable
+private fun LoadingState(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = WattsonColors.Primary)
+    }
+}
+
 // ===== PREVIEWS =====
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -636,9 +857,11 @@ private fun AccountContentPreview() {
             documentCount = 3,
             documentLimit = 5,
             isDeletingAccount = false,
+            currentLanguage = AppLanguage.FRENCH,
             onPreferenceReorder = {},
             onPremiumClick = {},
             onLogoutClick = {},
+            onLanguageChange = {},
             onDeleteAccountClick = {}
         )
     }

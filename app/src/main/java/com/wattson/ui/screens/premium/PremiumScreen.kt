@@ -49,13 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -64,15 +64,14 @@ import com.wattson.R
 import com.wattson.domain.model.SubscriptionType
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonPageTitle
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Premium subscription screen.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumScreen(
@@ -85,24 +84,23 @@ fun PremiumScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Initialize Stripe PaymentSheet
     val paymentSheet = rememberPaymentSheet { result ->
         when (result) {
-            is PaymentSheetResult.Completed -> {
-                onIntent(PremiumIntent.PaymentCompleted)
-            }
+            is PaymentSheetResult.Completed -> onIntent(PremiumIntent.PaymentCompleted)
             is PaymentSheetResult.Canceled -> {
-                onIntent(PremiumIntent.PaymentFailed("Paiement annulé"))
+                onIntent(PremiumIntent.PaymentFailed(UiText.StringResource(R.string.payment_cancelled)))
             }
+
             is PaymentSheetResult.Failed -> {
-                onIntent(PremiumIntent.PaymentFailed(
-                    result.error.localizedMessage ?: "Erreur de paiement"
-                ))
+                onIntent(
+                    PremiumIntent.PaymentFailed(
+                        UiText.StringResource(R.string.error_payment_generic)
+                    )
+                )
             }
         }
     }
 
-    // Handle events
     LaunchedEffect(Unit) {
         events.collectLatest { event ->
             when (event) {
@@ -110,23 +108,25 @@ fun PremiumScreen(
                 is PremiumEvent.SubscriptionSuccess -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.premium_success))
                 }
+
                 is PremiumEvent.ShowError -> {
-                    snackbarHostState.showSnackbar(context.getString(R.string.error_prefix, event.message))
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.error_prefix, event.message.asString(context))
+                    )
                 }
+
                 is PremiumEvent.OpenPaymentSheet -> {
-                    // Configure and present the Stripe PaymentSheet
                     PaymentConfiguration.init(context, event.publishableKey)
                     paymentSheet.presentWithPaymentIntent(
                         paymentIntentClientSecret = event.clientSecret,
-                        configuration = PaymentSheet.Configuration.Builder("Wattson")
-                            .customer(
-                                PaymentSheet.CustomerConfiguration(
-                                    id = event.customerId,
-                                    ephemeralKeySecret = event.ephemeralKey
-                                )
+                        configuration = PaymentSheet.Configuration.Builder(
+                            context.getString(R.string.app_name)
+                        ).customer(
+                            PaymentSheet.CustomerConfiguration(
+                                id = event.customerId,
+                                ephemeralKeySecret = event.ephemeralKey
                             )
-                            .allowsDelayedPaymentMethods(false)
-                            .build()
+                        ).allowsDelayedPaymentMethods(false).build()
                     )
                 }
             }
@@ -161,20 +161,17 @@ fun PremiumScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading -> {
-                    LoadingState()
-                }
-                else -> {
-                    PremiumContent(
-                        plans = uiState.availablePlans,
-                        selectedPlan = uiState.selectedPlan,
-                        currentSubscription = uiState.currentSubscription,
-                        isProcessingPayment = uiState.isProcessingPayment,
-                        onPlanSelected = { onIntent(PremiumIntent.SelectPlan(it)) },
-                        onConfirmSubscription = { onIntent(PremiumIntent.ConfirmSubscription) }
-                    )
-                }
+            if (uiState.isLoading) {
+                LoadingState()
+            } else {
+                PremiumContent(
+                    plans = uiState.availablePlans,
+                    selectedPlan = uiState.selectedPlan,
+                    currentSubscription = uiState.currentSubscription,
+                    isProcessingPayment = uiState.isProcessingPayment,
+                    onPlanSelected = { onIntent(PremiumIntent.SelectPlan(it)) },
+                    onConfirmSubscription = { onIntent(PremiumIntent.ConfirmSubscription) }
+                )
             }
         }
     }
@@ -205,11 +202,10 @@ private fun PremiumContent(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Plan cards
         plans.forEach { plan ->
             val isSelected = selectedPlan == plan
             val isCurrentPlan = currentSubscription == plan.type
-            
+
             PlanCard(
                 plan = plan,
                 isSelected = isSelected,
@@ -217,16 +213,19 @@ private fun PremiumContent(
                 onClick = { if (!isCurrentPlan) onPlanSelected(plan) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Subscribe button
         if (selectedPlan != null && currentSubscription != selectedPlan.type) {
             WattsonButton(
-                text = if (isProcessingPayment) stringResource(R.string.processing) else stringResource(R.string.select),
+                text = if (isProcessingPayment) {
+                    stringResource(R.string.processing)
+                } else {
+                    stringResource(R.string.select)
+                },
                 onClick = onConfirmSubscription,
                 isLoading = isProcessingPayment,
                 enabled = !isProcessingPayment,
@@ -236,9 +235,8 @@ private fun PremiumContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Terms
         Text(
-            text = "En souscrivant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité. L'abonnement se renouvelle automatiquement.",
+            text = stringResource(R.string.premium_subscription_terms_notice),
             style = MaterialTheme.typography.labelSmall,
             color = WattsonColors.OnSurfaceVariant.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
@@ -277,36 +275,32 @@ private fun PlanCard(
             .scale(scale)
             .then(
                 if (borderColor != Color.Transparent) {
-                    Modifier.border(
-                        width = 2.dp,
-                        color = borderColor,
-                        shape = WattsonCorners.Card
-                    )
-                } else Modifier
+                    Modifier.border(width = 2.dp, color = borderColor, shape = WattsonCorners.Card)
+                } else {
+                    Modifier
+                }
             )
             .clickable(enabled = !isCurrentPlan, onClick = onClick),
         shape = WattsonCorners.Card,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected && !isCurrentPlan) 
-                WattsonColors.Primary.copy(alpha = 0.05f) 
-            else MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected && !isCurrentPlan) {
+                WattsonColors.Primary.copy(alpha = 0.05f)
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 4.dp else 2.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 4.dp else 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            // Header row with popular badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Wattson logo placeholder
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -323,7 +317,7 @@ private fun PlanCard(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.wattson_logo),
-                        contentDescription = "Wattson Logo",
+                        contentDescription = stringResource(R.string.logo_content_description),
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -339,18 +333,14 @@ private fun PlanCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Price
             Text(
                 text = plan.price,
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Features
             plan.features.forEach { feature ->
                 FeatureItem(text = feature)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -383,10 +373,8 @@ private fun PopularBadge(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "Populaire",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                text = stringResource(R.string.popular),
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                 color = Color.White
             )
         }
@@ -404,10 +392,8 @@ private fun CurrentPlanBadge(modifier: Modifier = Modifier) {
             .padding(horizontal = 12.dp, vertical = 4.dp)
     ) {
         Text(
-            text = "Plan actuel",
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            text = stringResource(R.string.current_plan),
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
             color = WattsonColors.Success
         )
     }
@@ -457,8 +443,6 @@ private fun LoadingState(modifier: Modifier = Modifier) {
     }
 }
 
-// ===== PREVIEWS =====
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun PremiumContentPreview() {
@@ -467,35 +451,35 @@ private fun PremiumContentPreview() {
             plans = listOf(
                 SubscriptionPlan(
                     type = SubscriptionType.PREMIUM,
-                    name = "Premium",
-                    price = "5,99 €/mois",
+                    name = stringResource(R.string.premium_plan_basic_name),
+                    price = stringResource(R.string.premium_plan_basic_price),
                     priceValue = 5.99,
                     features = listOf(
-                        "Conciergerie 15 documents",
-                        "Conseil de réparabilité basique",
-                        "Historique illimité"
+                        stringResource(R.string.premium_plan_basic_feature_documents),
+                        stringResource(R.string.premium_plan_basic_feature_repair),
+                        stringResource(R.string.premium_plan_basic_feature_history)
                     )
                 ),
                 SubscriptionPlan(
                     type = SubscriptionType.PREMIUM_UNLIMITED,
-                    name = "Premium Illimité",
-                    price = "9,95 €/mois",
+                    name = stringResource(R.string.premium_plan_unlimited_name),
+                    price = stringResource(R.string.premium_plan_unlimited_price),
                     priceValue = 9.95,
                     features = listOf(
-                        "Conciergerie 1000 documents",
-                        "Conseil de réparabilité avancé",
-                        "Historique illimité",
-                        "Support prioritaire"
+                        stringResource(R.string.premium_plan_unlimited_feature_documents),
+                        stringResource(R.string.premium_plan_unlimited_feature_repair),
+                        stringResource(R.string.premium_plan_unlimited_feature_history),
+                        stringResource(R.string.premium_plan_unlimited_feature_support)
                     ),
                     isPopular = true
                 )
             ),
             selectedPlan = SubscriptionPlan(
                 type = SubscriptionType.PREMIUM_UNLIMITED,
-                name = "Premium Illimité",
-                price = "9,95 €/mois",
+                name = stringResource(R.string.premium_plan_unlimited_name),
+                price = stringResource(R.string.premium_plan_unlimited_price),
                 priceValue = 9.95,
-                features = listOf(),
+                features = emptyList(),
                 isPopular = true
             ),
             currentSubscription = SubscriptionType.FREE,
@@ -503,30 +487,5 @@ private fun PremiumContentPreview() {
             onPlanSelected = {},
             onConfirmSubscription = {}
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PlanCardPreview() {
-    WattsonPreviewTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            PlanCard(
-                plan = SubscriptionPlan(
-                    type = SubscriptionType.PREMIUM_UNLIMITED,
-                    name = "Premium Illimité",
-                    price = "9,95 €/mois",
-                    priceValue = 9.95,
-                    features = listOf(
-                        "Conciergerie 1000 documents",
-                        "Conseil de réparabilité avancé"
-                    ),
-                    isPopular = true
-                ),
-                isSelected = true,
-                isCurrentPlan = false,
-                onClick = {}
-            )
-        }
     }
 }

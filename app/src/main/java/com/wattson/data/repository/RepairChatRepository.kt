@@ -1,6 +1,7 @@
 package com.wattson.data.repository
 
 import android.util.Log
+import com.wattson.R
 import com.wattson.data.remote.api.ConversationResponse
 import com.wattson.data.remote.api.CreateConversationRequest
 import com.wattson.data.remote.api.RepairMessageResponse
@@ -9,6 +10,8 @@ import com.wattson.data.remote.api.WattsonApi
 import com.wattson.domain.model.ChatMessage
 import com.wattson.domain.model.MessageRole
 import com.wattson.domain.model.RepairConversation
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.UserFacingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,7 +111,7 @@ class RepairChatRepository @Inject constructor(
                     conversation
                 } else {
                     Log.e(TAG, "Failed to create conversation: ${response.code()}")
-                    throw RuntimeException("Failed to create conversation: ${response.code()}")
+                    throw UserFacingException(UiText.StringResource(R.string.error_create_generic))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error creating conversation: ${e.message}", e)
@@ -144,12 +147,12 @@ class RepairChatRepository @Inject constructor(
                 message
             } else if (response.code() == 403) {
                 Log.w(TAG, "Premium required for repair chat")
-                throw PremiumRequiredException()
+                throw UserFacingException(UiText.StringResource(R.string.repair_premium_required))
             } else {
                 Log.e(TAG, "Failed to send message: ${response.code()} - ${response.message()}")
-                throw RuntimeException("Erreur serveur: ${response.code()}")
+                throw UserFacingException(UiText.StringResource(R.string.error_send_generic))
             }
-        } catch (e: PremiumRequiredException) {
+        } catch (e: UserFacingException) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Error sending message: ${e.message}", e)
@@ -206,8 +209,5 @@ class RepairChatRepository @Inject constructor(
         }
     }
 
-    /**
-     * Exception thrown when a FREE user tries to use the repair assistant.
-     */
-    class PremiumRequiredException : RuntimeException("L'assistant de reparation necessite un abonnement Premium.")
+    class PremiumRequiredException : RuntimeException()
 }

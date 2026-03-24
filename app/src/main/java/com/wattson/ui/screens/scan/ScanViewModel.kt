@@ -4,12 +4,15 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.ocr.EprelIdParser
 import com.wattson.data.ocr.EprelLabelOcrService
 import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.BarcodeFormat
 import com.wattson.domain.model.ResolvedEprelProduct
 import com.wattson.domain.model.ScanResult
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +33,7 @@ data class ScanUiState(
     val isTorchEnabled: Boolean = false,
     val lastScannedCode: String? = null,
     val scanResult: ScanResult? = null,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val showPermissionRationale: Boolean = false,
     val showEprelDialog: Boolean = false
 )
@@ -51,11 +54,10 @@ sealed interface LabelGuidanceState {
     data object NotScannable : LabelGuidanceState
     data object Ready : LabelGuidanceState
 }
-
 sealed interface ScanEvent {
     data class NavigateToProductDetail(val productId: String) : ScanEvent
     data object NavigateBack : ScanEvent
-    data class ShowError(val message: String) : ScanEvent
+    data class ShowError(val message: UiText) : ScanEvent
     data class ShowProductNotFound(val barcode: String) : ScanEvent
     data object RequestCameraPermission : ScanEvent
     data object OpenAppSettings : ScanEvent
@@ -96,7 +98,6 @@ class ScanViewModel @Inject constructor(
 
     private var lastRetryRequest: RetryRequest? = null
     private var isEvaluatingLabelFrame = false
-
     fun onIntent(intent: ScanIntent) {
         when (intent) {
             is ScanIntent.StartScanning -> startScanning()
@@ -147,7 +148,6 @@ class ScanViewModel @Inject constructor(
         if (_uiState.value.scanMode != ScanMode.BARCODE) {
             return
         }
-
         if (_uiState.value.isProcessing || _uiState.value.lastScannedCode == barcode) {
             return
         }
@@ -190,11 +190,12 @@ class ScanViewModel @Inject constructor(
                     }
 
                     is ScanResult.ProductNotFound -> {
+                        val message = UiText.StringResource(R.string.scan_product_not_found, barcode)
                         _uiState.update {
                             it.copy(
                                 isProcessing = false,
                                 processingStage = null,
-                                errorMessage = "Produit non trouve: $barcode",
+                                errorMessage = message,
                                 scanResult = scanResult,
                                 isScanning = true
                             )
@@ -203,17 +204,20 @@ class ScanViewModel @Inject constructor(
                     }
 
                     is ScanResult.NetworkError -> {
-                        val errorMessage = scanResult.message ?: "Erreur reseau"
+                        val message = scanResult.message
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let(UiText::DynamicString)
+                            ?: UiText.StringResource(R.string.error_network_generic)
                         _uiState.update {
                             it.copy(
                                 isProcessing = false,
                                 processingStage = null,
-                                errorMessage = errorMessage,
+                                errorMessage = message,
                                 scanResult = scanResult,
                                 isScanning = true
                             )
                         }
-                        _events.emit(ScanEvent.ShowError(errorMessage))
+                        _events.emit(ScanEvent.ShowError(message))
                     }
 
                     else -> {
@@ -221,7 +225,7 @@ class ScanViewModel @Inject constructor(
                             it.copy(
                                 isProcessing = false,
                                 processingStage = null,
-                                errorMessage = "Erreur inattendue",
+                                errorMessage = UiText.StringResource(R.string.error_unexpected_generic),
                                 scanResult = scanResult,
                                 isScanning = true
                             )
@@ -230,20 +234,20 @@ class ScanViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("ScanViewModel", "Scan exception", e)
-                val errorMessage = e.message ?: e.javaClass.simpleName
+                val errorText = e.toUiTextOr(UiText.StringResource(R.string.error_network_generic))
                 _uiState.update {
                     it.copy(
                         isProcessing = false,
                         processingStage = null,
-                        errorMessage = errorMessage,
+                        errorMessage = errorText,
                         scanResult = ScanResult.NetworkError(
                             gtin = barcode,
-                            message = errorMessage
+                            message = null
                         ),
                         isScanning = true
                     )
                 }
-                _events.emit(ScanEvent.ShowError(errorMessage))
+                _events.emit(ScanEvent.ShowError(errorText))
             }
         }
     }
@@ -322,11 +326,14 @@ class ScanViewModel @Inject constructor(
     }
 
     private fun onEprelLabelCaptureFailed(message: String) {
+        if (message.isNotBlank()) {
+            Log.w("ScanViewModel", "EPREL label capture failed: $message")
+        }
         if (_uiState.value.scanMode == ScanMode.EPREL_LABEL) {
             _uiState.update {
                 it.copy(
                     labelGuidance = LabelGuidanceState.NotScannable,
-                    errorMessage = message
+                    errorMessage = UiText.StringResource(R.string.label_scan_capture_failed)
                 )
             }
         }
@@ -367,17 +374,18 @@ class ScanViewModel @Inject constructor(
 
         val resolved = resolvedProduct
         if (resolved == null) {
+            val message = UiText.StringResource(R.string.scan_eprel_product_not_found)
             _uiState.update {
                 it.copy(
                     isProcessing = false,
                     processingStage = null,
-                    errorMessage = "Produit EPREL non trouve",
+                    errorMessage = message,
                     scanMode = ScanMode.EPREL_LABEL,
                     labelGuidance = LabelGuidanceState.NotScannable,
                     isScanning = it.hasCameraPermission
                 )
             }
-            _events.emit(ScanEvent.ShowError("Produit EPREL non trouve"))
+            _events.emit(ScanEvent.ShowError(message))
             return
         }
 
@@ -504,7 +512,9 @@ class ScanViewModel @Inject constructor(
     }
 
     private fun searchByEprelId(category: String, registrationNumber: String) {
-        if (_uiState.value.isProcessing) return
+        if (_uiState.value.isProcessing) {
+            return
+        }
 
         lastRetryRequest = RetryRequest.ResolvedEprel(category, registrationNumber)
         beginSearch(lastScannedCode = "$category/$registrationNumber", closeDialog = true)
@@ -523,28 +533,32 @@ class ScanViewModel @Inject constructor(
                         )
                     },
                     onFailure = {
+                        val message = UiText.StringResource(R.string.scan_eprel_product_not_found)
                         _uiState.update {
                             it.copy(
                                 isProcessing = false,
                                 processingStage = null,
-                                errorMessage = "Produit EPREL non trouve: $category/$registrationNumber",
+                                errorMessage = message,
                                 isScanning = it.hasCameraPermission
                             )
                         }
-                        _events.emit(ScanEvent.ShowError("Produit EPREL non trouve"))
+                        _events.emit(ScanEvent.ShowError(message))
                     }
                 )
             } catch (e: Exception) {
                 Log.e("ScanViewModel", "EPREL search error", e)
+                val errorText = e.toUiTextOr(
+                    UiText.StringResource(R.string.scan_eprel_search_error)
+                )
                 _uiState.update {
                     it.copy(
                         isProcessing = false,
                         processingStage = null,
-                        errorMessage = e.message ?: "Erreur de recherche EPREL",
+                        errorMessage = errorText,
                         isScanning = it.hasCameraPermission
                     )
                 }
-                _events.emit(ScanEvent.ShowError(e.message ?: "Erreur de recherche EPREL"))
+                _events.emit(ScanEvent.ShowError(errorText))
             }
         }
     }
@@ -571,7 +585,7 @@ class ScanViewModel @Inject constructor(
             it.copy(
                 isProcessing = false,
                 processingStage = null,
-                errorMessage = "Impossible de lire l'identifiant EPREL. Recadrez l'etiquette ou utilisez la recherche manuelle.",
+                errorMessage = UiText.StringResource(R.string.label_scan_capture_failed),
                 isScanning = it.hasCameraPermission
             )
         }
@@ -584,5 +598,8 @@ class ScanViewModel @Inject constructor(
             val registrationNumbers: List<String>,
             val preferredCategories: List<String>
         ) : RetryRequest
+    }
+
+    fun onScreenVisible() {
     }
 }

@@ -1,6 +1,7 @@
 package com.wattson.data.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -8,42 +9,16 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.wattson.BuildConfig
-import android.util.Log
+import com.wattson.R
+import com.wattson.ui.i18n.UiText
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Last Edit : 19/03/2026 -- Victorio Garcia
-// Resume : ---------------------------------
-// Step 1 : Construction de la requete GetGoogleIdOption avec le Web Client ID
-// Step 2 : Appel au Credential Manager pour obtenir le Google ID token
-// Step 3 : Retry automatique (1 fois, delai 500ms) en cas de NoCredentialException
-//          car Google Play Services retourne souvent BAD_AUTHENTICATION au premier essai
-//          quand le cache n'est pas encore "chaud" apres un fresh start de l'app
-// Step 4 : Extraction du Google ID token depuis la reponse Credential Manager
-// Explication Total : Gere le flux Google Sign-In via Credential Manager API.
-//   Encapsule la creation de la requete, l'appel au Credential Manager, et l'extraction
-//   du token. Inclut un mecanisme de retry pour contourner le bug connu de Google Play
-//   Services qui echoue la premiere requete apres un demarrage a froid.
-// Historique : 17/03/2026 -- Creation initiale
-//              19/03/2026 -- Ajout retry automatique sur NoCredentialException (fix cold start)
-/**
- * Manages Google Sign-In using the Credential Manager API.
- *
- * This class wraps the Android Credential Manager and handles the
- * Google ID token retrieval flow. It requires an Activity context
- * to display the account picker UI.
- *
- * Includes an automatic retry mechanism for the first attempt, as Google Play
- * Services often returns BAD_AUTHENTICATION on cold starts.
- *
- * @see <a href="https://developer.android.com/identity/sign-in/credential-manager-siwg">
- *     Sign in with Google using Credential Manager</a>
- */
 @Singleton
 class GoogleAuthManager @Inject constructor() {
 
@@ -53,41 +28,22 @@ class GoogleAuthManager @Inject constructor() {
         private const val RETRY_DELAY_MS = 500L
     }
 
-    /**
-     * Launches the Google Sign-In flow via Credential Manager and returns
-     * the Google ID token on success.
-     *
-     * Automatically retries once on [NoCredentialException], as Google Play Services
-     * often fails on the first attempt after a cold start (BAD_AUTHENTICATION).
-     *
-     * @param activityContext The Activity context (required for the picker UI).
-     * @return The Google ID token string.
-     * @throws GoogleAuthException on failure (cancellation, no accounts, parsing error, etc.).
-     */
     suspend fun getGoogleIdToken(activityContext: Context): String {
         val clientId = BuildConfig.GOOGLE_WEB_CLIENT_ID
         if (clientId.isBlank()) {
             throw GoogleAuthException(
-                "Google Sign-In non configure. " +
-                "Ajoutez google.web.client.id dans local.properties."
+                UiText.StringResource(R.string.google_sign_in_not_configured)
             )
         }
 
         val credentialManager = CredentialManager.create(activityContext)
-
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(clientId)
-            .setAutoSelectEnabled(true)
-            .build()
-
+        val googleSignInOption = GetSignInWithGoogleOption.Builder(clientId).build()
         val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
+            .addCredentialOption(googleSignInOption)
             .build()
 
         var lastException: Exception? = null
 
-        // Retry loop: Google Play Services often fails on first cold-start attempt
         for (attempt in 0..MAX_RETRIES) {
             try {
                 if (attempt > 0) {
@@ -102,54 +58,56 @@ class GoogleAuthManager @Inject constructor() {
 
                 Log.i(TAG, "Google Sign-In successful on attempt ${attempt + 1}")
                 return extractIdToken(response)
-
             } catch (e: GetCredentialCancellationException) {
-                // User canceled — don't retry
                 Log.w(TAG, "Google Sign-In canceled by user")
-                throw GoogleAuthException("Connexion Google annulee", e)
-
+                throw GoogleAuthException(
+                    UiText.StringResource(R.string.google_sign_in_cancelled),
+                    e
+                )
             } catch (e: NoCredentialException) {
-                // Often happens on first attempt (cold start) — retry
-                Log.w(TAG, "Google Sign-In NoCredentialException on attempt ${attempt + 1} — ${e.message}")
+                Log.w(
+                    TAG,
+                    "Google Sign-In NoCredentialException on attempt ${attempt + 1} - ${e.message}"
+                )
                 lastException = e
-
             } catch (e: GetCredentialException) {
                 Log.e(TAG, "Google Sign-In failed on attempt ${attempt + 1}: ${e.message}")
                 lastException = e
             }
         }
 
-        // All retries exhausted
         Log.e(TAG, "Google Sign-In failed after ${MAX_RETRIES + 1} attempts")
         throw GoogleAuthException(
-            "Aucun compte Google disponible. Ajoutez un compte Google dans les parametres.",
+            UiText.StringResource(R.string.google_sign_in_no_credentials),
             lastException
         )
     }
 
-    /**
-     * Extracts the Google ID token from the Credential Manager response.
-     */
     private fun extractIdToken(response: GetCredentialResponse): String {
         val credential = response.credential
 
-        if (credential is CustomCredential &&
+        if (
+            credential is CustomCredential &&
             credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
         ) {
             try {
-                val googleIdTokenCredential =
-                    GoogleIdTokenCredential.createFrom(credential.data)
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 return googleIdTokenCredential.idToken
             } catch (e: GoogleIdTokenParsingException) {
-                throw GoogleAuthException("Erreur lors du traitement de la reponse Google", e)
+                throw GoogleAuthException(
+                    UiText.StringResource(R.string.google_sign_in_response_error),
+                    e
+                )
             }
         }
 
-        throw GoogleAuthException("Type de credential inattendu: ${credential.type}")
+        throw GoogleAuthException(
+            UiText.StringResource(R.string.google_sign_in_unexpected_credential, credential.type)
+        )
     }
 }
 
-/**
- * Exception for Google authentication errors.
- */
-class GoogleAuthException(message: String, cause: Throwable? = null) : Exception(message, cause)
+class GoogleAuthException(
+    val uiText: UiText,
+    cause: Throwable? = null
+) : Exception(null, cause)

@@ -61,6 +61,7 @@ import com.wattson.ui.components.WattsonOAuthButton
 import com.wattson.ui.components.WattsonPageTitle
 import com.wattson.ui.components.WattsonPasswordField
 import com.wattson.ui.components.WattsonTextField
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonTheme
 import kotlinx.coroutines.delay
@@ -139,9 +140,9 @@ fun RegisterScreen(
                             value = uiState.email,
                             onValueChange = onEmailChange,
                             label = stringResource(id = R.string.email),
-                            placeholder = "test@wattson.com",
+                            placeholder = stringResource(R.string.placeholder_email_example),
                             isError = uiState.emailError != null,
-                            errorMessage = uiState.emailError,
+                            errorMessage = uiState.emailError?.asString(),
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next,
                             modifier = Modifier.fillMaxWidth()
@@ -156,7 +157,7 @@ fun RegisterScreen(
                             label = stringResource(id = R.string.password),
                             placeholder = stringResource(id = R.string.password),
                             isError = uiState.passwordError != null,
-                            errorMessage = uiState.passwordError,
+                            errorMessage = uiState.passwordError?.asString(),
                             imeAction = ImeAction.Next,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -170,7 +171,7 @@ fun RegisterScreen(
                             label = stringResource(id = R.string.confirm_password),
                             placeholder = stringResource(id = R.string.confirm_password),
                             isError = uiState.confirmPasswordError != null,
-                            errorMessage = uiState.confirmPasswordError,
+                            errorMessage = uiState.confirmPasswordError?.asString(),
                             imeAction = ImeAction.Done,
                             onImeAction = onRegister,
                             modifier = Modifier.fillMaxWidth()
@@ -294,10 +295,10 @@ private fun PasswordRequirementsHint(
     // Strength label and color
     val strengthLabel = when {
         password.isBlank() -> ""
-        strengthScore <= 1 -> "Faible"
-        strengthScore == 2 -> "Moyen"
-        strengthScore == 3 -> "Bon"
-        else -> "Fort"
+        strengthScore <= 1 -> stringResource(R.string.password_strength_weak)
+        strengthScore == 2 -> stringResource(R.string.password_strength_medium)
+        strengthScore == 3 -> stringResource(R.string.password_strength_good)
+        else -> stringResource(R.string.password_strength_strong)
     }
 
     val strengthColor = when {
@@ -422,7 +423,11 @@ private fun PasswordRequirementChip(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = if (isMet) "✓" else "○",
+                text = if (isMet) {
+                    stringResource(R.string.password_requirement_met_symbol)
+                } else {
+                    stringResource(R.string.password_requirement_pending_symbol)
+                },
                 style = MaterialTheme.typography.labelSmall,
                 color = textColor
             )
@@ -451,14 +456,14 @@ private fun RegisterLogo(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.wattson_logo),
-            contentDescription = "Wattson Logo",
+            contentDescription = stringResource(R.string.logo_content_description),
             modifier = Modifier
                 .size(48.dp)
                 .offset(x = 6.dp)
         )
         
         Text(
-            text = "attson",
+            text = stringResource(R.string.app_name_tail),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,

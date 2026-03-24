@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.annotation.StringRes
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,13 +64,17 @@ import com.wattson.domain.model.ProductMetrics
 import com.wattson.ui.components.EnergyClassBadge
 import com.wattson.ui.components.EnergyBadgeSize
 import com.wattson.ui.components.RepairabilityBadge
+import com.wattson.ui.i18n.asString
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 import com.wattson.ui.theme.getRepairabilityColor
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import java.text.NumberFormat
 import java.time.Instant
+import java.util.Locale
 
 /**
  * Product Detail screen displaying comprehensive product information.
@@ -170,7 +175,7 @@ fun ProductDetailScreen(
                 }
                 uiState.errorMessage != null -> {
                     ErrorState(
-                        message = uiState.errorMessage,
+                        message = uiState.errorMessage.asString(),
                         onRetry = { onIntent(ProductDetailIntent.LoadProduct) }
                     )
                 }
@@ -367,7 +372,7 @@ private fun ProductHeader(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = getCategoryLabel(product.category),
+                text = stringResource(product.category.labelResId()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
             )
@@ -425,7 +430,7 @@ private fun ConsumptionDetailsContent(
         product.energyEfficiencyIndex?.let { eei ->
             DetailRow(
                 label = stringResource(R.string.energy_efficiency_index_label),
-                value = String.format("%.1f", eei)
+                value = formatDecimal(eei, minFractionDigits = 1, maxFractionDigits = 1)
             )
         }
         product.powerStandbyMode?.let { standby ->
@@ -531,7 +536,10 @@ private fun RepairabilityContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.index_prefix, String.format("%.2f", repairabilityIndex)),
+                text = stringResource(
+                    R.string.index_prefix,
+                    formatDecimal(repairabilityIndex, minFractionDigits = 2, maxFractionDigits = 2)
+                ),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -869,147 +877,161 @@ private fun ErrorState(
  * Mapping of EPREL JSON keys to user-friendly French labels.
  * Grouped by category section.
  */
-private val EPREL_FIELD_LABELS = mapOf(
+private val EPREL_FIELD_LABELS: Map<String, Int> = mapOf(
     // Light source
-    "lightingTechnology" to "Technologie d'éclairage",
-    "directional" to "Directionnelle",
-    "capType" to "Type de culot",
-    "mains" to "Alimentation",
-    "connectedLightSource" to "Connectée",
-    "colourTuneableLightSource" to "Réglable en couleur",
-    "highLuminanceLightSource" to "Haute luminance",
-    "antiGlareShield" to "Anti-éblouissement",
-    "dimmable" to "Dimmable",
-    "luminousFlux" to "Flux lumineux (lm)",
-    "powerOnMode" to "Puissance en marche (W)",
-    "energyConsOnMode" to "Consommation (kWh/1000h)",
-    "powerStandby" to "Puissance en veille (W)",
-    "powerStandbyNetworked" to "Veille réseau (W)",
-    "beamAngle" to "Angle de faisceau (°)",
-    "beamAngleCorrespondence" to "Type de faisceau",
-    "peakLuminousIntensity" to "Intensité crête (cd)",
-    "correlatedColourTempMax" to "Température de couleur (K)",
-    "correlatedColourTempMin" to "Temp. couleur min (K)",
-    "colourRenderingIndex" to "Indice de rendu des couleurs (CRI)",
-    "minColourRenderingIndex" to "CRI minimum",
-    "maxColourRenderingIndex" to "CRI maximum",
-    "r9ColourRenderingIndex" to "CRI R9",
-    "colourConsistency" to "Constance couleurs (MacAdam)",
-    "survivalFactor" to "Facteur de survie",
-    "lumenMaintenanceFactor" to "Conservation flux lumineux",
-    "displacementFactor" to "Facteur de déphasage",
-    "flickerMetric" to "Papillotement",
-    "stroboscopicEffectMetric" to "Effet stroboscopique",
-    "equivalentPower" to "Puissance équivalente (W)",
-    "claimEquivalentPower" to "Décl. puissance équivalente",
-    "claimLedReplaceFluorescent" to "Remplace fluorescent",
-    "envelope" to "Enveloppe",
+    "lightingTechnology" to R.string.eprel_field_lighting_technology,
+    "directional" to R.string.eprel_field_directional,
+    "capType" to R.string.eprel_field_cap_type,
+    "mains" to R.string.eprel_field_mains,
+    "connectedLightSource" to R.string.eprel_field_connected_light_source,
+    "colourTuneableLightSource" to R.string.eprel_field_colour_tuneable_light_source,
+    "highLuminanceLightSource" to R.string.eprel_field_high_luminance_light_source,
+    "antiGlareShield" to R.string.eprel_field_anti_glare_shield,
+    "dimmable" to R.string.eprel_field_dimmable,
+    "luminousFlux" to R.string.eprel_field_luminous_flux,
+    "powerOnMode" to R.string.eprel_field_power_on_mode,
+    "energyConsOnMode" to R.string.eprel_field_energy_cons_on_mode,
+    "powerStandby" to R.string.eprel_field_power_standby,
+    "powerStandbyNetworked" to R.string.eprel_field_power_standby_networked,
+    "beamAngle" to R.string.eprel_field_beam_angle,
+    "beamAngleCorrespondence" to R.string.eprel_field_beam_angle_correspondence,
+    "peakLuminousIntensity" to R.string.eprel_field_peak_luminous_intensity,
+    "correlatedColourTempMax" to R.string.eprel_field_correlated_colour_temp_max,
+    "correlatedColourTempMin" to R.string.eprel_field_correlated_colour_temp_min,
+    "colourRenderingIndex" to R.string.eprel_field_colour_rendering_index,
+    "minColourRenderingIndex" to R.string.eprel_field_min_colour_rendering_index,
+    "maxColourRenderingIndex" to R.string.eprel_field_max_colour_rendering_index,
+    "r9ColourRenderingIndex" to R.string.eprel_field_r9_colour_rendering_index,
+    "colourConsistency" to R.string.eprel_field_colour_consistency,
+    "survivalFactor" to R.string.eprel_field_survival_factor,
+    "lumenMaintenanceFactor" to R.string.eprel_field_lumen_maintenance_factor,
+    "displacementFactor" to R.string.eprel_field_displacement_factor,
+    "flickerMetric" to R.string.eprel_field_flicker_metric,
+    "stroboscopicEffectMetric" to R.string.eprel_field_stroboscopic_effect_metric,
+    "equivalentPower" to R.string.eprel_field_equivalent_power,
+    "claimEquivalentPower" to R.string.eprel_field_claim_equivalent_power,
+    "claimLedReplaceFluorescent" to R.string.eprel_field_claim_led_replace_fluorescent,
+    "envelope" to R.string.eprel_field_envelope,
     // Dimensions
-    "dimensionWidth" to "Largeur (mm)",
-    "dimensionHeight" to "Hauteur (mm)",
-    "dimensionDepth" to "Profondeur (mm)",
+    "dimensionWidth" to R.string.eprel_field_dimension_width,
+    "dimensionHeight" to R.string.eprel_field_dimension_height,
+    "dimensionDepth" to R.string.eprel_field_dimension_depth,
     // Electronic display
-    "diagonalCm" to "Diagonale (cm)",
-    "diagonalInch" to "Diagonale (pouces)",
-    "panelTechnology" to "Technologie panneau",
-    "resolutionHorizontalPixels" to "Résolution horizontale (px)",
-    "resolutionVerticalPixels" to "Résolution verticale (px)",
-    "displayCategory" to "Catégorie d'écran",
-    "powerOnModeSDR" to "Puissance SDR (W)",
-    "energyClassHDR" to "Classe énergie HDR",
+    "diagonalCm" to R.string.eprel_field_diagonal_cm,
+    "diagonalInch" to R.string.eprel_field_diagonal_inch,
+    "panelTechnology" to R.string.eprel_field_panel_technology,
+    "resolutionHorizontalPixels" to R.string.eprel_field_resolution_horizontal_pixels,
+    "resolutionVerticalPixels" to R.string.eprel_field_resolution_vertical_pixels,
+    "displayCategory" to R.string.eprel_field_display_category,
+    "powerOnModeSDR" to R.string.eprel_field_power_on_mode_sdr,
+    "energyClassHDR" to R.string.eprel_field_energy_class_hdr,
     // Washing machine / dishwasher
-    "ratedCapacity" to "Capacité nominale (kg)",
-    "spinDryingEfficiencyClass" to "Classe essorage",
-    "dryingEfficiencyClass" to "Classe séchage",
-    "waterConsumption" to "Consommation d'eau (L)",
-    "programmeDurationRated" to "Durée programme (min)",
+    "ratedCapacity" to R.string.eprel_field_rated_capacity,
+    "spinDryingEfficiencyClass" to R.string.eprel_field_spin_drying_efficiency_class,
+    "dryingEfficiencyClass" to R.string.eprel_field_drying_efficiency_class,
+    "waterConsumption" to R.string.eprel_field_water_consumption,
+    "programmeDurationRated" to R.string.eprel_field_programme_duration_rated,
     // Refrigerating appliance
-    "totalVolume" to "Volume total (L)",
-    "freezerVolume" to "Volume congélateur (L)",
-    "energyConsAnnual" to "Consommation annuelle (kWh)",
-    "applianceType" to "Type d'appareil",
-    "cabinetFamilyCode" to "Code famille armoire",
+    "totalVolume" to R.string.eprel_field_total_volume,
+    "freezerVolume" to R.string.eprel_field_freezer_volume,
+    "energyConsAnnual" to R.string.eprel_field_energy_cons_annual,
+    "applianceType" to R.string.eprel_field_appliance_type,
+    "cabinetFamilyCode" to R.string.eprel_field_cabinet_family_code,
     // Tyre
-    "tyreDesignation" to "Désignation du pneu",
-    "tyreClass" to "Classe du pneu",
-    "severeSnowTyre" to "Pneu neige sévère",
-    "iceTyre" to "Pneu verglas",
+    "tyreDesignation" to R.string.eprel_field_tyre_designation,
+    "tyreClass" to R.string.eprel_field_tyre_class,
+    "severeSnowTyre" to R.string.eprel_field_severe_snow_tyre,
+    "iceTyre" to R.string.eprel_field_ice_tyre,
     // General
-    "guaranteeDuration" to "Durée de garantie (mois)",
-    "onMarketEndDate" to "Fin de commercialisation",
-    "supplierOrTrademark" to "Fournisseur",
+    "guaranteeDuration" to R.string.eprel_field_guarantee_duration,
+    "onMarketEndDate" to R.string.eprel_field_on_market_end_date,
+    "supplierOrTrademark" to R.string.eprel_field_supplier_or_trademark,
     // Contact
-    "contactDetails" to "Coordonnées fabricant"
+    "contactDetails" to R.string.eprel_field_contact_details
 )
 
-/** Maps EPREL directional codes to readable labels. */
+/** Maps EPREL values to localized labels. */
+@Composable
 private fun formatEprelValue(key: String, value: Any?): String {
-    if (value == null) return "—"
+    if (value == null) return stringResource(R.string.eprel_value_not_available)
     return when {
-        value is Boolean -> if (value) "Oui" else "Non"
+        value is Boolean -> stringResource(
+            if (value) R.string.eprel_value_yes else R.string.eprel_value_no
+        )
         value is Number && value.toDouble() == value.toDouble().toLong().toDouble() ->
-            value.toLong().toString()
-        value is Number -> String.format("%.2f", value.toDouble())
+            NumberFormat.getIntegerInstance(Locale.getDefault()).format(value.toLong())
+        value is Number -> formatDecimal(value.toDouble(), maxFractionDigits = 2)
         key == "directional" -> when (value.toString()) {
-            "DLS" -> "Dirigée"
-            "NDLS" -> "Non-dirigée"
+            "DLS" -> stringResource(R.string.eprel_value_directional_directed)
+            "NDLS" -> stringResource(R.string.eprel_value_directional_non_directed)
             else -> value.toString()
         }
         key == "mains" -> when (value.toString()) {
-            "MLS" -> "Secteur"
-            "NMLS" -> "Non-secteur"
+            "MLS" -> stringResource(R.string.eprel_value_mains_mains)
+            "NMLS" -> stringResource(R.string.eprel_value_mains_non_mains)
             else -> value.toString()
         }
         key == "dimmable" -> when (value.toString()) {
-            "NO" -> "Non"
-            "YES" -> "Oui"
-            "SPECIFIC" -> "Spécifique"
+            "NO" -> stringResource(R.string.eprel_value_no)
+            "YES" -> stringResource(R.string.eprel_value_yes)
+            "SPECIFIC" -> stringResource(R.string.eprel_value_specific)
             else -> value.toString()
         }
         key == "beamAngleCorrespondence" -> when (value.toString()) {
-            "SPHERE_360" -> "Sphère 360°"
-            "WIDE_CONE_120" -> "Cône large 120°"
-            "NARROW_CONE_90" -> "Cône étroit 90°"
+            "SPHERE_360" -> stringResource(R.string.eprel_value_beam_sphere)
+            "WIDE_CONE_120" -> stringResource(R.string.eprel_value_beam_wide)
+            "NARROW_CONE_90" -> stringResource(R.string.eprel_value_beam_narrow)
             else -> value.toString()
         }
         key == "applianceType" -> when (value.toString()) {
-            "BEVERAGE_COOLER" -> "Refroidisseur de boissons"
-            "WINE_STORAGE" -> "Cave à vin"
-            "REFRIGERATOR" -> "Réfrigérateur"
-            "FREEZER" -> "Congélateur"
+            "BEVERAGE_COOLER" -> stringResource(R.string.eprel_appliance_beverage_cooler)
+            "WINE_STORAGE" -> stringResource(R.string.eprel_appliance_wine_storage)
+            "REFRIGERATOR" -> stringResource(R.string.eprel_appliance_refrigerator)
+            "FREEZER" -> stringResource(R.string.eprel_appliance_freezer)
             else -> value.toString().replace("_", " ").lowercase()
                 .replaceFirstChar { it.uppercase() }
         }
-        // contactDetails is a map — format it nicely
         value is Map<*, *> -> {
             val parts = mutableListOf<String>()
             (value["serviceName"] as? String)?.let { parts.add(it) }
             (value["email"] as? String)?.let { parts.add(it) }
             (value["phone"] as? String)?.let { parts.add(it) }
             (value["webSiteURL"] as? String)?.let { parts.add(it) }
-            val addr = buildString {
+            val address = buildString {
                 (value["addressBloc"] as? String)?.let { append(it) }
                 if (isEmpty()) {
-                    val street = (value["street"] as? String) ?: ""
-                    val num = (value["streetNumber"] as? String) ?: ""
-                    val city = (value["city"] as? String)?.trim() ?: ""
-                    val postal = (value["postalCode"] as? String) ?: ""
+                    val street = (value["street"] as? String).orEmpty()
+                    val streetNumber = (value["streetNumber"] as? String).orEmpty()
+                    val city = (value["city"] as? String)?.trim().orEmpty()
+                    val postalCode = (value["postalCode"] as? String).orEmpty()
                     if (street.isNotBlank() || city.isNotBlank()) {
-                        append("$street $num, $postal $city".trim())
+                        append(
+                            stringResource(
+                                R.string.eprel_contact_address_format,
+                                street,
+                                streetNumber,
+                                postalCode,
+                                city
+                            )
+                                .replace(Regex("\\s+,\\s+"), ", ")
+                                .replace(Regex("\\s{2,}"), " ")
+                                .trim()
+                        )
                     }
                 }
             }
-            if (addr.isNotBlank()) parts.add(addr)
+            if (address.isNotBlank()) parts.add(address)
             parts.joinToString("\n")
         }
-        // Lists (like correlatedColourTemp)
         value is List<*> -> {
             value.joinToString(", ") { item ->
                 if (item is Map<*, *>) {
                     item.values.filterNotNull()
                         .filter { it.toString() != "null" }
                         .joinToString(" ")
-                } else item.toString()
+                } else {
+                    item.toString()
+                }
             }
         }
         else -> value.toString()
@@ -1026,28 +1048,12 @@ private fun EprelDetailsSection(
     details: Map<String, Any?>,
     modifier: Modifier = Modifier
 ) {
-    val groupTitle = when (productGroup) {
-        "lightsources" -> "Source lumineuse"
-        "electronicdisplays", "electronicdisplays20232766" -> "Écran électronique"
-        "washingmachines", "washingmachines2019" -> "Lave-linge"
-        "dishwashers2019" -> "Lave-vaisselle"
-        "refrigeratingappliances", "refrigeratingappliances2019",
-        "refrigeratingappliancesdirectsalesfunction" -> "Réfrigérateur"
-        "tumbledryers", "tumbledryers20232534" -> "Sèche-linge"
-        "tyres" -> "Pneumatique"
-        "smartphonestablets20231669" -> "Smartphone / Tablette"
-        "airconditioners" -> "Climatiseur"
-        "spaceheaters", "localspaceheaters" -> "Chauffage"
-        "waterheaters" -> "Chauffe-eau"
-        "ovens" -> "Four"
-        "rangehoods" -> "Hotte"
-        "washerdryers" -> "Lave-linge séchant"
-        else -> "Détails produit"
-    }
+    val groupTitle = stringResource(getEprelGroupTitleResId(productGroup))
+    val notAvailableValue = stringResource(R.string.eprel_value_not_available)
 
     MetricCard(
         icon = Icons.Filled.Info,
-        title = "Détails EPREL — $groupTitle",
+        title = stringResource(R.string.eprel_details_title, groupTitle),
         iconColor = Color(0xFF1976D2)
     ) {
         Column(modifier = modifier.fillMaxWidth()) {
@@ -1061,14 +1067,12 @@ private fun EprelDetailsSection(
                 if (key.contains("Image") || key.contains("image")) continue
                 if (key.contains("spectral")) continue
 
-                val label = EPREL_FIELD_LABELS[key]
-                    ?: key.replace(Regex("([A-Z])"), " $1")
-                        .trim()
-                        .replaceFirstChar { it.uppercase() }
+                val label = EPREL_FIELD_LABELS[key]?.let { stringResource(it) }
+                    ?: formatEprelFallbackLabel(key)
 
                 val formattedValue = formatEprelValue(key, value)
 
-                if (formattedValue.isNotBlank() && formattedValue != "—") {
+                if (formattedValue.isNotBlank() && formattedValue != notAvailableValue) {
                     // For multi-line values (contactDetails), use a column layout
                     if (formattedValue.contains("\n")) {
                         Column(
@@ -1101,18 +1105,44 @@ private fun EprelDetailsSection(
 
 // ===== COLOR HELPERS =====
 
-private fun getCategoryLabel(category: ProductCategory): String {
-    return when (category) {
-        ProductCategory.ELECTRONIQUE -> "Électronique"
-        ProductCategory.ELECTROMENAGER -> "Électroménager"
-        ProductCategory.ECLAIRAGE -> "Éclairage"
-        ProductCategory.GAMING -> "Gaming"
-        ProductCategory.CLIMATISATION -> "Climatisation"
-        ProductCategory.INFORMATIQUE -> "Informatique"
-        ProductCategory.TELEPHONIE -> "Téléphonie"
-        ProductCategory.AUDIO_VIDEO -> "Audio/Vidéo"
-        ProductCategory.OTHER -> "Autre"
+@StringRes
+private fun getEprelGroupTitleResId(productGroup: String?): Int {
+    return when (productGroup) {
+        "lightsources" -> R.string.eprel_group_light_source
+        "electronicdisplays", "electronicdisplays20232766" -> R.string.eprel_group_electronic_display
+        "washingmachines", "washingmachines2019" -> R.string.eprel_group_washing_machine
+        "dishwashers2019" -> R.string.eprel_group_dishwasher
+        "refrigeratingappliances", "refrigeratingappliances2019",
+        "refrigeratingappliancesdirectsalesfunction" -> R.string.eprel_group_refrigerator
+        "tumbledryers", "tumbledryers20232534" -> R.string.eprel_group_tumble_dryer
+        "tyres" -> R.string.eprel_group_tyre
+        "smartphonestablets20231669" -> R.string.eprel_group_smartphone_tablet
+        "airconditioners" -> R.string.eprel_group_air_conditioner
+        "spaceheaters", "localspaceheaters" -> R.string.eprel_group_space_heater
+        "waterheaters" -> R.string.eprel_group_water_heater
+        "ovens" -> R.string.eprel_group_oven
+        "rangehoods" -> R.string.eprel_group_range_hood
+        "washerdryers" -> R.string.eprel_group_washer_dryer
+        else -> R.string.eprel_group_product_details
     }
+}
+
+private fun formatDecimal(
+    value: Double,
+    minFractionDigits: Int = 0,
+    maxFractionDigits: Int = minFractionDigits
+): String {
+    return NumberFormat.getNumberInstance(Locale.getDefault()).run {
+        minimumFractionDigits = minFractionDigits
+        maximumFractionDigits = maxFractionDigits
+        format(value)
+    }
+}
+
+private fun formatEprelFallbackLabel(key: String): String {
+    return key.replace(Regex("([A-Z])"), " $1")
+        .trim()
+        .replaceFirstChar { it.uppercase() }
 }
 
 private fun getNoiseColor(db: Int): Color {

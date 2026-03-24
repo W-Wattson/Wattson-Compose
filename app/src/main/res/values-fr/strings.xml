@@ -63,6 +63,7 @@
     <string name="label_scan_not_ready">L\'etiquette n\'est pas encore assez lisible</string>
     <string name="label_scan_ready">Etiquette detectee, ne bougez plus</string>
     <string name="label_scan_helper">Gardez toute l\'etiquette visible, bien droite et assez proche pour que le QR code et le texte du bas restent nets</string>
+    <string name="label_scan_capture_failed">Impossible de lire l\'identifiant EPREL. Recadrez l\'etiquette ou utilisez la recherche manuelle.</string>
     <string name="camera_access_required">Accès à la caméra requis</string>
     <string name="camera_access_description">Pour scanner les codes-barres des produits, Wattson a besoin d\'accéder à votre caméra.</string>
     <string name="allow_access">Autoriser l\'accès</string>
@@ -159,6 +160,14 @@
     <string name="documents_suffix">documents</string>
     <string name="preferences_explanation">L\'ordre de vos préférences ajuste l\'algorithme du Score Wattson. Vos critères prioritaires auront plus de poids dans la note finale des produits scannés.</string>
     <string name="premium_member">Membre premium</string>
+    <string name="account_settings_title">Paramètres</string>
+    <string name="account_language_label">Langue de l\'application</string>
+    <string name="account_language_description">Choisissez la langue utilisée dans toute l\'application</string>
+    <string name="account_language_dialog_title">Choisir la langue de l\'application</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_french">Français</string>
+    <string name="account_danger_zone_title">Zone de danger</string>
+    <string name="account_danger_zone_description">La suppression du compte efface définitivement votre profil, vos documents et votre historique de scans.</string>
     <string name="sign_out">Déconnexion</string>
     <string name="logout_title">Se déconnecter ?</string>
     <string name="logout_confirmation">Êtes-vous sûr de vouloir vous déconnecter de votre compte Wattson ?</string>
@@ -167,6 +176,11 @@
     <string name="error_prefix">Erreur : %s</string>
     <string name="processing">Traitement…</string>
     
+    <string name="delete_account">Supprimer mon compte</string>
+    <string name="delete_account_title">Supprimer votre compte ?</string>
+    <string name="delete_account_confirmation">Cette action est irréversible. Toutes vos données (profil, documents, historique des scans) seront supprimées définitivement conformément au RGPD. Vous serez déconnecté immédiatement.</string>
+    <string name="delete_account_confirm">Supprimer définitivement</string>
+
     <!-- Premium Screen -->
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Passez à Premium pour profiter de tous les avantages</string>

@@ -19,16 +19,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wattson.R
 import com.wattson.domain.model.EnergyClass
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 import com.wattson.ui.theme.getEnergyClassColor
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * Energy class badge showing A-G rating for products.
@@ -135,7 +139,7 @@ private fun EnergyBadgePlaceholder(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "—",
+            text = stringResource(R.string.energy_badge_placeholder),
             style = MaterialTheme.typography.labelLarge,
             fontSize = size.fontSize,
             fontWeight = FontWeight.Bold,
@@ -186,7 +190,7 @@ fun RepairabilityBadge(
     if (score == null) {
         if (showLabel) {
             Text(
-                text = "Indice: N/A",
+                text = stringResource(R.string.repairability_not_available),
                 style = MaterialTheme.typography.bodySmall,
                 color = WattsonColors.OnSurfaceVariant,
                 modifier = modifier
@@ -208,14 +212,19 @@ fun RepairabilityBadge(
     ) {
         if (showLabel) {
             Text(
-                text = "Indice de réparabilité :",
+                text = stringResource(R.string.repairability_label),
                 style = MaterialTheme.typography.bodySmall,
                 color = WattsonColors.OnSurfaceVariant
             )
         }
 
+        val scoreText = NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+            minimumFractionDigits = 1
+            maximumFractionDigits = 1
+        }.format(score)
+
         Text(
-            text = String.format("%.1f/10", score),
+            text = stringResource(R.string.score_out_of_ten, scoreText),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = color
@@ -240,7 +249,7 @@ fun GlobalScoreBadge(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Score:",
+            text = stringResource(R.string.global_score_label),
             style = MaterialTheme.typography.labelSmall,
             color = WattsonColors.OnSurfaceVariant
         )

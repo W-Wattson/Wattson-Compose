@@ -61,6 +61,7 @@
     <string name="label_scan_not_ready">Label not fully readable yet</string>
     <string name="label_scan_ready">Label detected, hold steady</string>
     <string name="label_scan_helper">Keep the whole label visible, upright, and close enough for the QR and bottom text to stay sharp</string>
+    <string name="label_scan_capture_failed">Unable to read the EPREL label. Reframe it or use manual search.</string>
     <string name="camera_access_required">Camera access required</string>
     <string name="camera_access_description">To scan product barcodes, Wattson needs to access your camera.</string>
     <string name="allow_access">Allow access</string>
@@ -156,6 +157,14 @@
     <string name="documents_suffix">documents</string>
     <string name="preferences_explanation">The order of your preferences adjusts the Wattson Score algorithm. Your priority criteria will have more weight in the final rating of scanned products.</string>
     <string name="premium_member">Premium member</string>
+    <string name="account_settings_title">Settings</string>
+    <string name="account_language_label">App language</string>
+    <string name="account_language_description">Choose the language used throughout the app</string>
+    <string name="account_language_dialog_title">Choose app language</string>
+    <string name="language_name_english">English</string>
+    <string name="language_name_french">Français</string>
+    <string name="account_danger_zone_title">Danger zone</string>
+    <string name="account_danger_zone_description">Deleting your account permanently removes your profile, documents, and scan history.</string>
     <string name="sign_out">Sign out</string>
     <string name="logout_title">Sign out?</string>
     <string name="logout_confirmation">Are you sure you want to sign out of your Wattson account?</string>
