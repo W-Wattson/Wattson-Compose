@@ -65,6 +65,7 @@ import com.wattson.ui.components.DocumentsEmptyState
 import com.wattson.ui.components.WattsonPageTitle
 import com.wattson.ui.components.WattsonSearchBar
 import com.wattson.ui.components.YearFilterChip
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
@@ -132,7 +133,9 @@ fun DocumentsScreen(
                     snackbarHostState.showSnackbar(context.getString(R.string.document_added_success, event.fileName))
                 }
                 is DocumentsEvent.ShowUploadError -> {
-                    snackbarHostState.showSnackbar("${context.getString(R.string.error)}: ${event.message}")
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.error_prefix, event.message.asString(context))
+                    )
                 }
                 is DocumentsEvent.ShowDeleteSuccess -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.document_deleted_success, event.documentName))
@@ -147,7 +150,9 @@ fun DocumentsScreen(
 
                         val request = DownloadManager.Request(Uri.parse(event.url)).apply {
                             setTitle(event.filename)
-                            setDescription("Wattson — Téléchargement")
+                            setDescription(
+                                context.getString(R.string.download_notification_description)
+                            )
                             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, event.filename)
                             setAllowedOverMetered(true)
@@ -155,7 +160,9 @@ fun DocumentsScreen(
                         }
 
                         dm.enqueue(request)
-                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.document_download_started)
+                        )
                     } catch (e: Exception) {
                         // fallback navigateur
                         try {
@@ -164,12 +171,16 @@ fun DocumentsScreen(
                             }
                             context.startActivity(intent)
                         } catch (_: Exception) {}
-                        snackbarHostState.showSnackbar("Téléchargement démarré")
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.document_download_started)
+                        )
                     }
                 }
 
                 is DocumentsEvent.ShowDownloadError -> {
-                    snackbarHostState.showSnackbar("${context.getString(R.string.error)}: ${event.message}")
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.error_prefix, event.message.asString(context))
+                    )
                 }
             }
         }
@@ -284,10 +295,10 @@ private fun getDisplayName(context: android.content.Context, uri: Uri): String {
     cursor?.use {
         val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
         if (nameIndex >= 0 && it.moveToFirst()) {
-            return it.getString(nameIndex) ?: "document"
+            return it.getString(nameIndex) ?: context.getString(R.string.document_generic_name)
         }
     }
-    return "document"
+    return context.getString(R.string.document_generic_name)
 }
 
 private fun getFileSize(context: android.content.Context, uri: Uri): Long {
@@ -525,7 +536,11 @@ private fun YearSectionHeader(
 
             Icon(
                 imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = if (isExpanded) "Réduire" else "Développer",
+                contentDescription = if (isExpanded) {
+                    stringResource(R.string.collapse)
+                } else {
+                    stringResource(R.string.expand)
+                },
                 tint = if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -636,7 +651,10 @@ private fun UploadProgressOverlay(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "${(progress * 100).toInt()}%",
+                    text = stringResource(
+                        R.string.upload_progress_percent,
+                        (progress * 100).toInt()
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

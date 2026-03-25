@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,10 +64,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.wattson.R
 import com.wattson.domain.model.ChatMessage
 import com.wattson.domain.model.MessageRole
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 /**
  * Chat screen for conversing with the AI repair assistant.
@@ -82,6 +87,7 @@ fun RepairChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     // Handle one-shot events
     LaunchedEffect(Unit) {
@@ -93,7 +99,7 @@ fun RepairChatScreen(
                         listState.animateScrollToItem(itemCount - 1)
                     }
                 }
-                is RepairChatEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is RepairChatEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString(context))
             }
         }
     }
@@ -217,9 +223,11 @@ private fun WelcomeMessage() {
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "🔧",
-                style = MaterialTheme.typography.headlineMedium
+            Icon(
+                imageVector = Icons.Filled.Build,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
             )
         }
 
@@ -396,7 +404,8 @@ private fun ChatInputBar(
 }
 
 private fun formatMessageTime(instant: Instant): String {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        .withLocale(Locale.getDefault())
         .withZone(ZoneId.systemDefault())
     return formatter.format(instant)
 }

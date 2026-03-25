@@ -1,9 +1,11 @@
 package com.wattson.data.repository
 
+import com.wattson.R
 import com.wattson.data.remote.api.WattsonApi
 import com.wattson.data.remote.dto.MobileSubscribeRequest
 import com.wattson.data.remote.dto.MobileSubscriptionResponse
-import org.json.JSONObject
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.UserFacingException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,11 +28,11 @@ class SubscriptionRepository @Inject constructor(
      *
      * @param priceId the Stripe Price ID for the chosen plan.
      * @return [MobileSubscriptionResponse] with clientSecret, ephemeralKey, etc.
-     * @throws SubscriptionException if the API call fails.
+     * @throws UserFacingException if the API call fails.
      */
     suspend fun createMobileSubscription(priceId: String): MobileSubscriptionResponse {
         val token = authRepository.getAccessToken()
-            ?: throw SubscriptionException("Non authentifié. Veuillez vous reconnecter.")
+            ?: throw paymentException()
 
         try {
             val response = api.createMobileSubscription(
@@ -42,32 +44,19 @@ class SubscriptionRepository @Inject constructor(
                 return response.body()!!
             }
 
-            // Parse error message from response
-            val errorMessage = try {
-                val errorBody = response.errorBody()?.string()
-                if (errorBody != null) {
-                    JSONObject(errorBody).optString("message", "Erreur lors de la création de l'abonnement")
-                } else {
-                    "Erreur lors de la création de l'abonnement (code: ${response.code()})"
-                }
-            } catch (e: Exception) {
-                "Erreur lors de la création de l'abonnement (code: ${response.code()})"
-            }
+            throw paymentException()
 
-            throw SubscriptionException(errorMessage)
-
-        } catch (e: SubscriptionException) {
+        } catch (e: UserFacingException) {
             throw e
         } catch (e: Exception) {
-            throw SubscriptionException("Erreur réseau: ${e.message}", e)
+            throw paymentException(e)
         }
     }
 
-    /**
-     * Exception thrown when a subscription operation fails.
-     */
-    class SubscriptionException(
-        message: String,
-        cause: Throwable? = null
-    ) : RuntimeException(message, cause)
+    private fun paymentException(cause: Throwable? = null): UserFacingException {
+        return UserFacingException(
+            UiText.StringResource(R.string.error_payment_generic),
+            cause
+        )
+    }
 }

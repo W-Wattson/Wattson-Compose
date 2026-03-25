@@ -7,9 +7,13 @@ import android.os.Environment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
+import com.wattson.domain.model.DocumentType
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,9 +26,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
-/**
- * UI State for the Document Detail screen.
- */
 data class DocumentDetailUiState(
     val isLoading: Boolean = false,
     val document: Document? = null,
@@ -32,24 +33,18 @@ data class DocumentDetailUiState(
     val daysUntilWarrantyExpiry: Int? = null,
     val showDeleteConfirmation: Boolean = false,
     val showShareSheet: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: UiText? = null
 )
 
-/**
- * One-shot events for document detail screen.
- */
 sealed interface DocumentDetailEvent {
     data object NavigateBack : DocumentDetailEvent
     data class OpenDocument(val url: String) : DocumentDetailEvent
     data class ShareDocument(val url: String) : DocumentDetailEvent
-    data class ShowError(val message: String) : DocumentDetailEvent
+    data class ShowError(val message: UiText) : DocumentDetailEvent
     data object DocumentDeleted : DocumentDetailEvent
     data object DownloadStarted : DocumentDetailEvent
 }
 
-/**
- * User intents for document detail screen.
- */
 sealed interface DocumentDetailIntent {
     data object LoadDocument : DocumentDetailIntent
     data object OpenDocument : DocumentDetailIntent
@@ -62,10 +57,6 @@ sealed interface DocumentDetailIntent {
     data object NavigateBack : DocumentDetailIntent
 }
 
-/**
- * ViewModel for the Document Detail screen.
- * Displays full document information with actions, backed by real API.
- */
 @HiltViewModel
 class DocumentDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -86,9 +77,6 @@ class DocumentDetailViewModel @Inject constructor(
         loadDocument()
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: DocumentDetailIntent) {
         when (intent) {
             is DocumentDetailIntent.LoadDocument -> loadDocument()
@@ -127,7 +115,9 @@ class DocumentDetailViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "Erreur lors du chargement"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_loading_generic)
+                                )
                             )
                         }
                     }
@@ -136,7 +126,9 @@ class DocumentDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors du chargement"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_loading_generic)
+                        )
                     )
                 }
             }
@@ -154,15 +146,21 @@ class DocumentDetailViewModel @Inject constructor(
                         _events.emit(DocumentDetailEvent.OpenDocument(downloadInfo.url))
                     },
                     onFailure = { error ->
-                        _events.emit(DocumentDetailEvent.ShowError(
-                            error.message ?: "Impossible d'obtenir l'URL du document"
-                        ))
+                        _events.emit(
+                            DocumentDetailEvent.ShowError(
+                                error.toUiTextOr(
+                                    UiText.StringResource(R.string.doc_detail_get_url_error)
+                                )
+                            )
+                        )
                     }
                 )
             } catch (e: Exception) {
-                _events.emit(DocumentDetailEvent.ShowError(
-                    e.message ?: "Erreur lors de l'ouverture"
-                ))
+                _events.emit(
+                    DocumentDetailEvent.ShowError(
+                        e.toUiTextOr(UiText.StringResource(R.string.error_open_generic))
+                    )
+                )
             }
         }
     }
@@ -178,15 +176,21 @@ class DocumentDetailViewModel @Inject constructor(
                         _events.emit(DocumentDetailEvent.ShareDocument(downloadInfo.url))
                     },
                     onFailure = { error ->
-                        _events.emit(DocumentDetailEvent.ShowError(
-                            error.message ?: "Impossible de partager le document"
-                        ))
+                        _events.emit(
+                            DocumentDetailEvent.ShowError(
+                                error.toUiTextOr(
+                                    UiText.StringResource(R.string.doc_detail_share_error)
+                                )
+                            )
+                        )
                     }
                 )
             } catch (e: Exception) {
-                _events.emit(DocumentDetailEvent.ShowError(
-                    e.message ?: "Erreur lors du partage"
-                ))
+                _events.emit(
+                    DocumentDetailEvent.ShowError(
+                        e.toUiTextOr(UiText.StringResource(R.string.error_share_generic))
+                    )
+                )
             }
         }
     }
@@ -200,37 +204,52 @@ class DocumentDetailViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { downloadInfo ->
                         try {
-                            val downloadManager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                            val downloadManager =
+                                appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                             val uri = Uri.parse(downloadInfo.url)
-                            val filename = document.filename ?: "document_${document.id}"
+                            val filename = document.filename ?: appContext.getString(
+                                R.string.document_generic_filename,
+                                document.id
+                            )
 
                             val request = DownloadManager.Request(uri).apply {
                                 setTitle(filename)
-                                setDescription("Wattson — Téléchargement")
-                                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
-                                // Allow all network types
+                                setDescription(
+                                    appContext.getString(R.string.download_notification_description)
+                                )
+                                setNotificationVisibility(
+                                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                                )
+                                setDestinationInExternalPublicDir(
+                                    Environment.DIRECTORY_DOWNLOADS,
+                                    filename
+                                )
                                 setAllowedOverMetered(true)
                                 setAllowedOverRoaming(true)
                             }
 
                             downloadManager.enqueue(request)
                             _events.emit(DocumentDetailEvent.DownloadStarted)
-                        } catch (e: Exception) {
-                            // Fallback: open URL in browser
+                        } catch (_: Exception) {
                             _events.emit(DocumentDetailEvent.OpenDocument(downloadInfo.url))
                         }
                     },
                     onFailure = { error ->
-                        _events.emit(DocumentDetailEvent.ShowError(
-                            error.message ?: "Impossible de télécharger"
-                        ))
+                        _events.emit(
+                            DocumentDetailEvent.ShowError(
+                                error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_download_generic)
+                                )
+                            )
+                        )
                     }
                 )
             } catch (e: Exception) {
-                _events.emit(DocumentDetailEvent.ShowError(
-                    e.message ?: "Erreur lors du téléchargement"
-                ))
+                _events.emit(
+                    DocumentDetailEvent.ShowError(
+                        e.toUiTextOr(UiText.StringResource(R.string.error_download_generic))
+                    )
+                )
             }
         }
     }
@@ -256,7 +275,9 @@ class DocumentDetailViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "Erreur lors de la suppression"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_delete_generic)
+                                )
                             )
                         }
                     }
@@ -265,7 +286,9 @@ class DocumentDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors de la suppression"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_delete_generic)
+                        )
                     )
                 }
             }
@@ -289,13 +312,15 @@ class DocumentDetailViewModel @Inject constructor(
     private fun calculateWarrantyInfo(document: Document): Pair<Boolean, Int?> {
         val startDate = document.metadata.warrantyStartDate ?: document.metadata.purchaseDate
         val endDate = document.metadata.warrantyEndDate
-            ?: if (document.type == com.wattson.domain.model.DocumentType.GARANTIE && startDate != null) {
+            ?: if (document.type == DocumentType.GARANTIE && startDate != null) {
                 startDate.plusMonths(24)
             } else {
                 null
             }
 
-        if (endDate == null) return Pair(false, null)
+        if (endDate == null) {
+            return false to null
+        }
 
         val today = LocalDate.now()
         val isActive = endDate.isAfter(today) || endDate.isEqual(today)
@@ -305,6 +330,6 @@ class DocumentDetailViewModel @Inject constructor(
             null
         }
 
-        return Pair(isActive, daysRemaining)
+        return isActive to daysRemaining
     }
 }

@@ -1,6 +1,7 @@
 package com.wattson.data.repository
 
 import android.util.Log
+import com.wattson.R
 import com.wattson.data.remote.api.ConversationResponse
 import com.wattson.data.remote.api.CreateConversationRequest
 import com.wattson.data.remote.api.RepairMessageResponse
@@ -9,6 +10,8 @@ import com.wattson.data.remote.api.WattsonApi
 import com.wattson.domain.model.ChatMessage
 import com.wattson.domain.model.MessageRole
 import com.wattson.domain.model.RepairConversation
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.UserFacingException
 import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,13 +55,21 @@ class RepairChatRepository @Inject constructor(
                 Log.d(TAG, "Loaded ${messages.size} messages for conversation $conversationId")
                 Result.success(messages.map { it.toDomain(conversationId) })
             } else {
-                val message = "Erreur serveur: ${response.code()}"
                 Log.e(TAG, "Failed to load messages: ${response.code()} - ${response.message()}")
-                Result.failure(RuntimeException(message))
+                Result.failure(
+                    UserFacingException(
+                        UiText.StringResource(R.string.error_loading_generic)
+                    )
+                )
             }
         } catch (exception: Exception) {
             Log.e(TAG, "Error loading messages: ${exception.message}", exception)
-            Result.failure(exception)
+            Result.failure(
+                UserFacingException(
+                    UiText.StringResource(R.string.error_loading_generic),
+                    exception
+                )
+            )
         }
     }
 
@@ -103,7 +114,7 @@ class RepairChatRepository @Inject constructor(
                     conversation
                 } else {
                     Log.e(TAG, "Failed to create conversation: ${response.code()}")
-                    throw RuntimeException("Failed to create conversation: ${response.code()}")
+                    throw UserFacingException(UiText.StringResource(R.string.error_create_generic))
                 }
             } catch (exception: Exception) {
                 Log.e(TAG, "Error creating conversation: ${exception.message}", exception)
@@ -114,7 +125,8 @@ class RepairChatRepository @Inject constructor(
     /**
      * Sends a user message and returns the assistant response.
      *
-     * @throws PremiumRequiredException when the backend rejects the request for a free plan.
+     * @throws UserFacingException when the backend returns a message that should be surfaced
+     * directly to the UI layer.
      */
     suspend fun sendMessageAndGetResponse(
         conversationId: String,
@@ -138,16 +150,16 @@ class RepairChatRepository @Inject constructor(
                 message
             } else if (response.code() == 403) {
                 Log.w(TAG, "Premium required for repair chat")
-                throw PremiumRequiredException()
+                throw UserFacingException(UiText.StringResource(R.string.repair_premium_required))
             } else {
                 Log.e(TAG, "Failed to send message: ${response.code()} - ${response.message()}")
-                throw RuntimeException("Erreur serveur: ${response.code()}")
+                throw UserFacingException(UiText.StringResource(R.string.error_send_generic))
             }
-        } catch (exception: PremiumRequiredException) {
-            throw exception
-        } catch (exception: Exception) {
-            Log.e(TAG, "Error sending message: ${exception.message}", exception)
-            throw exception
+        } catch (e: UserFacingException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending message: ${e.message}", e)
+            throw e
         }
     }
 
@@ -202,9 +214,4 @@ class RepairChatRepository @Inject constructor(
         }
     }
 
-    /**
-     * Thrown when the repair assistant is restricted to premium subscribers.
-     */
-    class PremiumRequiredException :
-        RuntimeException("L'assistant de reparation necessite un abonnement Premium.")
 }

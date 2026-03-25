@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,11 +54,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.wattson.R
 import com.wattson.domain.model.RepairConversation
 import com.wattson.ui.components.WattsonPageTitle
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 /**
  * Repair screen displaying the conversation history with the AI repair assistant.
@@ -71,13 +75,14 @@ fun RepairScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     // Handle one-shot events
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is RepairEvent.NavigateToChat -> onNavigateToChat(event.conversationId)
-                is RepairEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is RepairEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString(context))
             }
         }
     }
@@ -226,7 +231,7 @@ private fun ConversationCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = formatRelativeDate(conversation.updatedAt),
+                    text = formatRelativeDate(LocalContext.current, conversation.updatedAt),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
@@ -313,27 +318,31 @@ private fun EmptyConversationsCard(
     }
 }
 
-private fun formatRelativeDate(instant: Instant): String {
+private fun formatRelativeDate(
+    context: android.content.Context,
+    instant: Instant
+): String {
     val now = Instant.now()
     val today = now.truncatedTo(ChronoUnit.DAYS)
     val messageDay = instant.truncatedTo(ChronoUnit.DAYS)
+    val locale = Locale.getDefault()
+    val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        .withLocale(locale)
+        .withZone(ZoneId.systemDefault())
 
     return when {
-        messageDay == today -> {
-            val formatter = DateTimeFormatter.ofPattern("HH:mm")
-                .withZone(ZoneId.systemDefault())
-            "Aujourd'hui, ${formatter.format(instant)}"
-        }
-        messageDay == today.minus(1, ChronoUnit.DAYS) -> {
-            val formatter = DateTimeFormatter.ofPattern("HH:mm")
-                .withZone(ZoneId.systemDefault())
-            "Hier, ${formatter.format(instant)}"
-        }
-        else -> {
-            val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
-                .withZone(ZoneId.systemDefault())
-            formatter.format(instant)
-        }
+        messageDay == today -> context.getString(
+            R.string.repair_date_today,
+            timeFormatter.format(instant)
+        )
+        messageDay == today.minus(1, ChronoUnit.DAYS) -> context.getString(
+            R.string.repair_date_yesterday,
+            timeFormatter.format(instant)
+        )
+        else -> DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+            .withLocale(locale)
+            .withZone(ZoneId.systemDefault())
+            .format(instant)
     }
 }
 

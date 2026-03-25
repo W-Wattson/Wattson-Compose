@@ -81,6 +81,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.wattson.R
 import com.wattson.ui.components.WattsonButton
 import com.wattson.ui.components.WattsonOutlinedButton
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
@@ -277,7 +278,7 @@ fun ScanScreen(
                 .padding(32.dp)
         ) {
             ErrorBanner(
-                message = uiState.errorMessage ?: "",
+                message = uiState.errorMessage?.asString() ?: "",
                 onDismiss = { onIntent(ScanIntent.DismissError) },
                 onRetry = { onIntent(ScanIntent.RetryLastScan) }
             )
@@ -323,7 +324,7 @@ private fun CameraPreviewContent(
                 currentOnLabelPreviewFrame(bitmap)
             },
             onLabelCaptureFailed = { error ->
-                currentOnLabelCaptureFailed(error.message ?: "Label capture failed")
+                currentOnLabelCaptureFailed(error.message.orEmpty())
             },
             onError = { /* Ignore camera analysis errors silently */ }
         )
@@ -636,25 +637,25 @@ private fun ErrorBanner(
  */
 private data class EprelCategory(
     val apiName: String,
-    val displayName: String
+    val displayNameResId: Int
 )
 
 private val EPREL_CATEGORIES = listOf(
-    EprelCategory("lightsources", "Sources lumineuses"),
-    EprelCategory("electronicdisplays", "Écrans / TV"),
-    EprelCategory("washingmachines2019", "Lave-linge"),
-    EprelCategory("washerdryers", "Lave-linge séchant"),
-    EprelCategory("dishwashers2019", "Lave-vaisselle"),
-    EprelCategory("refrigeratingappliances2019", "Réfrigérateurs"),
-    EprelCategory("tumbledryers", "Sèche-linge"),
-    EprelCategory("ovens", "Fours"),
-    EprelCategory("rangehoods", "Hottes aspirantes"),
-    EprelCategory("airconditioners", "Climatiseurs"),
-    EprelCategory("tyres", "Pneus"),
-    EprelCategory("spaceheaters", "Chauffage"),
-    EprelCategory("waterheaters", "Chauffe-eau"),
-    EprelCategory("electronicdisplays20232766", "Écrans (2023)"),
-    EprelCategory("smartphonestablets20231669", "Smartphones / Tablettes")
+    EprelCategory("lightsources", R.string.eprel_category_lightsources),
+    EprelCategory("electronicdisplays", R.string.eprel_category_electronicdisplays),
+    EprelCategory("washingmachines2019", R.string.eprel_category_washingmachines),
+    EprelCategory("washerdryers", R.string.eprel_category_washerdryers),
+    EprelCategory("dishwashers2019", R.string.eprel_category_dishwashers),
+    EprelCategory("refrigeratingappliances2019", R.string.eprel_category_refrigerators),
+    EprelCategory("tumbledryers", R.string.eprel_category_tumbledryers),
+    EprelCategory("ovens", R.string.eprel_category_ovens),
+    EprelCategory("rangehoods", R.string.eprel_category_rangehoods),
+    EprelCategory("airconditioners", R.string.eprel_category_airconditioners),
+    EprelCategory("tyres", R.string.eprel_category_tyres),
+    EprelCategory("spaceheaters", R.string.eprel_category_spaceheaters),
+    EprelCategory("waterheaters", R.string.eprel_category_waterheaters),
+    EprelCategory("electronicdisplays20232766", R.string.eprel_category_electronicdisplays_2023),
+    EprelCategory("smartphonestablets20231669", R.string.eprel_category_smartphones_tablets)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -668,6 +669,7 @@ private fun EprelSearchBottomSheet(
     var selectedCategory by remember { mutableStateOf(EPREL_CATEGORIES[0]) }
     var registrationNumber by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+    val selectedCategoryName = stringResource(selectedCategory.displayNameResId)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -700,7 +702,7 @@ private fun EprelSearchBottomSheet(
                 onExpandedChange = { expanded = it }
             ) {
                 OutlinedTextField(
-                    value = selectedCategory.displayName,
+                    value = selectedCategoryName,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.eprel_category)) },
@@ -716,7 +718,7 @@ private fun EprelSearchBottomSheet(
                 ) {
                     EPREL_CATEGORIES.forEach { category ->
                         DropdownMenuItem(
-                            text = { Text(category.displayName) },
+                            text = { Text(stringResource(category.displayNameResId)) },
                             onClick = {
                                 selectedCategory = category
                                 expanded = false
@@ -731,7 +733,7 @@ private fun EprelSearchBottomSheet(
                 value = registrationNumber,
                 onValueChange = { registrationNumber = it.filter { c -> c.isLetterOrDigit() } },
                 label = { Text(stringResource(R.string.eprel_registration_number)) },
-                placeholder = { Text("ex: 2640403") },
+                placeholder = { Text(stringResource(R.string.eprel_registration_placeholder)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Search
@@ -795,7 +797,7 @@ private fun ProcessingOverlayPreview() {
 private fun ErrorBannerPreview() {
     WattsonPreviewTheme {
         ErrorBanner(
-            message = "Produit non trouvé dans notre base de données",
+            message = stringResource(R.string.scan_product_not_found_catalog),
             onDismiss = {},
             onRetry = {},
             modifier = Modifier.padding(16.dp)

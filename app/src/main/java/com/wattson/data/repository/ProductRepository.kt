@@ -1,6 +1,8 @@
 package com.wattson.data.repository
 
+import android.content.Context
 import com.google.gson.Gson
+import com.wattson.R
 import com.wattson.data.remote.api.WattsonApi
 import com.wattson.data.remote.dto.ProductDto
 import com.wattson.data.remote.dto.ScanRequest
@@ -8,9 +10,11 @@ import com.wattson.data.remote.dto.ScanResponse
 import com.wattson.domain.model.BarcodeFormat
 import com.wattson.domain.model.DEFAULT_EPREL_CATEGORY_IDS
 import com.wattson.domain.model.Product
+import com.wattson.domain.model.ProductCategory
 import com.wattson.domain.model.ResolvedEprelProduct
 import com.wattson.domain.model.Scan
 import com.wattson.domain.model.ScanResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +26,8 @@ import okhttp3.ResponseBody
  */
 @Singleton
 class ProductRepository @Inject constructor(
-    private val api: WattsonApi
+    private val api: WattsonApi,
+    @ApplicationContext private val appContext: Context
 ) {
     private val gson = Gson()
 
@@ -37,7 +42,7 @@ class ProductRepository @Inject constructor(
             } else if (response.code() == 404) {
                 Result.failure(ProductNotFoundException(ean))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("product_api_error:${response.code()}"))
             }
         } catch (exception: Exception) {
             android.util.Log.e("ProductRepository", "getProductByEan error", exception)
@@ -56,7 +61,7 @@ class ProductRepository @Inject constructor(
             } else if (response.code() == 404) {
                 Result.failure(ProductNotFoundException(id))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("product_api_error:${response.code()}"))
             }
         } catch (exception: Exception) {
             android.util.Log.e("ProductRepository", "getProductById error", exception)
@@ -71,7 +76,7 @@ class ProductRepository @Inject constructor(
         val normalizedEan = BarcodeNormalizer.normalizeToEan13(ean)
             ?: return@withContext ScanResult.NetworkError(
                 gtin = ean,
-                message = "Format de code-barres invalide. Seuls les codes EAN-13, EAN-8 et UPC-A sont supportes."
+                message = appContext.getString(R.string.scan_invalid_barcode_format)
             )
 
         try {
@@ -151,7 +156,7 @@ class ProductRepository @Inject constructor(
             } else if (response.code() == 404) {
                 Result.failure(ProductNotFoundException("$category/$registrationNumber"))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("product_api_error:${response.code()}"))
             }
         } catch (exception: Exception) {
             android.util.Log.e("ProductRepository", "getProductByEprelId error", exception)
@@ -242,12 +247,12 @@ class ProductRepository @Inject constructor(
                         )
                     )
                 } else {
-                    Result.failure(Exception("Scan has no product snapshot"))
+                    Result.failure(Exception("scan_missing_product_snapshot"))
                 }
             } else if (response.code() == 404) {
                 Result.failure(ProductNotFoundException(scanId))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("product_api_error:${response.code()}"))
             }
         } catch (exception: Exception) {
             android.util.Log.e("ProductRepository", "getProductFromScan error", exception)
@@ -273,7 +278,7 @@ class ProductRepository @Inject constructor(
                     Result.success(emptyList())
                 }
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("product_api_error:${response.code()}"))
             }
         } catch (exception: Exception) {
             Result.failure(exception)
@@ -288,7 +293,7 @@ class ProductRepository @Inject constructor(
         identifier: String
     ): Result<Product> {
         if (body == null) {
-            return Result.failure(Exception("Empty response body"))
+            return Result.failure(Exception("product_empty_response_body"))
         }
 
         return try {
@@ -328,18 +333,15 @@ class ProductRepository @Inject constructor(
     private suspend fun lookupCatalogProduct(normalizedEan: String): Product? {
         return try {
             val productResponse = api.getProductByEan(normalizedEan)
-            if (productResponse.isSuccessful && productResponse.body() != null) {
-                val json = productResponse.body()!!.string()
-                android.util.Log.d(
-                    "ProductRepository",
-                    "Product JSON: ${json.take(100)}..."
-                )
-                gson.fromJson(json, ProductDto::class.java).toDomain().also { product ->
-                    android.util.Log.d(
-                        "ProductRepository",
-                        "Product found in catalog: ${product.name}"
-                    )
-                }
+            if (productResponse.isSuccessful) {
+                parseProductResponse(productResponse.body(), normalizedEan)
+                    .getOrNull()
+                    ?.also { product ->
+                        android.util.Log.d(
+                            "ProductRepository",
+                            "Product found in catalog: ${product.name}"
+                        )
+                    }
             } else {
                 null
             }
@@ -352,12 +354,24 @@ class ProductRepository @Inject constructor(
             null
         }
     }
+
+    private fun placeholderScannedProduct(gtin: String): Product {
+        return Product(
+            id = gtin,
+            gtin = gtin,
+            name = appContext.getString(R.string.product_scanned_name_with_gtin, gtin),
+            brand = appContext.getString(R.string.product_unlisted_brand),
+            model = null,
+            category = ProductCategory.OTHER,
+            energyLabel = null
+        )
+    }
 }
 
 /**
  * Exception thrown when a product cannot be resolved.
  */
-class ProductNotFoundException(val identifier: String) : Exception("Product not found: $identifier")
+class ProductNotFoundException(val identifier: String) : Exception("product_not_found:$identifier")
 
 private fun Product.isInvalidEprelPlaceholder(): Boolean {
     val detailCode = eprelDetails["code"]?.toString()

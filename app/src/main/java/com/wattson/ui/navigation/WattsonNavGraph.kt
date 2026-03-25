@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -14,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material3.SnackbarHostState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -28,6 +28,7 @@ import androidx.navigation.toRoute
 import com.wattson.data.auth.GoogleAuthException
 import com.wattson.data.auth.GoogleAuthManager
 import com.wattson.domain.model.AuthProvider
+import com.wattson.ui.i18n.asString
 import com.wattson.ui.screens.account.AccountScreen
 import com.wattson.ui.screens.account.AccountViewModel
 import com.wattson.ui.screens.auth.AuthEvent
@@ -109,9 +110,7 @@ fun WattsonNavHost(
                 navController = navController,
                 snackbarHostState = snackbarHostState,
                 onGoogleSignInFailure = { exception ->
-                    viewModel.handleGoogleSignInError(
-                        exception.message ?: "Erreur Google Sign-In"
-                    )
+                    viewModel.handleGoogleSignInError(exception.uiText)
                 }
             )
 
@@ -139,9 +138,7 @@ fun WattsonNavHost(
                 navController = navController,
                 snackbarHostState = snackbarHostState,
                 onGoogleSignInFailure = { exception ->
-                    viewModel.handleGoogleSignInError(
-                        exception.message ?: "Erreur Google Sign-In"
-                    )
+                    viewModel.handleGoogleSignInError(exception.uiText)
                 },
                 onUnhandledEvent = { event ->
                     if (event is AuthEvent.NavigateToRegister) {
@@ -158,18 +155,15 @@ fun WattsonNavHost(
                     viewModel.onIntent(AuthIntent.ToggleRememberMe(it))
                 },
                 onLogin = { viewModel.performLogin() },
-                onNavigateBack = { navController.popBackStack() },
                 onForgotPassword = { viewModel.handleForgotPassword() },
                 onLoginWithGoogle = {
                     viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE))
                 },
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToRegister = {
                     navController.navigate(WattsonRoute.Register)
                 },
-                snackbarHostState = snackbarHostState,
-                onAutoFillTestUser = {
-                    viewModel.onIntent(AuthIntent.AutoFillTestUser)
-                }
+                snackbarHostState = snackbarHostState
             )
         }
 
@@ -183,9 +177,7 @@ fun WattsonNavHost(
                 navController = navController,
                 snackbarHostState = snackbarHostState,
                 onGoogleSignInFailure = { exception ->
-                    viewModel.handleGoogleSignInError(
-                        exception.message ?: "Erreur Google Sign-In"
-                    )
+                    viewModel.handleGoogleSignInError(exception.uiText)
                 },
                 onUnhandledEvent = { event ->
                     if (event is AuthEvent.NavigateToLogin) {
@@ -202,10 +194,10 @@ fun WattsonNavHost(
                     viewModel.onIntent(AuthIntent.UpdateConfirmPassword(it))
                 },
                 onRegister = { viewModel.performRegister() },
-                onNavigateBack = { navController.popBackStack() },
                 onLoginWithGoogle = {
                     viewModel.onIntent(AuthIntent.LoginWithProvider(AuthProvider.GOOGLE))
                 },
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToLogin = {
                     navController.navigate(WattsonRoute.Login)
                 },
@@ -397,8 +389,14 @@ private fun HandleAuthEvents(
                         onGoogleSignInFailure(exception)
                     }
                 }
-                is AuthEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                is AuthEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
+
+                is AuthEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
+
+                is AuthEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
 
                 else -> onUnhandledEvent(event)
             }

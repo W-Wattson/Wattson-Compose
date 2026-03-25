@@ -286,7 +286,7 @@ fun WattsonLogoNavItem(
     ) {
         Image(
             painter = painterResource(id = R.drawable.wattson_logo),
-            contentDescription = "Wattson Logo",
+            contentDescription = stringResource(R.string.logo_content_description),
             modifier = Modifier.size(32.dp)
         )
     }

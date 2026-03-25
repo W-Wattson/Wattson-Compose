@@ -63,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,10 +76,14 @@ import com.wattson.domain.model.DocumentMetadata
 import com.wattson.domain.model.DocumentType
 import com.wattson.domain.model.ProductCategory
 import com.wattson.domain.model.WarrantyType
+import com.wattson.ui.i18n.asString
+import com.wattson.ui.i18n.labelResId
 import com.wattson.ui.theme.WattsonTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.text.NumberFormat
 import java.util.Locale
 
 /**
@@ -138,7 +143,7 @@ fun DocumentDetailScreen(
                     }
                 }
                 is DocumentDetailEvent.ShowError -> {
-                    snackbarHostState.showSnackbar(event.message)
+                    snackbarHostState.showSnackbar(event.message.asString(context))
                 }
                 is DocumentDetailEvent.DocumentDeleted -> {
                     snackbarHostState.showSnackbar(deletedMsg)
@@ -213,7 +218,7 @@ fun DocumentDetailScreen(
             }
             uiState.errorMessage != null -> {
                 ErrorState(
-                    message = uiState.errorMessage!!,
+                    message = uiState.errorMessage!!.asString(),
                     onRetry = { viewModel.onIntent(DocumentDetailIntent.LoadDocument) },
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -224,7 +229,7 @@ fun DocumentDetailScreen(
     // Delete confirmation dialog
     if (uiState.showDeleteConfirmation) {
         DeleteConfirmationDialog(
-            documentName = uiState.document?.productName ?: "ce document",
+            documentName = uiState.document?.productName ?: stringResource(R.string.document_generic_name),
             onConfirm = { viewModel.onIntent(DocumentDetailIntent.ConfirmDelete) },
             onDismiss = { viewModel.onIntent(DocumentDetailIntent.DismissDeleteDialog) }
         )
@@ -501,7 +506,11 @@ private fun WarrantyStatusCard(
 
                     if (daysRemaining != null && isActive) {
                         Text(
-                            text = stringResource(R.string.doc_detail_warranty_days, daysRemaining),
+                            text = pluralStringResource(
+                                R.plurals.doc_detail_warranty_days_remaining,
+                                daysRemaining,
+                                daysRemaining
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -569,10 +578,18 @@ private fun PurchaseDetailsCard(metadata: DocumentMetadata) {
         }
 
         if (metadata.totalAmount != null) {
+            val formattedAmount = NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+                minimumFractionDigits = 2
+                maximumFractionDigits = 2
+            }.format(metadata.totalAmount)
             InfoRow(
                 icon = Icons.Default.ShoppingBag,
                 label = stringResource(R.string.doc_detail_amount),
-                value = "${String.format(Locale.FRANCE, "%.2f", metadata.totalAmount)} ${metadata.currency}"
+                value = stringResource(
+                    R.string.doc_detail_amount_value,
+                    formattedAmount,
+                    metadata.currency
+                )
             )
         }
     }
@@ -797,7 +814,8 @@ private fun DeleteConfirmationDialog(
 // Helper functions
 
 private fun formatDate(date: LocalDate): String {
-    val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.FRANCE)
+    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+        .withLocale(Locale.getDefault())
     return date.format(formatter)
 }
 
@@ -808,22 +826,12 @@ private fun formatInstant(instant: Instant): String {
 
 @Composable
 private fun getDocumentTypeLabel(type: DocumentType): String {
-    return when (type) {
-        DocumentType.FACTURE -> stringResource(R.string.type_invoice)
-        DocumentType.GARANTIE -> stringResource(R.string.type_warranty)
-        DocumentType.MANUEL -> stringResource(R.string.type_manual)
-        DocumentType.OTHER -> stringResource(R.string.type_other)
-    }
+    return stringResource(type.labelResId())
 }
 
 @Composable
 private fun getWarrantyTypeLabel(type: WarrantyType): String {
-    return when (type) {
-        WarrantyType.LEGAL -> stringResource(R.string.warranty_legal)
-        WarrantyType.MANUFACTURER -> stringResource(R.string.warranty_manufacturer)
-        WarrantyType.EXTENDED -> stringResource(R.string.warranty_extended)
-        WarrantyType.COMMERCIAL -> stringResource(R.string.warranty_commercial)
-    }
+    return stringResource(type.labelResId())
 }
 
 // ============ Previews ============

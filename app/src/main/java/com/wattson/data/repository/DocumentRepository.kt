@@ -36,7 +36,7 @@ class DocumentRepository @Inject constructor(
     ): Result<List<Document>> = withContext(Dispatchers.IO) {
         try {
             val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
-                Exception("Missing access token for documents API")
+                Exception("documents_missing_access_token")
             )
             val response = api.getDocuments(authorization, userId, limit, offset)
             if (response.isSuccessful) {
@@ -48,7 +48,7 @@ class DocumentRepository @Inject constructor(
                     Result.success(emptyList())
                 }
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("documents_api_error:${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -64,7 +64,7 @@ class DocumentRepository @Inject constructor(
     ): Result<Document> = withContext(Dispatchers.IO) {
         try {
             val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
-                Exception("Missing access token for documents API")
+                Exception("documents_missing_access_token")
             )
             val response = api.getDocumentById(authorization, userId, documentId)
             if (response.isSuccessful) {
@@ -72,12 +72,12 @@ class DocumentRepository @Inject constructor(
                 if (body != null) {
                     Result.success(body.toDomain(userId))
                 } else {
-                    Result.failure(Exception("Empty response body"))
+                    Result.failure(Exception("documents_empty_response_body"))
                 }
             } else if (response.code() == 404) {
                 Result.failure(DocumentNotFoundException(documentId))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("documents_api_error:${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -93,7 +93,7 @@ class DocumentRepository @Inject constructor(
     ): Result<DocumentDownloadInfo> = withContext(Dispatchers.IO) {
         try {
             val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
-                Exception("Missing access token for documents API")
+                Exception("documents_missing_access_token")
             )
             val response = api.getDocumentDownloadUrl(authorization, userId, documentId)
             if (response.isSuccessful) {
@@ -106,12 +106,12 @@ class DocumentRepository @Inject constructor(
                         )
                     )
                 } else {
-                    Result.failure(Exception("Empty response body"))
+                    Result.failure(Exception("documents_empty_response_body"))
                 }
             } else if (response.code() == 404) {
                 Result.failure(DocumentNotFoundException(documentId))
             } else {
-                Result.failure(Exception("API error: ${response.code()}"))
+                Result.failure(Exception("documents_api_error:${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -129,7 +129,7 @@ class DocumentRepository @Inject constructor(
         try {
             // Copy content URI to a temporary file
             val tempFile = copyUriToTempFile(uri)
-                ?: return@withContext Result.failure(Exception("Failed to read file"))
+                ?: return@withContext Result.failure(Exception("documents_read_failed"))
 
             try {
                 val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
@@ -140,7 +140,7 @@ class DocumentRepository @Inject constructor(
                 val typePart = documentType.toRequestBody("text/plain".toMediaTypeOrNull())
 
                 val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
-                    Exception("Missing access token for documents API")
+                    Exception("documents_missing_access_token")
                 )
                 val response = api.uploadDocument(authorization, userId, filePart, typePart)
 
@@ -149,10 +149,10 @@ class DocumentRepository @Inject constructor(
                     if (body != null) {
                         Result.success(body.toDomain(userId))
                     } else {
-                        Result.failure(Exception("Empty response body"))
+                        Result.failure(Exception("documents_empty_response_body"))
                     }
                 } else {
-                    Result.failure(Exception("Upload failed: ${response.code()}"))
+                    Result.failure(Exception("documents_upload_failed:${response.code()}"))
                 }
             } finally {
                 tempFile.delete()
@@ -171,7 +171,7 @@ class DocumentRepository @Inject constructor(
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val authorization = buildAuthorizationHeader() ?: return@withContext Result.failure(
-                Exception("Missing access token for documents API")
+                Exception("documents_missing_access_token")
             )
             val response = api.deleteDocument(authorization, userId, documentId)
             if (response.isSuccessful || response.code() == 204) {
@@ -179,7 +179,7 @@ class DocumentRepository @Inject constructor(
             } else if (response.code() == 404) {
                 Result.failure(DocumentNotFoundException(documentId))
             } else {
-                Result.failure(Exception("Delete failed: ${response.code()}"))
+                Result.failure(Exception("documents_delete_failed:${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -228,4 +228,4 @@ data class DocumentDownloadInfo(
 /**
  * Exception thrown when a document is not found.
  */
-class DocumentNotFoundException(val documentId: String) : Exception("Document not found: $documentId")
+class DocumentNotFoundException(val documentId: String) : Exception("document_not_found:$documentId")

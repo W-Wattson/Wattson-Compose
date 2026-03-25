@@ -1,5 +1,6 @@
 package com.wattson.ui.navigation
 
+import com.wattson.R
 import kotlinx.serialization.Serializable
 
 /**
@@ -116,6 +117,38 @@ fun String?.toBottomBarRoute(): WattsonRoute? {
         contains("Account") -> WattsonRoute.Account
         else -> null
     }
+}
+
+enum class BottomNavItem(
+    val route: WattsonRoute,
+    val labelRes: Int, // String resource ID
+    val iconRes: Int,  // Drawable resource ID
+    val contentDescriptionRes: Int
+) {
+    HISTORY(
+        route = WattsonRoute.History,
+        labelRes = R.string.nav_history,
+        iconRes = 0,
+        contentDescriptionRes = R.string.nav_history_desc
+    ),
+    REPAIR(
+        route = WattsonRoute.Repair,
+        labelRes = R.string.nav_repair,
+        iconRes = 0,
+        contentDescriptionRes = R.string.nav_repair_desc
+    ),
+    DOCUMENTS(
+        route = WattsonRoute.Documents,
+        labelRes = R.string.nav_documents,
+        iconRes = 0,
+        contentDescriptionRes = R.string.nav_documents_desc
+    ),
+    ACCOUNT(
+        route = WattsonRoute.Account,
+        labelRes = R.string.nav_account,
+        iconRes = 0,
+        contentDescriptionRes = R.string.nav_account_desc
+    )
 }
 
 /**

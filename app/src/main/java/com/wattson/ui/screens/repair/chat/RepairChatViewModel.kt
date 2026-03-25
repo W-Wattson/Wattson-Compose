@@ -3,10 +3,14 @@ package com.wattson.ui.screens.repair.chat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wattson.domain.model.ChatMessage
-import com.wattson.domain.model.MessageRole
+import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.RepairChatRepository
+import com.wattson.domain.model.ChatMessage
+import com.wattson.domain.model.MessageRole
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.UserFacingException
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,38 +23,25 @@ import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
-/**
- * UI State for the Repair Chat screen.
- */
 data class RepairChatUiState(
     val conversationId: String = "",
     val messages: List<ChatMessage> = emptyList(),
     val inputText: String = "",
     val isAssistantTyping: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: UiText? = null
 )
 
-/**
- * One-shot events for the chat screen.
- */
 sealed interface RepairChatEvent {
     data object ScrollToBottom : RepairChatEvent
-    data class ShowError(val message: String) : RepairChatEvent
+    data class ShowError(val message: UiText) : RepairChatEvent
 }
 
-/**
- * User intents for the chat screen.
- */
 sealed interface RepairChatIntent {
     data class UpdateInput(val text: String) : RepairChatIntent
     data object SendMessage : RepairChatIntent
     data object DismissError : RepairChatIntent
 }
 
-/**
- * ViewModel for the Repair Chat screen.
- * Manages the message list, input state, and AI assistant interaction via backend API.
- */
 @HiltViewModel
 class RepairChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -70,9 +61,6 @@ class RepairChatViewModel @Inject constructor(
         loadMessages()
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: RepairChatIntent) {
         when (intent) {
             is RepairChatIntent.UpdateInput -> _uiState.update { it.copy(inputText = intent.text) }
@@ -81,9 +69,6 @@ class RepairChatViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Loads messages from the backend for this conversation.
-     */
     private fun loadMessages() {
         viewModelScope.launch {
             val userId = authRepository.getCurrentUserId()
@@ -99,7 +84,7 @@ class RepairChatViewModel @Inject constructor(
                 onFailure = { error ->
                     _events.emit(
                         RepairChatEvent.ShowError(
-                            error.message ?: "Erreur de chargement"
+                            error.toUiTextOr(UiText.StringResource(R.string.error_loading_generic))
                         )
                     )
                 }
@@ -119,10 +104,12 @@ class RepairChatViewModel @Inject constructor(
 
     private fun sendMessage() {
         val content = _uiState.value.inputText.trim()
-        if (content.isBlank() || _uiState.value.isAssistantTyping) return
+        if (content.isBlank() || _uiState.value.isAssistantTyping) {
+            return
+        }
 
         viewModelScope.launch {
-            val optimisticUserMsg = ChatMessage(
+            val optimisticUserMessage = ChatMessage(
                 id = UUID.randomUUID().toString(),
                 conversationId = conversationId,
                 role = MessageRole.USER,
@@ -134,7 +121,7 @@ class RepairChatViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         inputText = "",
-                        messages = it.messages + optimisticUserMsg
+                        messages = it.messages + optimisticUserMessage
                     )
                 }
                 _events.emit(RepairChatEvent.ScrollToBottom)
@@ -158,22 +145,22 @@ class RepairChatViewModel @Inject constructor(
                     )
                 }
                 _events.emit(RepairChatEvent.ScrollToBottom)
-            } catch (e: RepairChatRepository.PremiumRequiredException) {
+            } catch (exception: UserFacingException) {
                 rollbackOptimisticMessage(
-                    messageId = optimisticUserMsg.id,
+                    messageId = optimisticUserMessage.id,
+                    content = content
+                )
+                _events.emit(RepairChatEvent.ShowError(exception.uiText))
+            } catch (exception: Exception) {
+                rollbackOptimisticMessage(
+                    messageId = optimisticUserMessage.id,
                     content = content
                 )
                 _events.emit(
                     RepairChatEvent.ShowError(
-                        "L'assistant de reparation necessite un abonnement Premium. Passez a Premium pour acceder a cette fonctionnalite."
+                        exception.toUiTextOr(UiText.StringResource(R.string.error_send_generic))
                     )
                 )
-            } catch (e: Exception) {
-                rollbackOptimisticMessage(
-                    messageId = optimisticUserMsg.id,
-                    content = content
-                )
-                _events.emit(RepairChatEvent.ShowError(e.message ?: "Erreur d'envoi"))
             }
         }
     }

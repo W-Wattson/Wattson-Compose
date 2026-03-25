@@ -1,13 +1,18 @@
 package com.wattson.ui.screens.documents
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
 import com.wattson.domain.model.getDocumentLimit
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,9 +24,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * UI state for the documents screen.
- */
 data class DocumentsUiState(
     val isLoading: Boolean = false,
     val documents: List<Document> = emptyList(),
@@ -35,30 +37,24 @@ data class DocumentsUiState(
     val totalDocuments: Int = 0,
     val totalDevices: Int = 0,
     val activeWarranties: Int = 0,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val isUploadInProgress: Boolean = false,
     val uploadProgress: Float = 0f,
     val showDeleteConfirmation: Document? = null
 )
 
-/**
- * One-shot events emitted by the documents screen.
- */
 sealed interface DocumentsEvent {
     data class NavigateToDocumentDetail(val documentId: String) : DocumentsEvent
     data object ShowUploadPicker : DocumentsEvent
     data class ShowUploadSuccess(val fileName: String) : DocumentsEvent
-    data class ShowUploadError(val message: String) : DocumentsEvent
+    data class ShowUploadError(val message: UiText) : DocumentsEvent
     data class ShowDeleteSuccess(val documentName: String) : DocumentsEvent
     data object NavigateToPremium : DocumentsEvent
     data object ShowQuotaExceeded : DocumentsEvent
     data class StartDownload(val url: String, val filename: String) : DocumentsEvent
-    data class ShowDownloadError(val message: String) : DocumentsEvent
+    data class ShowDownloadError(val message: UiText) : DocumentsEvent
 }
 
-/**
- * User intents for the documents screen.
- */
 sealed interface DocumentsIntent {
     data object LoadDocuments : DocumentsIntent
     data object RefreshDocuments : DocumentsIntent
@@ -82,13 +78,11 @@ sealed interface DocumentsIntent {
     data class DownloadDocument(val document: Document) : DocumentsIntent
 }
 
-/**
- * ViewModel for the documents screen.
- */
 @HiltViewModel
 class DocumentsViewModel @Inject constructor(
     private val documentRepository: DocumentRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DocumentsUiState())
@@ -103,9 +97,6 @@ class DocumentsViewModel @Inject constructor(
         loadDocuments()
     }
 
-    /**
-     * Processes user intents through a single entry point.
-     */
     fun onIntent(intent: DocumentsIntent) {
         when (intent) {
             DocumentsIntent.LoadDocuments -> loadDocuments()
@@ -115,14 +106,12 @@ class DocumentsViewModel @Inject constructor(
             is DocumentsIntent.ToggleYearExpanded -> toggleYearExpanded(intent.year)
             is DocumentsIntent.OpenDocument -> openDocument(intent.documentId)
             DocumentsIntent.StartUpload -> startUpload()
-            is DocumentsIntent.UploadDocument -> {
-                uploadDocument(
-                    uri = intent.uri,
-                    fileName = intent.fileName,
-                    mimeType = intent.mimeType,
-                    fileSize = intent.fileSize
-                )
-            }
+            is DocumentsIntent.UploadDocument -> uploadDocument(
+                uri = intent.uri,
+                fileName = intent.fileName,
+                mimeType = intent.mimeType,
+                fileSize = intent.fileSize
+            )
 
             is DocumentsIntent.DeleteDocument -> requestDeleteDocument(intent.document)
             DocumentsIntent.ConfirmDelete -> confirmDelete()
@@ -147,7 +136,9 @@ class DocumentsViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "Erreur lors du chargement"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_loading_generic)
+                                )
                             )
                         }
                     }
@@ -156,7 +147,9 @@ class DocumentsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Erreur lors du chargement"
+                        errorMessage = exception.toUiTextOr(
+                            UiText.StringResource(R.string.error_loading_generic)
+                        )
                     )
                 }
             }
@@ -193,7 +186,9 @@ class DocumentsViewModel @Inject constructor(
                 ),
                 totalDocuments = presentation.totalDocuments,
                 totalDevices = presentation.totalDevices,
-                activeWarranties = presentation.activeWarranties
+                activeWarranties = presentation.activeWarranties,
+                isUploadInProgress = false,
+                uploadProgress = 0f
             )
         }
     }
@@ -205,11 +200,18 @@ class DocumentsViewModel @Inject constructor(
                 query = query,
                 year = state.selectedYear
             )
+            val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
 
             state.copy(
                 searchQuery = query,
                 filteredDocuments = filteredDocuments,
-                filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
+                filteredDocumentsByYear = filteredDocumentsByYear,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = state.selectedYear,
+                    currentExpandedYears = state.expandedYears,
+                    defaultExpandedYears = defaultExpandedYears(filteredDocumentsByYear.keys),
+                    availableYears = filteredDocumentsByYear.keys
+                )
             )
         }
     }
@@ -230,7 +232,7 @@ class DocumentsViewModel @Inject constructor(
                 expandedYears = resolveExpandedYears(
                     selectedYear = year,
                     currentExpandedYears = state.expandedYears,
-                    defaultExpandedYears = state.availableYears.toSet(),
+                    defaultExpandedYears = defaultExpandedYears(filteredDocumentsByYear.keys),
                     availableYears = filteredDocumentsByYear.keys
                 )
             )
@@ -280,7 +282,9 @@ class DocumentsViewModel @Inject constructor(
         val validationError = DocumentUploadValidator.validate(fileName, mimeType, fileSize)
         if (validationError != null) {
             viewModelScope.launch {
-                _events.emit(DocumentsEvent.ShowUploadError(validationError))
+                _events.emit(
+                    DocumentsEvent.ShowUploadError(UiText.DynamicString(validationError))
+                )
             }
             return
         }
@@ -324,7 +328,7 @@ class DocumentsViewModel @Inject constructor(
         if (message.contains("Limite de documents", ignoreCase = true)) {
             _events.emit(DocumentsEvent.ShowQuotaExceeded)
         } else {
-            _events.emit(DocumentsEvent.ShowUploadError(message))
+            _events.emit(DocumentsEvent.ShowUploadError(UiText.DynamicString(message)))
         }
     }
 
@@ -353,7 +357,9 @@ class DocumentsViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "Erreur lors de la suppression"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_delete_generic)
+                                )
                             )
                         }
                     }
@@ -362,7 +368,9 @@ class DocumentsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Erreur lors de la suppression"
+                        errorMessage = exception.toUiTextOr(
+                            UiText.StringResource(R.string.error_delete_generic)
+                        )
                     )
                 }
             }
@@ -406,7 +414,6 @@ class DocumentsViewModel @Inject constructor(
         try {
             val userId = authRepository.getCurrentUserId()
             val result = documentRepository.getDocuments(userId)
-
             result.onSuccess(::processDocuments)
         } catch (_: Exception) {
             // Silent by design.
@@ -421,17 +428,23 @@ class DocumentsViewModel @Inject constructor(
 
                 result.fold(
                     onSuccess = { downloadInfo ->
+                        val fileName = appContext.getString(
+                            R.string.document_generic_filename,
+                            document.id
+                        )
                         _events.emit(
                             DocumentsEvent.StartDownload(
                                 url = downloadInfo.url,
-                                filename = "document_${document.id}"
+                                filename = fileName
                             )
                         )
                     },
                     onFailure = { error ->
                         _events.emit(
                             DocumentsEvent.ShowDownloadError(
-                                error.message ?: "Erreur download"
+                                error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_download_generic)
+                                )
                             )
                         )
                     }
@@ -439,7 +452,9 @@ class DocumentsViewModel @Inject constructor(
             } catch (exception: Exception) {
                 _events.emit(
                     DocumentsEvent.ShowDownloadError(
-                        exception.message ?: "Erreur download"
+                        exception.toUiTextOr(
+                            UiText.StringResource(R.string.error_download_generic)
+                        )
                     )
                 )
             }
@@ -467,5 +482,18 @@ class DocumentsViewModel @Inject constructor(
         }
 
         return availableYears.firstOrNull()?.let(::setOf) ?: emptySet()
+    }
+
+    private fun defaultExpandedYears(availableYears: Set<Int>): Set<Int> {
+        if (availableYears.isEmpty()) {
+            return emptySet()
+        }
+
+        val currentYear = java.time.LocalDate.now().year
+        return if (availableYears.contains(currentYear)) {
+            setOf(currentYear)
+        } else {
+            availableYears.maxOrNull()?.let(::setOf) ?: emptySet()
+        }
     }
 }

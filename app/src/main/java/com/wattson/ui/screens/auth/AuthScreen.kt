@@ -259,14 +259,14 @@ private fun WattsonLogo(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.wattson_logo),
-            contentDescription = "Wattson Logo",
+            contentDescription = stringResource(R.string.logo_content_description),
             modifier = Modifier
                 .size(64.dp)
                 .offset(x = 8.dp)
         )
         
         Text(
-            text = "attson",
+            text = stringResource(R.string.app_name_tail),
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,

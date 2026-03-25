@@ -2,6 +2,7 @@ package com.wattson.ui.screens.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
 import com.wattson.data.remote.api.WattsonApi
 import com.wattson.data.repository.AuthRepository
 import com.wattson.domain.model.PreferenceType
@@ -9,6 +10,10 @@ import com.wattson.domain.model.SubscriptionType
 import com.wattson.domain.model.User
 import com.wattson.domain.model.UserPreferences
 import com.wattson.domain.model.getDocumentLimit
+import com.wattson.ui.i18n.AppLanguage
+import com.wattson.ui.i18n.AppLanguageManager
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +24,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * UI State for the Account screen.
- */
 data class AccountUiState(
     val isLoading: Boolean = false,
     val user: User? = null,
@@ -30,28 +32,23 @@ data class AccountUiState(
     val documentCount: Int = 0,
     val documentLimit: Int? = null,
     val scanCount: Int = 0,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val showLogoutConfirmation: Boolean = false,
     val showDeleteAccountConfirmation: Boolean = false,
     val isDeletingAccount: Boolean = false,
-    val isUpdatingPreferences: Boolean = false
+    val isUpdatingPreferences: Boolean = false,
+    val currentLanguage: AppLanguage = AppLanguage.ENGLISH
 )
 
-/**
- * One-shot events for account screen.
- */
 sealed interface AccountEvent {
     data object NavigateToPremium : AccountEvent
     data object NavigateToLogin : AccountEvent
-    data class ShowError(val message: String) : AccountEvent
+    data class ShowError(val message: UiText) : AccountEvent
     data object LogoutSuccess : AccountEvent
     data object AccountDeleted : AccountEvent
     data object PreferencesUpdated : AccountEvent
 }
 
-/**
- * User intents for account screen.
- */
 sealed interface AccountIntent {
     data object LoadProfile : AccountIntent
     data object RefreshProfile : AccountIntent
@@ -63,17 +60,15 @@ sealed interface AccountIntent {
     data object RequestDeleteAccount : AccountIntent
     data object ConfirmDeleteAccount : AccountIntent
     data object CancelDeleteAccount : AccountIntent
+    data class ChangeLanguage(val language: AppLanguage) : AccountIntent
     data object DismissError : AccountIntent
 }
 
-/**
- * ViewModel for the Account screen.
- * Manages user profile and preferences.
- */
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val api: WattsonApi
+    private val api: WattsonApi,
+    private val appLanguageManager: AppLanguageManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -85,6 +80,7 @@ class AccountViewModel @Inject constructor(
     init {
         loadProfile()
         observeUserChanges()
+        observeCurrentLanguage()
     }
 
     private fun observeUserChanges() {
@@ -104,9 +100,6 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: AccountIntent) {
         when (intent) {
             is AccountIntent.LoadProfile -> loadProfile()
@@ -119,7 +112,16 @@ class AccountViewModel @Inject constructor(
             is AccountIntent.RequestDeleteAccount -> requestDeleteAccount()
             is AccountIntent.ConfirmDeleteAccount -> confirmDeleteAccount()
             is AccountIntent.CancelDeleteAccount -> cancelDeleteAccount()
+            is AccountIntent.ChangeLanguage -> changeLanguage(intent.language)
             is AccountIntent.DismissError -> dismissError()
+        }
+    }
+
+    private fun observeCurrentLanguage() {
+        viewModelScope.launch {
+            appLanguageManager.currentLanguage.collect { language ->
+                _uiState.update { it.copy(currentLanguage = language) }
+            }
         }
     }
 
@@ -136,7 +138,6 @@ class AccountViewModel @Inject constructor(
                     return@launch
                 }
 
-                // Fetch document count from API
                 var documentCount = 0
                 var scanCount = 0
 
@@ -145,7 +146,6 @@ class AccountViewModel @Inject constructor(
                     if (!token.isNullOrBlank()) {
                         val docResponse = api.getDocuments("Bearer $token", user.id, limit = 1, offset = 0)
                         if (docResponse.isSuccessful) {
-                            // Use total field from API response (not documents.size which is limited by limit param)
                             documentCount = docResponse.body()?.total?.toInt() ?: 0
                         }
                     } else {
@@ -175,13 +175,14 @@ class AccountViewModel @Inject constructor(
                         scanCount = scanCount
                     )
                 }
-
             } catch (e: Exception) {
                 android.util.Log.e("AccountViewModel", "Failed to load profile", e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors du chargement"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_loading_generic)
+                        )
                     )
                 }
             }
@@ -215,17 +216,20 @@ class AccountViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isUpdatingPreferences = false,
-                                errorMessage = error.message ?: "Erreur lors de la mise a jour"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_update_generic)
+                                )
                             )
                         }
                     }
                 )
-
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isUpdatingPreferences = false,
-                        errorMessage = e.message ?: "Erreur lors de la mise a jour"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_update_generic)
+                        )
                     )
                 }
             }
@@ -261,17 +265,20 @@ class AccountViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "Erreur lors de la deconnexion"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_logout_generic)
+                                )
                             )
                         }
                     }
                 )
-
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors de la deconnexion"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_logout_generic)
+                        )
                     )
                 }
             }
@@ -281,8 +288,6 @@ class AccountViewModel @Inject constructor(
     private fun cancelLogout() {
         _uiState.update { it.copy(showLogoutConfirmation = false) }
     }
-
-    // ===== Delete Account (RGPD) =====
 
     private fun requestDeleteAccount() {
         _uiState.update { it.copy(showDeleteAccountConfirmation = true) }
@@ -298,10 +303,9 @@ class AccountViewModel @Inject constructor(
                 val result = authRepository.deleteAccount()
 
                 result.fold(
-                    onSuccess = { message ->
-                        android.util.Log.d("AccountViewModel", "Account deleted: $message")
-                        _uiState.update {
-                            it.copy(isDeletingAccount = false, user = null)
+                    onSuccess = {
+                        _uiState.update { state ->
+                            state.copy(isDeletingAccount = false, user = null)
                         }
                         _events.emit(AccountEvent.AccountDeleted)
                         _events.emit(AccountEvent.NavigateToLogin)
@@ -311,7 +315,9 @@ class AccountViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isDeletingAccount = false,
-                                errorMessage = error.message ?: "Erreur lors de la suppression"
+                                errorMessage = error.toUiTextOr(
+                                    UiText.StringResource(R.string.error_delete_generic)
+                                )
                             )
                         }
                     }
@@ -320,7 +326,9 @@ class AccountViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isDeletingAccount = false,
-                        errorMessage = e.message ?: "Erreur lors de la suppression"
+                        errorMessage = e.toUiTextOr(
+                            UiText.StringResource(R.string.error_delete_generic)
+                        )
                     )
                 }
             }
@@ -329,6 +337,10 @@ class AccountViewModel @Inject constructor(
 
     private fun cancelDeleteAccount() {
         _uiState.update { it.copy(showDeleteAccountConfirmation = false) }
+    }
+
+    private fun changeLanguage(language: AppLanguage) {
+        appLanguageManager.setLanguage(language)
     }
 
     private fun dismissError() {

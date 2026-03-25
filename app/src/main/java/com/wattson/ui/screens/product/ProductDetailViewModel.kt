@@ -1,8 +1,13 @@
 package com.wattson.ui.screens.product
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wattson.R
+import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.FavoriteRepository
+import com.wattson.data.repository.ProductRepository
 import com.wattson.domain.model.DurabilityScore
 import com.wattson.domain.model.EnergyScore
 import com.wattson.domain.model.GlobalScore
@@ -11,9 +16,11 @@ import com.wattson.domain.model.ProductCategory
 import com.wattson.domain.model.ProductMetrics
 import com.wattson.domain.model.ProductScores
 import com.wattson.domain.model.RepairabilityScore
-import com.wattson.data.repository.AuthRepository
-import com.wattson.data.repository.FavoriteRepository
+import com.wattson.ui.i18n.UiText
+import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,35 +29,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
-import javax.inject.Inject
 
-/**
- * UI State for the Product Detail screen.
- */
 data class ProductDetailUiState(
     val isLoading: Boolean = false,
     val product: Product? = null,
     val metrics: ProductMetrics? = null,
     val globalScore: GlobalScore? = null,
     val userRating: Double? = null,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val isFavorite: Boolean = false
 )
 
-/**
- * One-shot events for product detail screen.
- */
 sealed interface ProductDetailEvent {
     data object NavigateBack : ProductDetailEvent
     data object NavigateToRepair : ProductDetailEvent
-    data class ShowError(val message: String) : ProductDetailEvent
+    data class ShowError(val message: UiText) : ProductDetailEvent
     data object AddedToFavorites : ProductDetailEvent
     data object RemovedFromFavorites : ProductDetailEvent
 }
 
-/**
- * User intents for product detail screen.
- */
 sealed interface ProductDetailIntent {
     data object LoadProduct : ProductDetailIntent
     data object RefreshProduct : ProductDetailIntent
@@ -60,16 +57,13 @@ sealed interface ProductDetailIntent {
     data object DismissError : ProductDetailIntent
 }
 
-/**
- * ViewModel for the Product Detail screen.
- * Displays comprehensive product information and sustainability metrics.
- */
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val productRepository: com.wattson.data.repository.ProductRepository,
+    private val productRepository: ProductRepository,
     private val authRepository: AuthRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val favoriteRepository: FavoriteRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val productId: String = savedStateHandle.get<String>("productId") ?: ""
@@ -87,17 +81,14 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Process user intents.
-     */
     fun onIntent(intent: ProductDetailIntent) {
         when (intent) {
-            is ProductDetailIntent.LoadProduct -> loadProduct()
-            is ProductDetailIntent.RefreshProduct -> refreshProduct()
-            is ProductDetailIntent.ToggleFavorite -> toggleFavorite()
-            is ProductDetailIntent.StartRepair -> startRepair()
-            is ProductDetailIntent.NavigateBack -> navigateBack()
-            is ProductDetailIntent.DismissError -> dismissError()
+            ProductDetailIntent.LoadProduct -> loadProduct()
+            ProductDetailIntent.RefreshProduct -> refreshProduct()
+            ProductDetailIntent.ToggleFavorite -> toggleFavorite()
+            ProductDetailIntent.StartRepair -> startRepair()
+            ProductDetailIntent.NavigateBack -> navigateBack()
+            ProductDetailIntent.DismissError -> dismissError()
         }
     }
 
@@ -108,59 +99,64 @@ class ProductDetailViewModel @Inject constructor(
             try {
                 android.util.Log.d("ProductDetailViewModel", "Loading product: $productId")
 
-                // Determine loading strategy based on identifier format
                 val result = when {
-                    // Scan history lookup: "scan:{scanId}" — load from stored snapshot
                     productId.startsWith("scan:") -> {
                         val scanId = productId.removePrefix("scan:")
                         val userId = authRepository.getCurrentUserId()
                         productRepository.getProductFromScan(userId, scanId)
                     }
-                    // EPREL direct lookup: "eprel:lightsources/2640403"
+
                     productId.startsWith("eprel:") -> {
                         val eprelPath = productId.removePrefix("eprel:")
                         val parts = eprelPath.split("/", limit = 2)
                         if (parts.size == 2) {
                             productRepository.getProductByEprelId(parts[0], parts[1])
                         } else {
-                            Result.failure(Exception("Invalid EPREL identifier: $productId"))
+                            Result.failure(Exception("invalid_eprel_identifier:$productId"))
                         }
                     }
-                    // Looks like an EAN/GTIN
+
                     productId.length in 8..13 && productId.all { it.isDigit() } -> {
                         productRepository.getProductByEan(productId)
                     }
-                    // Try as internal ID
-                    else -> {
-                        productRepository.getProductById(productId)
-                    }
+
+                    else -> productRepository.getProductById(productId)
                 }
 
                 result.fold(
                     onSuccess = { product ->
-                        android.util.Log.d("ProductDetailViewModel", "Product loaded: ${product.name}")
+                        android.util.Log.d(
+                            "ProductDetailViewModel",
+                            "Product loaded: ${product.name}"
+                        )
                         updateUiWithProduct(product)
                     },
                     onFailure = { error ->
-                        android.util.Log.e("ProductDetailViewModel", "Failed to load product from catalog", error)
-                        // Fallback: try to find product data from scan history snapshot
+                        android.util.Log.e(
+                            "ProductDetailViewModel",
+                            "Failed to load product from catalog",
+                            error
+                        )
                         val snapshotProduct = loadFromScanHistory(productId)
                         if (snapshotProduct != null) {
-                            android.util.Log.d("ProductDetailViewModel", "Using scan snapshot: ${snapshotProduct.name}")
+                            android.util.Log.d(
+                                "ProductDetailViewModel",
+                                "Using scan snapshot: ${snapshotProduct.name}"
+                            )
                             updateUiWithProduct(snapshotProduct)
                         } else {
-                            val fallbackProduct = createFallbackProduct(productId)
-                            updateUiWithProduct(fallbackProduct)
+                            updateUiWithProduct(createFallbackProduct(productId))
                         }
                     }
                 )
-
-            } catch (e: Exception) {
-                android.util.Log.e("ProductDetailViewModel", "Exception loading product", e)
+            } catch (exception: Exception) {
+                android.util.Log.e("ProductDetailViewModel", "Exception loading product", exception)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Erreur lors du chargement"
+                        errorMessage = exception.toUiTextOr(
+                            UiText.StringResource(R.string.error_loading_generic)
+                        )
                     )
                 }
             }
@@ -182,10 +178,6 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Tries to load product data from scan history snapshot.
-     * This is used when the product is not in the catalog but was scanned before.
-     */
     private suspend fun loadFromScanHistory(ean: String): Product? {
         return try {
             val userId = authRepository.getCurrentUserId()
@@ -219,8 +211,12 @@ class ProductDetailViewModel @Inject constructor(
                         sourceUrl = scan.snapshotData.sourceUrl
                     )
                 }
-        } catch (e: Exception) {
-            android.util.Log.w("ProductDetailViewModel", "Failed to load from scan history", e)
+        } catch (exception: Exception) {
+            android.util.Log.w(
+                "ProductDetailViewModel",
+                "Failed to load from scan history",
+                exception
+            )
             null
         }
     }
@@ -229,8 +225,8 @@ class ProductDetailViewModel @Inject constructor(
         return Product(
             id = ean,
             gtin = ean,
-            name = "Produit scanné",
-            brand = "Marque inconnue",
+            name = appContext.getString(R.string.product_scanned_name),
+            brand = appContext.getString(R.string.product_unknown_brand),
             model = null,
             category = ProductCategory.OTHER,
             energyLabel = null
@@ -238,7 +234,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun createMetricsFromProduct(product: Product): ProductMetrics {
-        // Count non-null environmental fields for completeness
         val totalFields = 10
         val filledFields = listOfNotNull(
             product.energyLabel,
@@ -265,14 +260,14 @@ class ProductDetailViewModel @Inject constructor(
                     DurabilityScore(value = it / 10.0)
                 },
                 repairability = product.repairabilityIndex?.let {
-                    val repClass = when {
+                    val repairabilityClass = when {
                         it >= 8.0 -> "A"
                         it >= 6.0 -> "B"
                         it >= 4.0 -> "C"
                         it >= 2.0 -> "D"
                         else -> "E"
                     }
-                    RepairabilityScore(value = it, repairabilityClass = repClass)
+                    RepairabilityScore(value = it, repairabilityClass = repairabilityClass)
                 }
             ),
             sources = emptyList(),
@@ -287,13 +282,19 @@ class ProductDetailViewModel @Inject constructor(
     private fun toggleFavorite() {
         viewModelScope.launch {
             if (productId.isBlank()) {
-                _events.emit(ProductDetailEvent.ShowError("Produit introuvable"))
+                _events.emit(
+                    ProductDetailEvent.ShowError(
+                        UiText.StringResource(R.string.error_generic)
+                    )
+                )
                 return@launch
             }
 
             val currentFavorite = _uiState.value.isFavorite
-            val newFavoriteState = !currentFavorite
-            val result = favoriteRepository.setFavorite(productId, newFavoriteState)
+            val result = favoriteRepository.setFavorite(
+                productId = productId,
+                isFavorite = !currentFavorite
+            )
 
             result.fold(
                 onSuccess = { isFavorite ->
@@ -305,7 +306,11 @@ class ProductDetailViewModel @Inject constructor(
                     }
                 },
                 onFailure = { error ->
-                    _events.emit(ProductDetailEvent.ShowError(error.message ?: "Erreur"))
+                    _events.emit(
+                        ProductDetailEvent.ShowError(
+                            error.toUiTextOr(UiText.StringResource(R.string.error_generic))
+                        )
+                    )
                 }
             )
         }
@@ -328,26 +333,27 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun calculateGlobalScore(metrics: ProductMetrics): GlobalScore {
-        // Calculate weighted average based on user preferences
-        // For now, simple average
         val scores = listOfNotNull(
             metrics.scores.durability?.value,
             metrics.scores.repairability?.value,
             metrics.scores.carbon?.value
         )
-        
-        val average = if (scores.isEmpty()) 0.0 else scores.average()
-        
-        val (letter, label) = when {
-            average >= 8.0 -> "A" to "Excellent"
-            average >= 6.5 -> "B" to "Très bon"
-            average >= 5.0 -> "C" to "Bon"
-            average >= 3.5 -> "D" to "Moyen"
-            average >= 2.0 -> "E" to "Passable"
-            else -> "F" to "Médiocre"
-        }
-        
-        return GlobalScore(numericValue = average * 10, letter = letter, label = label)
-    }
 
+        val average = if (scores.isEmpty()) 0.0 else scores.average()
+
+        val (letter, labelResId) = when {
+            average >= 8.0 -> "A" to R.string.excellent
+            average >= 6.5 -> "B" to R.string.product_score_very_good
+            average >= 5.0 -> "C" to R.string.good
+            average >= 3.5 -> "D" to R.string.fair
+            average >= 2.0 -> "E" to R.string.poor
+            else -> "F" to R.string.very_poor
+        }
+
+        return GlobalScore(
+            numericValue = average * 10,
+            letter = letter,
+            label = appContext.getString(labelResId)
+        )
+    }
 }
