@@ -78,18 +78,16 @@ fun LoginScreen(
     uiState: AuthUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit,
     onToggleRememberMe: (Boolean) -> Unit,
     onLogin: () -> Unit,
     onForgotPassword: () -> Unit,
     onLoginWithGoogle: () -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     onAutoFillTestUser: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    
     // Animation states
     var showContent by remember { mutableStateOf(false) }
     
@@ -468,13 +466,13 @@ private fun LoginScreenPreview() {
             ),
             onEmailChange = {},
             onPasswordChange = {},
-            onTogglePasswordVisibility = {},
             onToggleRememberMe = {},
             onLogin = {},
             onForgotPassword = {},
             onLoginWithGoogle = {},
             onNavigateBack = {},
-            onNavigateToRegister = {}
+            onNavigateToRegister = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }
@@ -492,13 +490,13 @@ private fun LoginScreenWithErrorPreview() {
             ),
             onEmailChange = {},
             onPasswordChange = {},
-            onTogglePasswordVisibility = {},
             onToggleRememberMe = {},
             onLogin = {},
             onForgotPassword = {},
             onLoginWithGoogle = {},
             onNavigateBack = {},
-            onNavigateToRegister = {}
+            onNavigateToRegister = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }

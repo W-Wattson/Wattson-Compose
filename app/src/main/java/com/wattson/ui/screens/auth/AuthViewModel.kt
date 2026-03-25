@@ -23,8 +23,6 @@ data class AuthUiState(
     val confirmPassword: String = "",
     val fullName: String = "",
     val isLoading: Boolean = false,
-    val isPasswordVisible: Boolean = false,
-    val isConfirmPasswordVisible: Boolean = false,
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
@@ -52,7 +50,6 @@ sealed interface AuthIntent {
     data class UpdatePassword(val password: String) : AuthIntent
     data class UpdateConfirmPassword(val confirmPassword: String) : AuthIntent
     data class UpdateFullName(val fullName: String) : AuthIntent
-    data class TogglePasswordVisibility(val isConfirmField: Boolean = false) : AuthIntent
     data class ToggleRememberMe(val checked: Boolean) : AuthIntent
     data object Login : AuthIntent
     data object Register : AuthIntent
@@ -103,7 +100,6 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.UpdatePassword -> updatePassword(intent.password)
             is AuthIntent.UpdateConfirmPassword -> updateConfirmPassword(intent.confirmPassword)
             is AuthIntent.UpdateFullName -> updateFullName(intent.fullName)
-            is AuthIntent.TogglePasswordVisibility -> togglePasswordVisibility(intent.isConfirmField)
             is AuthIntent.ToggleRememberMe -> toggleRememberMe(intent.checked)
             is AuthIntent.Login -> performLogin()
             is AuthIntent.Register -> performRegister()
@@ -173,20 +169,6 @@ class AuthViewModel @Inject constructor(
 
     private fun updateFullName(fullName: String) {
         _uiState.update { it.copy(fullName = fullName) }
-    }
-
-    private fun togglePasswordVisibility(isConfirmField: Boolean) {
-        _uiState.update { state ->
-            if (isConfirmField) {
-                state.copy(
-                    isConfirmPasswordVisible = !state.isConfirmPasswordVisible
-                )
-            } else {
-                state.copy(
-                    isPasswordVisible = !state.isPasswordVisible
-                )
-            }
-        }
     }
 
     private fun toggleRememberMe(checked: Boolean) {

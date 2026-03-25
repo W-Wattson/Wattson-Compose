@@ -248,13 +248,7 @@ fun DocumentsScreen(
                     }
                     else -> {
                         DocumentsList(
-                            documentsByYear = if (uiState.selectedYear != null) {
-                                mapOf(uiState.selectedYear to uiState.filteredDocuments)
-                            } else {
-                                uiState.documentsByYear.filterKeys { it in uiState.filteredDocuments.map { doc ->
-                                    java.time.ZonedDateTime.ofInstant(doc.uploadedAt, java.time.ZoneId.systemDefault()).year
-                                } }
-                            },
+                            documentsByYear = uiState.filteredDocumentsByYear,
                             expandedYears = uiState.expandedYears,
                             onToggleYear = { onIntent(DocumentsIntent.ToggleYearExpanded(it)) },
                             onDocumentClick = { onIntent(DocumentsIntent.OpenDocument(it)) },

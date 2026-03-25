@@ -86,47 +86,61 @@ class RepairChatViewModel @Inject constructor(
      */
     private fun loadMessages() {
         viewModelScope.launch {
-            try {
-                val userId = authRepository.getCurrentUserId()
-                val messages = repairChatRepository.getMessagesList(conversationId, userId)
-                _uiState.update { it.copy(messages = messages) }
-                if (messages.isNotEmpty()) {
-                    _events.emit(RepairChatEvent.ScrollToBottom)
+            val userId = authRepository.getCurrentUserId()
+            val result = repairChatRepository.getMessagesList(conversationId, userId)
+
+            result.fold(
+                onSuccess = { messages ->
+                    _uiState.update { it.copy(messages = messages) }
+                    if (messages.isNotEmpty()) {
+                        _events.emit(RepairChatEvent.ScrollToBottom)
+                    }
+                },
+                onFailure = { error ->
+                    _events.emit(
+                        RepairChatEvent.ShowError(
+                            error.message ?: "Erreur de chargement"
+                        )
+                    )
                 }
-            } catch (e: Exception) {
-                _events.emit(RepairChatEvent.ShowError(e.message ?: "Erreur de chargement"))
-            }
+            )
         }
     }
 
-    /**
-     * Sends a user message and waits for the AI response.
-     * The user message is added optimistically to the list for instant UX feedback.
-     */
+    private fun rollbackOptimisticMessage(messageId: String, content: String) {
+        _uiState.update { state ->
+            state.copy(
+                inputText = content,
+                isAssistantTyping = false,
+                messages = state.messages.filterNot { it.id == messageId }
+            )
+        }
+    }
+
     private fun sendMessage() {
         val content = _uiState.value.inputText.trim()
         if (content.isBlank() || _uiState.value.isAssistantTyping) return
 
         viewModelScope.launch {
-            try {
-                // Clear input immediately
-                _uiState.update { it.copy(inputText = "") }
+            val optimisticUserMsg = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                conversationId = conversationId,
+                role = MessageRole.USER,
+                content = content,
+                timestamp = Instant.now()
+            )
 
-                // Optimistic add: show user message immediately (before server confirms)
-                val optimisticUserMsg = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    conversationId = conversationId,
-                    role = MessageRole.USER,
-                    content = content,
-                    timestamp = Instant.now()
-                )
-                _uiState.update { it.copy(messages = it.messages + optimisticUserMsg) }
+            try {
+                _uiState.update {
+                    it.copy(
+                        inputText = "",
+                        messages = it.messages + optimisticUserMsg
+                    )
+                }
                 _events.emit(RepairChatEvent.ScrollToBottom)
 
-                // Show typing indicator
                 _uiState.update { it.copy(isAssistantTyping = true) }
 
-                // Send message and get AI response from backend (calls Ollama)
                 val userId = authRepository.getCurrentUserId()
                 val subscription = authRepository.currentUser.value?.subscriptionType?.name ?: "FREE"
 
@@ -137,7 +151,6 @@ class RepairChatViewModel @Inject constructor(
                     content = content
                 )
 
-                // Add AI response to the list
                 _uiState.update {
                     it.copy(
                         isAssistantTyping = false,
@@ -145,14 +158,21 @@ class RepairChatViewModel @Inject constructor(
                     )
                 }
                 _events.emit(RepairChatEvent.ScrollToBottom)
-
             } catch (e: RepairChatRepository.PremiumRequiredException) {
-                _uiState.update { it.copy(isAssistantTyping = false) }
-                _events.emit(RepairChatEvent.ShowError(
-                    "L'assistant de reparation necessite un abonnement Premium. Passez a Premium pour acceder a cette fonctionnalite."
-                ))
+                rollbackOptimisticMessage(
+                    messageId = optimisticUserMsg.id,
+                    content = content
+                )
+                _events.emit(
+                    RepairChatEvent.ShowError(
+                        "L'assistant de reparation necessite un abonnement Premium. Passez a Premium pour acceder a cette fonctionnalite."
+                    )
+                )
             } catch (e: Exception) {
-                _uiState.update { it.copy(isAssistantTyping = false) }
+                rollbackOptimisticMessage(
+                    messageId = optimisticUserMsg.id,
+                    content = content
+                )
                 _events.emit(RepairChatEvent.ShowError(e.message ?: "Erreur d'envoi"))
             }
         }

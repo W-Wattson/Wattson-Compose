@@ -29,9 +29,7 @@ internal object DocumentsPresentationFactory {
         today: LocalDate = LocalDate.now(),
         zoneId: ZoneId = ZoneId.systemDefault()
     ): DocumentsPresentation {
-        val documentsByYear = documents
-            .groupBy { document -> document.uploadedAt.atZone(zoneId).year }
-            .toSortedMap(reverseOrder())
+        val documentsByYear = groupByYear(documents, zoneId)
 
         val availableYears = documentsByYear.keys.toList()
         val expandedYears = availableYears.defaultExpandedYears(today.year)
@@ -48,6 +46,28 @@ internal object DocumentsPresentationFactory {
             totalDevices = totalDevices,
             activeWarranties = activeWarranties
         )
+    }
+
+    fun filter(
+        documents: List<Document>,
+        query: String,
+        year: Int?,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): List<Document> {
+        return filterByYear(
+            documents = filterByQuery(documents, query),
+            year = year,
+            zoneId = zoneId
+        )
+    }
+
+    fun groupByYear(
+        documents: List<Document>,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): Map<Int, List<Document>> {
+        return documents
+            .groupBy { document -> document.uploadedAt.atZone(zoneId).year }
+            .toSortedMap(reverseOrder())
     }
 
     fun filterByQuery(documents: List<Document>, query: String): List<Document> {

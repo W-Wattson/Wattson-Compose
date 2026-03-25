@@ -27,6 +27,7 @@ data class DocumentsUiState(
     val documents: List<Document> = emptyList(),
     val documentsByYear: Map<Int, List<Document>> = emptyMap(),
     val filteredDocuments: List<Document> = emptyList(),
+    val filteredDocumentsByYear: Map<Int, List<Document>> = emptyMap(),
     val searchQuery: String = "",
     val selectedYear: Int? = null,
     val availableYears: List<Int> = emptyList(),
@@ -167,16 +168,29 @@ class DocumentsViewModel @Inject constructor(
     }
 
     private fun processDocuments(documents: List<Document>) {
+        val currentState = _uiState.value
         val presentation = DocumentsPresentationFactory.create(documents)
+        val filteredDocuments = DocumentsPresentationFactory.filter(
+            documents = documents,
+            query = currentState.searchQuery,
+            year = currentState.selectedYear
+        )
+        val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
 
         _uiState.update {
             it.copy(
                 isLoading = false,
                 documents = documents,
                 documentsByYear = presentation.documentsByYear,
-                filteredDocuments = documents,
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = filteredDocumentsByYear,
                 availableYears = presentation.availableYears,
-                expandedYears = presentation.expandedYears,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = currentState.selectedYear,
+                    currentExpandedYears = currentState.expandedYears,
+                    defaultExpandedYears = presentation.expandedYears,
+                    availableYears = filteredDocumentsByYear.keys
+                ),
                 totalDocuments = presentation.totalDocuments,
                 totalDevices = presentation.totalDevices,
                 activeWarranties = presentation.activeWarranties
@@ -186,25 +200,39 @@ class DocumentsViewModel @Inject constructor(
 
     private fun searchDocuments(query: String) {
         _uiState.update { state ->
+            val filteredDocuments = DocumentsPresentationFactory.filter(
+                documents = state.documents,
+                query = query,
+                year = state.selectedYear
+            )
+
             state.copy(
                 searchQuery = query,
-                filteredDocuments = DocumentsPresentationFactory.filterByQuery(
-                    documents = state.documents,
-                    query = query
-                )
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
             )
         }
     }
 
     private fun filterByYear(year: Int?) {
         _uiState.update { state ->
+            val filteredDocuments = DocumentsPresentationFactory.filter(
+                documents = state.documents,
+                query = state.searchQuery,
+                year = year
+            )
+            val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
+
             state.copy(
                 selectedYear = year,
-                filteredDocuments = DocumentsPresentationFactory.filterByYear(
-                    documents = state.documents,
-                    year = year
-                ),
-                expandedYears = if (year != null) setOf(year) else state.expandedYears
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = filteredDocumentsByYear,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = year,
+                    currentExpandedYears = state.expandedYears,
+                    defaultExpandedYears = state.availableYears.toSet(),
+                    availableYears = filteredDocumentsByYear.keys
+                )
             )
         }
     }
@@ -416,5 +444,28 @@ class DocumentsViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun resolveExpandedYears(
+        selectedYear: Int?,
+        currentExpandedYears: Set<Int>,
+        defaultExpandedYears: Set<Int>,
+        availableYears: Set<Int>
+    ): Set<Int> {
+        if (selectedYear != null) {
+            return selectedYear.takeIf(availableYears::contains)?.let(::setOf) ?: emptySet()
+        }
+
+        val preservedExpandedYears = currentExpandedYears.intersect(availableYears)
+        if (preservedExpandedYears.isNotEmpty()) {
+            return preservedExpandedYears
+        }
+
+        val defaultVisibleYears = defaultExpandedYears.intersect(availableYears)
+        if (defaultVisibleYears.isNotEmpty()) {
+            return defaultVisibleYears
+        }
+
+        return availableYears.firstOrNull()?.let(::setOf) ?: emptySet()
     }
 }

@@ -44,20 +44,21 @@ class RepairChatRepository @Inject constructor(
     suspend fun getMessagesList(
         conversationId: String,
         userId: String
-    ): List<ChatMessage> = withContext(Dispatchers.IO) {
+    ): Result<List<ChatMessage>> = withContext(Dispatchers.IO) {
         try {
             val response = api.getRepairMessages(userId, conversationId)
             if (response.isSuccessful) {
                 val messages = response.body() ?: emptyList()
                 Log.d(TAG, "Loaded ${messages.size} messages for conversation $conversationId")
-                messages.map { it.toDomain(conversationId) }
+                Result.success(messages.map { it.toDomain(conversationId) })
             } else {
+                val message = "Erreur serveur: ${response.code()}"
                 Log.e(TAG, "Failed to load messages: ${response.code()} - ${response.message()}")
-                emptyList()
+                Result.failure(RuntimeException(message))
             }
         } catch (exception: Exception) {
             Log.e(TAG, "Error loading messages: ${exception.message}", exception)
-            emptyList()
+            Result.failure(exception)
         }
     }
 

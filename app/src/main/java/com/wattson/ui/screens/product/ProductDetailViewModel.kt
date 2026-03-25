@@ -12,6 +12,7 @@ import com.wattson.domain.model.ProductMetrics
 import com.wattson.domain.model.ProductScores
 import com.wattson.domain.model.RepairabilityScore
 import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.FavoriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,7 +68,8 @@ sealed interface ProductDetailIntent {
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productRepository: com.wattson.data.repository.ProductRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
 
     private val productId: String = savedStateHandle.get<String>("productId") ?: ""
@@ -80,6 +82,7 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         if (productId.isNotBlank()) {
+            _uiState.update { it.copy(isFavorite = favoriteRepository.isFavorite(productId)) }
             loadProduct()
         }
     }
@@ -283,25 +286,28 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         viewModelScope.launch {
-            val currentFavorite = _uiState.value.isFavorite
-            
-            _uiState.update { it.copy(isFavorite = !currentFavorite) }
-            
-            try {
-                // TODO: Replace with actual use case
-                // toggleFavoriteUseCase(productId, !currentFavorite)
-                
-                if (!currentFavorite) {
-                    _events.emit(ProductDetailEvent.AddedToFavorites)
-                } else {
-                    _events.emit(ProductDetailEvent.RemovedFromFavorites)
-                }
-                
-            } catch (e: Exception) {
-                // Revert on error
-                _uiState.update { it.copy(isFavorite = currentFavorite) }
-                _events.emit(ProductDetailEvent.ShowError(e.message ?: "Erreur"))
+            if (productId.isBlank()) {
+                _events.emit(ProductDetailEvent.ShowError("Produit introuvable"))
+                return@launch
             }
+
+            val currentFavorite = _uiState.value.isFavorite
+            val newFavoriteState = !currentFavorite
+            val result = favoriteRepository.setFavorite(productId, newFavoriteState)
+
+            result.fold(
+                onSuccess = { isFavorite ->
+                    _uiState.update { it.copy(isFavorite = isFavorite) }
+                    if (isFavorite) {
+                        _events.emit(ProductDetailEvent.AddedToFavorites)
+                    } else {
+                        _events.emit(ProductDetailEvent.RemovedFromFavorites)
+                    }
+                },
+                onFailure = { error ->
+                    _events.emit(ProductDetailEvent.ShowError(error.message ?: "Erreur"))
+                }
+            )
         }
     }
 

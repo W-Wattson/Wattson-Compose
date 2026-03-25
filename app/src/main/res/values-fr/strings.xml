@@ -96,6 +96,8 @@
     <string name="wattson_user_rating">Note utilisateur Wattson</string>
     <string name="remove_favorite">Retirer des favoris</string>
     <string name="add_favorite">Ajouter aux favoris</string>
+    <string name="favorite_added">Ajouté aux favoris</string>
+    <string name="favorite_removed">Retiré des favoris</string>
     <string name="score_prefix">Score :</string>
     <string name="energy_kwh_year">%d kWh/an</string>
     <string name="endurance_label">Endurance :</string>

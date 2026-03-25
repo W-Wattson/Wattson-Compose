@@ -73,6 +73,48 @@ class DocumentsPresentationFactoryTest {
     }
 
     @Test
+    fun `filter composes query and year constraints`() {
+        val matchingDocument = testDocument(
+            id = "1",
+            productName = "Lave-vaisselle",
+            merchant = "Boulanger",
+            uploadedAt = Instant.parse("2026-03-01T10:00:00Z")
+        )
+        val sameYearDifferentMerchant = testDocument(
+            id = "2",
+            productName = "Lave-linge",
+            merchant = "Darty",
+            uploadedAt = Instant.parse("2026-04-01T10:00:00Z")
+        )
+        val differentYearMatchingMerchant = testDocument(
+            id = "3",
+            productName = "TV",
+            merchant = "Boulanger",
+            uploadedAt = Instant.parse("2025-04-01T10:00:00Z")
+        )
+
+        val filteredDocuments = DocumentsPresentationFactory.filter(
+            documents = listOf(
+                matchingDocument,
+                sameYearDifferentMerchant,
+                differentYearMatchingMerchant
+            ),
+            query = "boul",
+            year = 2026,
+            zoneId = ZoneId.of("UTC")
+        )
+
+        val groupedDocuments = DocumentsPresentationFactory.groupByYear(
+            documents = filteredDocuments,
+            zoneId = ZoneId.of("UTC")
+        )
+
+        assertEquals(listOf(matchingDocument), filteredDocuments)
+        assertEquals(listOf(2026), groupedDocuments.keys.toList())
+        assertEquals(listOf(matchingDocument), groupedDocuments.getValue(2026))
+    }
+
+    @Test
     fun `recent pending OCR detection only keeps fresh processing documents`() {
         val now = Instant.parse("2026-03-25T10:00:00Z")
         val recentPending = testDocument(

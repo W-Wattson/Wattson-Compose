@@ -71,6 +71,7 @@ fun AuthScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginWithGoogle: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     AuthScreen(
@@ -78,6 +79,7 @@ fun AuthScreen(
         onNavigateToLogin = onNavigateToLogin,
         onNavigateToRegister = onNavigateToRegister,
         onLoginWithGoogle = onLoginWithGoogle,
+        snackbarHostState = snackbarHostState,
         modifier = modifier
     )
 }
@@ -88,10 +90,9 @@ fun AuthScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginWithGoogle: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    
     // Animation states for staggered entrance
     var showLogo by remember { mutableStateOf(false) }
     var showButtons by remember { mutableStateOf(false) }
@@ -453,7 +454,8 @@ private fun AuthScreenPreview() {
             uiState = AuthUiState(),
             onNavigateToLogin = {},
             onNavigateToRegister = {},
-            onLoginWithGoogle = {}
+            onLoginWithGoogle = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }
