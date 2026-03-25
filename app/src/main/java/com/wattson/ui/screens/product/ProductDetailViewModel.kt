@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wattson.R
 import com.wattson.data.repository.AuthRepository
+import com.wattson.data.repository.FavoriteRepository
+import com.wattson.data.repository.ProductRepository
 import com.wattson.domain.model.DurabilityScore
 import com.wattson.domain.model.EnergyScore
 import com.wattson.domain.model.GlobalScore
@@ -18,6 +20,7 @@ import com.wattson.ui.i18n.UiText
 import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
-import javax.inject.Inject
 
 data class ProductDetailUiState(
     val isLoading: Boolean = false,
@@ -58,8 +60,9 @@ sealed interface ProductDetailIntent {
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val productRepository: com.wattson.data.repository.ProductRepository,
+    private val productRepository: ProductRepository,
     private val authRepository: AuthRepository,
+    private val favoriteRepository: FavoriteRepository,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -73,18 +76,19 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         if (productId.isNotBlank()) {
+            _uiState.update { it.copy(isFavorite = favoriteRepository.isFavorite(productId)) }
             loadProduct()
         }
     }
 
     fun onIntent(intent: ProductDetailIntent) {
         when (intent) {
-            is ProductDetailIntent.LoadProduct -> loadProduct()
-            is ProductDetailIntent.RefreshProduct -> refreshProduct()
-            is ProductDetailIntent.ToggleFavorite -> toggleFavorite()
-            is ProductDetailIntent.StartRepair -> startRepair()
-            is ProductDetailIntent.NavigateBack -> navigateBack()
-            is ProductDetailIntent.DismissError -> dismissError()
+            ProductDetailIntent.LoadProduct -> loadProduct()
+            ProductDetailIntent.RefreshProduct -> refreshProduct()
+            ProductDetailIntent.ToggleFavorite -> toggleFavorite()
+            ProductDetailIntent.StartRepair -> startRepair()
+            ProductDetailIntent.NavigateBack -> navigateBack()
+            ProductDetailIntent.DismissError -> dismissError()
         }
     }
 
@@ -116,18 +120,23 @@ class ProductDetailViewModel @Inject constructor(
                         productRepository.getProductByEan(productId)
                     }
 
-                    else -> {
-                        productRepository.getProductById(productId)
-                    }
+                    else -> productRepository.getProductById(productId)
                 }
 
                 result.fold(
                     onSuccess = { product ->
-                        android.util.Log.d("ProductDetailViewModel", "Product loaded: ${product.name}")
+                        android.util.Log.d(
+                            "ProductDetailViewModel",
+                            "Product loaded: ${product.name}"
+                        )
                         updateUiWithProduct(product)
                     },
                     onFailure = { error ->
-                        android.util.Log.e("ProductDetailViewModel", "Failed to load product from catalog", error)
+                        android.util.Log.e(
+                            "ProductDetailViewModel",
+                            "Failed to load product from catalog",
+                            error
+                        )
                         val snapshotProduct = loadFromScanHistory(productId)
                         if (snapshotProduct != null) {
                             android.util.Log.d(
@@ -140,12 +149,12 @@ class ProductDetailViewModel @Inject constructor(
                         }
                     }
                 )
-            } catch (e: Exception) {
-                android.util.Log.e("ProductDetailViewModel", "Exception loading product", e)
+            } catch (exception: Exception) {
+                android.util.Log.e("ProductDetailViewModel", "Exception loading product", exception)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.toUiTextOr(
+                        errorMessage = exception.toUiTextOr(
                             UiText.StringResource(R.string.error_loading_generic)
                         )
                     )
@@ -202,8 +211,12 @@ class ProductDetailViewModel @Inject constructor(
                         sourceUrl = scan.snapshotData.sourceUrl
                     )
                 }
-        } catch (e: Exception) {
-            android.util.Log.w("ProductDetailViewModel", "Failed to load from scan history", e)
+        } catch (exception: Exception) {
+            android.util.Log.w(
+                "ProductDetailViewModel",
+                "Failed to load from scan history",
+                exception
+            )
             null
         }
     }
@@ -247,14 +260,14 @@ class ProductDetailViewModel @Inject constructor(
                     DurabilityScore(value = it / 10.0)
                 },
                 repairability = product.repairabilityIndex?.let {
-                    val repClass = when {
+                    val repairabilityClass = when {
                         it >= 8.0 -> "A"
                         it >= 6.0 -> "B"
                         it >= 4.0 -> "C"
                         it >= 2.0 -> "D"
                         else -> "E"
                     }
-                    RepairabilityScore(value = it, repairabilityClass = repClass)
+                    RepairabilityScore(value = it, repairabilityClass = repairabilityClass)
                 }
             ),
             sources = emptyList(),
@@ -268,23 +281,38 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         viewModelScope.launch {
-            val currentFavorite = _uiState.value.isFavorite
-            _uiState.update { it.copy(isFavorite = !currentFavorite) }
-
-            try {
-                if (!currentFavorite) {
-                    _events.emit(ProductDetailEvent.AddedToFavorites)
-                } else {
-                    _events.emit(ProductDetailEvent.RemovedFromFavorites)
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isFavorite = currentFavorite) }
+            if (productId.isBlank()) {
                 _events.emit(
                     ProductDetailEvent.ShowError(
-                        e.toUiTextOr(UiText.StringResource(R.string.error_generic))
+                        UiText.StringResource(R.string.error_generic)
                     )
                 )
+                return@launch
             }
+
+            val currentFavorite = _uiState.value.isFavorite
+            val result = favoriteRepository.setFavorite(
+                productId = productId,
+                isFavorite = !currentFavorite
+            )
+
+            result.fold(
+                onSuccess = { isFavorite ->
+                    _uiState.update { it.copy(isFavorite = isFavorite) }
+                    if (isFavorite) {
+                        _events.emit(ProductDetailEvent.AddedToFavorites)
+                    } else {
+                        _events.emit(ProductDetailEvent.RemovedFromFavorites)
+                    }
+                },
+                onFailure = { error ->
+                    _events.emit(
+                        ProductDetailEvent.ShowError(
+                            error.toUiTextOr(UiText.StringResource(R.string.error_generic))
+                        )
+                    )
+                }
+            )
         }
     }
 

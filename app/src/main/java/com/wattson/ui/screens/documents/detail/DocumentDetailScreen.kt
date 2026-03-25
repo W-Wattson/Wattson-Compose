@@ -20,12 +20,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.ShoppingBag
@@ -363,7 +363,7 @@ private fun DocumentPreviewCard(
             ) {
                 ActionButton(
                     onClick = onOpen,
-                    icon = Icons.Default.OpenInNew,
+                    icon = Icons.AutoMirrored.Filled.OpenInNew,
                     text = stringResource(R.string.doc_detail_open),
                     modifier = Modifier.weight(1f)
                 )

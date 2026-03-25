@@ -72,9 +72,9 @@ import com.wattson.ui.theme.WattsonPreviewTheme
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
@@ -259,13 +259,7 @@ fun DocumentsScreen(
                     }
                     else -> {
                         DocumentsList(
-                            documentsByYear = if (uiState.selectedYear != null) {
-                                mapOf(uiState.selectedYear to uiState.filteredDocuments)
-                            } else {
-                                uiState.documentsByYear.filterKeys { it in uiState.filteredDocuments.map { doc ->
-                                    java.time.ZonedDateTime.ofInstant(doc.uploadedAt, java.time.ZoneId.systemDefault()).year
-                                } }
-                            },
+                            documentsByYear = uiState.filteredDocumentsByYear,
                             expandedYears = uiState.expandedYears,
                             onToggleYear = { onIntent(DocumentsIntent.ToggleYearExpanded(it)) },
                             onDocumentClick = { onIntent(DocumentsIntent.OpenDocument(it)) },

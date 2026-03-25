@@ -12,13 +12,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.wattson.data.repository.AuthRepository
 import com.wattson.ui.components.BottomNavigationBar
+import com.wattson.ui.navigation.isProtectedRoute
 import com.wattson.ui.navigation.WattsonNavHost
 import com.wattson.ui.navigation.WattsonRoute
+import com.wattson.ui.navigation.toBottomBarRoute
 import com.wattson.ui.theme.WattsonTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -52,11 +53,9 @@ class MainActivity : AppCompatActivity() {
  */
 @Composable
 fun WattsonApp(authRepository: AuthRepository) {
-    // Observe login state from AuthRepository
     val isLoggedIn by authRepository.isLoggedIn.collectAsState()
     val currentUser by authRepository.currentUser.collectAsState()
 
-    // Determine start destination based on login state
     val isAuthenticated = isLoggedIn && currentUser != null
     val startDestination: WattsonRoute = if (isAuthenticated) {
         WattsonRoute.History
@@ -64,26 +63,13 @@ fun WattsonApp(authRepository: AuthRepository) {
         WattsonRoute.Auth
     }
 
-    // Use key to force NavHost recreation when auth state changes.
-    // This ensures the correct startDestination is applied and the
-    // entire back stack is reset on login/logout transitions.
     val navController = rememberNavController()
 
-    // Get current route for bottom nav visibility
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val currentBottomBarRoute = remember(currentRoute) { currentRoute.toBottomBarRoute() }
+    val showBottomNav = isAuthenticated && currentBottomBarRoute != null
 
-    // Determine if bottom nav should be shown (only when authenticated on main tabs)
-    val showBottomNav = remember(currentRoute, isAuthenticated) {
-        isAuthenticated && currentRoute?.let { route ->
-            route.contains("History") ||
-            route.contains("Repair") ||
-            route.contains("Documents") ||
-            route.contains("Account")
-        } ?: false
-    }
-
-    // Strict auth guard: redirect to Auth when user becomes unauthenticated
     LaunchedEffect(isAuthenticated) {
         if (!isAuthenticated) {
             navController.navigate(WattsonRoute.Auth) {
@@ -92,16 +78,10 @@ fun WattsonApp(authRepository: AuthRepository) {
         }
     }
 
-    // Strict route protection: intercept navigation to protected routes when not authenticated
     LaunchedEffect(currentRoute, isAuthenticated) {
-        if (!isAuthenticated && currentRoute != null) {
-            val isOnProtectedRoute = !currentRoute.contains("Auth") &&
-                    !currentRoute.contains("Login") &&
-                    !currentRoute.contains("Register")
-            if (isOnProtectedRoute) {
-                navController.navigate(WattsonRoute.Auth) {
-                    popUpTo(0) { inclusive = true }
-                }
+        if (!isAuthenticated && currentRoute.isProtectedRoute()) {
+            navController.navigate(WattsonRoute.Auth) {
+                popUpTo(0) { inclusive = true }
             }
         }
     }
@@ -121,11 +101,7 @@ fun WattsonApp(authRepository: AuthRepository) {
             navController = navController,
             startDestination = startDestination,
             innerPadding = innerPadding,
-            isLoggedIn = isAuthenticated,
-            onLogout = {
-                // Logout is handled by AuthRepository, which updates isLoggedIn state
-                // The LaunchedEffect above will handle navigation
-            }
+            isLoggedIn = isAuthenticated
         )
     }
 }

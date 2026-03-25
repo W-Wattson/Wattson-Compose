@@ -19,6 +19,19 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Manages Google Sign-In using the Credential Manager API.
+ *
+ * This class wraps the Android Credential Manager and handles the
+ * Google ID token retrieval flow. It requires an Activity context
+ * to display the account picker UI.
+ *
+ * Includes an automatic retry mechanism for the first attempt, as Google Play
+ * Services often returns BAD_AUTHENTICATION on cold starts.
+ *
+ * @see <a href="https://developer.android.com/identity/sign-in/credential-manager-siwg">
+ *     Sign in with Google using Credential Manager</a>
+ */
 @Singleton
 class GoogleAuthManager @Inject constructor() {
 

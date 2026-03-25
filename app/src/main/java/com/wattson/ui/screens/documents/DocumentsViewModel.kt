@@ -1,21 +1,19 @@
 package com.wattson.ui.screens.documents
 
-import android.net.Uri
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wattson.R
 import com.wattson.data.repository.AuthRepository
 import com.wattson.data.repository.DocumentRepository
 import com.wattson.domain.model.Document
-import com.wattson.domain.model.DocumentConstraints
-import com.wattson.domain.model.OcrStatus
 import com.wattson.domain.model.getDocumentLimit
-import com.wattson.domain.model.isAllowedMimeType
 import com.wattson.ui.i18n.UiText
 import com.wattson.ui.i18n.toUiTextOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,15 +23,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.LocalDate
-import javax.inject.Inject
 
 data class DocumentsUiState(
     val isLoading: Boolean = false,
     val documents: List<Document> = emptyList(),
     val documentsByYear: Map<Int, List<Document>> = emptyMap(),
     val filteredDocuments: List<Document> = emptyList(),
+    val filteredDocumentsByYear: Map<Int, List<Document>> = emptyMap(),
     val searchQuery: String = "",
     val selectedYear: Int? = null,
     val availableYears: List<Int> = emptyList(),
@@ -103,25 +99,25 @@ class DocumentsViewModel @Inject constructor(
 
     fun onIntent(intent: DocumentsIntent) {
         when (intent) {
-            is DocumentsIntent.LoadDocuments -> loadDocuments()
-            is DocumentsIntent.RefreshDocuments -> refreshDocuments()
+            DocumentsIntent.LoadDocuments -> loadDocuments()
+            DocumentsIntent.RefreshDocuments -> refreshDocuments()
             is DocumentsIntent.SearchDocuments -> searchDocuments(intent.query)
             is DocumentsIntent.FilterByYear -> filterByYear(intent.year)
             is DocumentsIntent.ToggleYearExpanded -> toggleYearExpanded(intent.year)
             is DocumentsIntent.OpenDocument -> openDocument(intent.documentId)
-            is DocumentsIntent.StartUpload -> startUpload()
+            DocumentsIntent.StartUpload -> startUpload()
             is DocumentsIntent.UploadDocument -> uploadDocument(
-                intent.uri,
-                intent.fileName,
-                intent.mimeType,
-                intent.fileSize
+                uri = intent.uri,
+                fileName = intent.fileName,
+                mimeType = intent.mimeType,
+                fileSize = intent.fileSize
             )
 
             is DocumentsIntent.DeleteDocument -> requestDeleteDocument(intent.document)
-            is DocumentsIntent.ConfirmDelete -> confirmDelete()
-            is DocumentsIntent.CancelDelete -> cancelDelete()
-            is DocumentsIntent.DismissError -> dismissError()
-            is DocumentsIntent.NavigateToPremium -> navigateToPremium()
+            DocumentsIntent.ConfirmDelete -> confirmDelete()
+            DocumentsIntent.CancelDelete -> cancelDelete()
+            DocumentsIntent.DismissError -> dismissError()
+            DocumentsIntent.NavigateToPremium -> navigateToPremium()
             is DocumentsIntent.DownloadDocument -> downloadDocument(intent.document)
         }
     }
@@ -135,9 +131,7 @@ class DocumentsViewModel @Inject constructor(
                 val result = documentRepository.getDocuments(userId)
 
                 result.fold(
-                    onSuccess = { documents ->
-                        processDocuments(documents)
-                    },
+                    onSuccess = ::processDocuments,
                     onFailure = { error ->
                         _uiState.update {
                             it.copy(
@@ -149,11 +143,11 @@ class DocumentsViewModel @Inject constructor(
                         }
                     }
                 )
-            } catch (e: Exception) {
+            } catch (exception: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.toUiTextOr(
+                        errorMessage = exception.toUiTextOr(
                             UiText.StringResource(R.string.error_loading_generic)
                         )
                     )
@@ -167,83 +161,93 @@ class DocumentsViewModel @Inject constructor(
     }
 
     private fun processDocuments(documents: List<Document>) {
-        val documentsByYear = documents.groupBy {
-            java.time.ZonedDateTime.ofInstant(it.uploadedAt, java.time.ZoneId.systemDefault()).year
-        }.toSortedMap(reverseOrder())
-
-        val availableYears = documentsByYear.keys.toList()
-        val uniqueGtins = documents.mapNotNull { it.gtin }.distinct()
-        val activeWarranties = documents.count { doc ->
-            doc.metadata.warrantyEndDate?.isAfter(LocalDate.now()) ?: false
-        }
-
-        val currentYear = LocalDate.now().year
-        val expandedYears = if (availableYears.contains(currentYear)) {
-            setOf(currentYear)
-        } else {
-            availableYears.firstOrNull()?.let { setOf(it) } ?: emptySet()
-        }
+        val currentState = _uiState.value
+        val presentation = DocumentsPresentationFactory.create(documents)
+        val filteredDocuments = DocumentsPresentationFactory.filter(
+            documents = documents,
+            query = currentState.searchQuery,
+            year = currentState.selectedYear
+        )
+        val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
 
         _uiState.update {
             it.copy(
                 isLoading = false,
                 documents = documents,
-                documentsByYear = documentsByYear,
-                filteredDocuments = documents,
-                availableYears = availableYears,
-                expandedYears = expandedYears,
-                totalDocuments = documents.size,
-                totalDevices = uniqueGtins.size,
-                activeWarranties = activeWarranties
+                documentsByYear = presentation.documentsByYear,
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = filteredDocumentsByYear,
+                availableYears = presentation.availableYears,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = currentState.selectedYear,
+                    currentExpandedYears = currentState.expandedYears,
+                    defaultExpandedYears = presentation.expandedYears,
+                    availableYears = filteredDocumentsByYear.keys
+                ),
+                totalDocuments = presentation.totalDocuments,
+                totalDevices = presentation.totalDevices,
+                activeWarranties = presentation.activeWarranties,
+                isUploadInProgress = false,
+                uploadProgress = 0f
             )
         }
     }
 
     private fun searchDocuments(query: String) {
         _uiState.update { state ->
-            val filtered = if (query.isBlank()) {
-                state.documents
-            } else {
-                state.documents.filter { doc ->
-                    doc.productName.contains(query, ignoreCase = true) ||
-                        doc.metadata.merchant?.contains(query, ignoreCase = true) == true ||
-                        doc.type.name.contains(query, ignoreCase = true)
-                }
-            }
+            val filteredDocuments = DocumentsPresentationFactory.filter(
+                documents = state.documents,
+                query = query,
+                year = state.selectedYear
+            )
+            val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
 
-            state.copy(searchQuery = query, filteredDocuments = filtered)
+            state.copy(
+                searchQuery = query,
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = filteredDocumentsByYear,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = state.selectedYear,
+                    currentExpandedYears = state.expandedYears,
+                    defaultExpandedYears = defaultExpandedYears(filteredDocumentsByYear.keys),
+                    availableYears = filteredDocumentsByYear.keys
+                )
+            )
         }
     }
 
     private fun filterByYear(year: Int?) {
         _uiState.update { state ->
-            val filtered = if (year == null) {
-                state.documents
-            } else {
-                state.documents.filter { doc ->
-                    java.time.ZonedDateTime.ofInstant(
-                        doc.uploadedAt,
-                        java.time.ZoneId.systemDefault()
-                    ).year == year
-                }
-            }
+            val filteredDocuments = DocumentsPresentationFactory.filter(
+                documents = state.documents,
+                query = state.searchQuery,
+                year = year
+            )
+            val filteredDocumentsByYear = DocumentsPresentationFactory.groupByYear(filteredDocuments)
 
             state.copy(
                 selectedYear = year,
-                filteredDocuments = filtered,
-                expandedYears = if (year != null) setOf(year) else state.expandedYears
+                filteredDocuments = filteredDocuments,
+                filteredDocumentsByYear = filteredDocumentsByYear,
+                expandedYears = resolveExpandedYears(
+                    selectedYear = year,
+                    currentExpandedYears = state.expandedYears,
+                    defaultExpandedYears = defaultExpandedYears(filteredDocumentsByYear.keys),
+                    availableYears = filteredDocumentsByYear.keys
+                )
             )
         }
     }
 
     private fun toggleYearExpanded(year: Int) {
         _uiState.update { state ->
-            val newExpanded = if (state.expandedYears.contains(year)) {
+            val expandedYears = if (state.expandedYears.contains(year)) {
                 state.expandedYears - year
             } else {
                 state.expandedYears + year
             }
-            state.copy(expandedYears = newExpanded)
+
+            state.copy(expandedYears = expandedYears)
         }
     }
 
@@ -269,23 +273,32 @@ class DocumentsViewModel @Inject constructor(
         }
     }
 
-    private fun uploadDocument(uri: String, fileName: String, mimeType: String?, fileSize: Long) {
-        val validationError = validateFileBeforeUpload(fileName, mimeType, fileSize)
+    private fun uploadDocument(
+        uri: String,
+        fileName: String,
+        mimeType: String?,
+        fileSize: Long
+    ) {
+        val validationError = DocumentUploadValidator.validate(fileName, mimeType, fileSize)
         if (validationError != null) {
-            viewModelScope.launch { _events.emit(DocumentsEvent.ShowUploadError(validationError)) }
+            viewModelScope.launch {
+                _events.emit(
+                    DocumentsEvent.ShowUploadError(UiText.DynamicString(validationError))
+                )
+            }
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isUploadInProgress = true, uploadProgress = 0.1f) }
+            _uiState.update {
+                it.copy(isUploadInProgress = true, uploadProgress = 0.1f)
+            }
 
             try {
                 val userId = authRepository.getCurrentUserId()
-                val androidUri = Uri.parse(uri)
-
                 val result = documentRepository.uploadDocument(
                     userId = userId,
-                    uri = androidUri,
+                    uri = Uri.parse(uri),
                     documentType = "OTHER"
                 )
 
@@ -296,28 +309,26 @@ class DocumentsViewModel @Inject constructor(
                         startPostUploadRefreshWindow()
                     },
                     onFailure = { error ->
-                        _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-
-                        if (isQuotaExceededMessage(error.message)) {
-                            _events.emit(DocumentsEvent.ShowQuotaExceeded)
-                        } else {
-                            _events.emit(
-                                DocumentsEvent.ShowUploadError(mapUploadErrorMessage(error.message))
-                            )
+                        _uiState.update {
+                            it.copy(isUploadInProgress = false, uploadProgress = 0f)
                         }
+                        emitUploadFailure(DocumentUploadValidator.mapErrorMessage(error.message))
                     }
                 )
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isUploadInProgress = false, uploadProgress = 0f) }
-
-                if (isQuotaExceededMessage(e.message)) {
-                    _events.emit(DocumentsEvent.ShowQuotaExceeded)
-                } else {
-                    _events.emit(
-                        DocumentsEvent.ShowUploadError(mapUploadErrorMessage(e.message))
-                    )
+            } catch (exception: Exception) {
+                _uiState.update {
+                    it.copy(isUploadInProgress = false, uploadProgress = 0f)
                 }
+                emitUploadFailure(DocumentUploadValidator.mapErrorMessage(exception.message))
             }
+        }
+    }
+
+    private suspend fun emitUploadFailure(message: String) {
+        if (message.contains("Limite de documents", ignoreCase = true)) {
+            _events.emit(DocumentsEvent.ShowQuotaExceeded)
+        } else {
+            _events.emit(DocumentsEvent.ShowUploadError(UiText.DynamicString(message)))
         }
     }
 
@@ -329,7 +340,9 @@ class DocumentsViewModel @Inject constructor(
         val document = _uiState.value.showDeleteConfirmation ?: return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(showDeleteConfirmation = null, isLoading = true) }
+            _uiState.update {
+                it.copy(showDeleteConfirmation = null, isLoading = true)
+            }
 
             try {
                 val userId = authRepository.getCurrentUserId()
@@ -351,11 +364,11 @@ class DocumentsViewModel @Inject constructor(
                         }
                     }
                 )
-            } catch (e: Exception) {
+            } catch (exception: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.toUiTextOr(
+                        errorMessage = exception.toUiTextOr(
                             UiText.StringResource(R.string.error_delete_generic)
                         )
                     )
@@ -381,89 +394,29 @@ class DocumentsViewModel @Inject constructor(
     private fun startPostUploadRefreshWindow() {
         postUploadRefreshJob?.cancel()
         postUploadRefreshJob = viewModelScope.launch {
-            val delays = listOf(800L, 1500L, 2500L, 4000L, 6500L, 10000L)
-            for (delayMs in delays) {
+            val pollingDelays = listOf(800L, 1500L, 2500L, 4000L, 6500L, 10000L)
+
+            for (delayMs in pollingDelays) {
                 delay(delayMs)
                 reloadDocumentsSilently()
-                if (!hasRecentPendingOcr(_uiState.value.documents)) {
+
+                if (!DocumentsPresentationFactory.hasRecentPendingOcr(_uiState.value.documents)) {
                     break
                 }
             }
         }
     }
 
+    /**
+     * Polling after an upload should not surface transient backend failures to the user.
+     */
     private suspend fun reloadDocumentsSilently() {
         try {
             val userId = authRepository.getCurrentUserId()
             val result = documentRepository.getDocuments(userId)
-            result.onSuccess { documents -> processDocuments(documents) }
+            result.onSuccess(::processDocuments)
         } catch (_: Exception) {
-        }
-    }
-
-    private fun hasRecentPendingOcr(documents: List<Document>): Boolean {
-        val cutoff = Instant.now().minusSeconds(120)
-        return documents.any { doc ->
-            doc.uploadedAt.isAfter(cutoff) &&
-                (doc.ocrStatus?.isInProgress == true || doc.ocrStatus == OcrStatus.UNKNOWN)
-        }
-    }
-
-    private fun validateFileBeforeUpload(
-        fileName: String,
-        mimeType: String?,
-        fileSize: Long
-    ): UiText? {
-        val normalizedMime = mimeType?.lowercase()
-        if (normalizedMime.isNullOrBlank() || !normalizedMime.isAllowedMimeType()) {
-            return UiText.StringResource(R.string.documents_error_invalid_format)
-        }
-
-        if (fileSize <= 0L) {
-            return UiText.StringResource(R.string.documents_error_unreadable_file)
-        }
-
-        if (fileSize > DocumentConstraints.MAX_FILE_SIZE_BYTES) {
-            return UiText.StringResource(
-                R.string.documents_error_file_too_large,
-                DocumentConstraints.MAX_FILE_SIZE_MB
-            )
-        }
-
-        if (!fileName.contains('.')) {
-            return UiText.StringResource(R.string.documents_error_invalid_filename)
-        }
-
-        return null
-    }
-
-    private fun isQuotaExceededMessage(raw: String?): Boolean {
-        val source = raw.orEmpty()
-        return source.contains("quota", ignoreCase = true) ||
-            source.contains("limit", ignoreCase = true)
-    }
-
-    private fun mapUploadErrorMessage(raw: String?): UiText {
-        val source = raw.orEmpty()
-        val code = Regex("\\b(400|401|402|403|404|413|429)\\b").find(source)?.value
-
-        if (isQuotaExceededMessage(source)) {
-            return UiText.StringResource(R.string.documents_error_quota_exceeded)
-        }
-
-        return when (code) {
-            "400" -> UiText.StringResource(R.string.documents_error_invalid_or_unsupported)
-            "401" -> UiText.StringResource(R.string.documents_error_session_expired)
-            "402" -> UiText.StringResource(R.string.documents_error_quota_exceeded)
-            "403" -> UiText.StringResource(R.string.documents_error_access_denied)
-            "404" -> UiText.StringResource(R.string.documents_error_not_found)
-            "413" -> UiText.StringResource(
-                R.string.documents_error_file_too_large,
-                DocumentConstraints.MAX_FILE_SIZE_MB
-            )
-
-            "429" -> UiText.StringResource(R.string.documents_error_quota_exceeded)
-            else -> UiText.StringResource(R.string.documents_error_upload_generic)
+            // Silent by design.
         }
     }
 
@@ -475,11 +428,16 @@ class DocumentsViewModel @Inject constructor(
 
                 result.fold(
                     onSuccess = { downloadInfo ->
-                        val filename = appContext.getString(
+                        val fileName = appContext.getString(
                             R.string.document_generic_filename,
                             document.id
                         )
-                        _events.emit(DocumentsEvent.StartDownload(downloadInfo.url, filename))
+                        _events.emit(
+                            DocumentsEvent.StartDownload(
+                                url = downloadInfo.url,
+                                filename = fileName
+                            )
+                        )
                     },
                     onFailure = { error ->
                         _events.emit(
@@ -491,13 +449,51 @@ class DocumentsViewModel @Inject constructor(
                         )
                     }
                 )
-            } catch (e: Exception) {
+            } catch (exception: Exception) {
                 _events.emit(
                     DocumentsEvent.ShowDownloadError(
-                        e.toUiTextOr(UiText.StringResource(R.string.error_download_generic))
+                        exception.toUiTextOr(
+                            UiText.StringResource(R.string.error_download_generic)
+                        )
                     )
                 )
             }
+        }
+    }
+
+    private fun resolveExpandedYears(
+        selectedYear: Int?,
+        currentExpandedYears: Set<Int>,
+        defaultExpandedYears: Set<Int>,
+        availableYears: Set<Int>
+    ): Set<Int> {
+        if (selectedYear != null) {
+            return selectedYear.takeIf(availableYears::contains)?.let(::setOf) ?: emptySet()
+        }
+
+        val preservedExpandedYears = currentExpandedYears.intersect(availableYears)
+        if (preservedExpandedYears.isNotEmpty()) {
+            return preservedExpandedYears
+        }
+
+        val defaultVisibleYears = defaultExpandedYears.intersect(availableYears)
+        if (defaultVisibleYears.isNotEmpty()) {
+            return defaultVisibleYears
+        }
+
+        return availableYears.firstOrNull()?.let(::setOf) ?: emptySet()
+    }
+
+    private fun defaultExpandedYears(availableYears: Set<Int>): Set<Int> {
+        if (availableYears.isEmpty()) {
+            return emptySet()
+        }
+
+        val currentYear = java.time.LocalDate.now().year
+        return if (availableYears.contains(currentYear)) {
+            setOf(currentYear)
+        } else {
+            availableYears.maxOrNull()?.let(::setOf) ?: emptySet()
         }
     }
 }

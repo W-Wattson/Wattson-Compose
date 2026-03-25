@@ -75,16 +75,13 @@ fun RegisterScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    onTogglePasswordVisibility: () -> Unit,
-    onToggleConfirmPasswordVisibility: () -> Unit,
     onRegister: () -> Unit,
     onLoginWithGoogle: () -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    
     // Animation states
     var showContent by remember { mutableStateOf(false) }
     
@@ -658,12 +655,11 @@ private fun RegisterScreenPreview() {
             onEmailChange = {},
             onPasswordChange = {},
             onConfirmPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onToggleConfirmPasswordVisibility = {},
             onRegister = {},
             onLoginWithGoogle = {},
             onNavigateBack = {},
-            onNavigateToLogin = {}
+            onNavigateToLogin = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }
@@ -681,12 +677,11 @@ private fun RegisterScreenFilledPreview() {
             onEmailChange = {},
             onPasswordChange = {},
             onConfirmPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onToggleConfirmPasswordVisibility = {},
             onRegister = {},
             onLoginWithGoogle = {},
             onNavigateBack = {},
-            onNavigateToLogin = {}
+            onNavigateToLogin = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }

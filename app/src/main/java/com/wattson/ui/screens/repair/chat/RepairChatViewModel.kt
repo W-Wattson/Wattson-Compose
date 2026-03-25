@@ -71,20 +71,34 @@ class RepairChatViewModel @Inject constructor(
 
     private fun loadMessages() {
         viewModelScope.launch {
-            try {
-                val userId = authRepository.getCurrentUserId()
-                val messages = repairChatRepository.getMessagesList(conversationId, userId)
-                _uiState.update { it.copy(messages = messages) }
-                if (messages.isNotEmpty()) {
-                    _events.emit(RepairChatEvent.ScrollToBottom)
-                }
-            } catch (e: Exception) {
-                _events.emit(
-                    RepairChatEvent.ShowError(
-                        e.toUiTextOr(UiText.StringResource(R.string.error_loading_generic))
+            val userId = authRepository.getCurrentUserId()
+            val result = repairChatRepository.getMessagesList(conversationId, userId)
+
+            result.fold(
+                onSuccess = { messages ->
+                    _uiState.update { it.copy(messages = messages) }
+                    if (messages.isNotEmpty()) {
+                        _events.emit(RepairChatEvent.ScrollToBottom)
+                    }
+                },
+                onFailure = { error ->
+                    _events.emit(
+                        RepairChatEvent.ShowError(
+                            error.toUiTextOr(UiText.StringResource(R.string.error_loading_generic))
+                        )
                     )
-                )
-            }
+                }
+            )
+        }
+    }
+
+    private fun rollbackOptimisticMessage(messageId: String, content: String) {
+        _uiState.update { state ->
+            state.copy(
+                inputText = content,
+                isAssistantTyping = false,
+                messages = state.messages.filterNot { it.id == messageId }
+            )
         }
     }
 
@@ -95,18 +109,23 @@ class RepairChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            try {
-                _uiState.update { it.copy(inputText = "") }
+            val optimisticUserMessage = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                conversationId = conversationId,
+                role = MessageRole.USER,
+                content = content,
+                timestamp = Instant.now()
+            )
 
-                val optimisticUserMsg = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    conversationId = conversationId,
-                    role = MessageRole.USER,
-                    content = content,
-                    timestamp = Instant.now()
-                )
-                _uiState.update { it.copy(messages = it.messages + optimisticUserMsg) }
+            try {
+                _uiState.update {
+                    it.copy(
+                        inputText = "",
+                        messages = it.messages + optimisticUserMessage
+                    )
+                }
                 _events.emit(RepairChatEvent.ScrollToBottom)
+
                 _uiState.update { it.copy(isAssistantTyping = true) }
 
                 val userId = authRepository.getCurrentUserId()
@@ -126,21 +145,20 @@ class RepairChatViewModel @Inject constructor(
                     )
                 }
                 _events.emit(RepairChatEvent.ScrollToBottom)
-            } catch (e: UserFacingException) {
-                _uiState.update { it.copy(isAssistantTyping = false) }
-                _events.emit(RepairChatEvent.ShowError(e.uiText))
-            } catch (e: RepairChatRepository.PremiumRequiredException) {
-                _uiState.update { it.copy(isAssistantTyping = false) }
-                _events.emit(
-                    RepairChatEvent.ShowError(
-                        UiText.StringResource(R.string.repair_premium_required)
-                    )
+            } catch (exception: UserFacingException) {
+                rollbackOptimisticMessage(
+                    messageId = optimisticUserMessage.id,
+                    content = content
                 )
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isAssistantTyping = false) }
+                _events.emit(RepairChatEvent.ShowError(exception.uiText))
+            } catch (exception: Exception) {
+                rollbackOptimisticMessage(
+                    messageId = optimisticUserMessage.id,
+                    content = content
+                )
                 _events.emit(
                     RepairChatEvent.ShowError(
-                        e.toUiTextOr(UiText.StringResource(R.string.error_send_generic))
+                        exception.toUiTextOr(UiText.StringResource(R.string.error_send_generic))
                     )
                 )
             }

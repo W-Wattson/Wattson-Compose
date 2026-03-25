@@ -12,32 +12,17 @@ import com.wattson.domain.model.MessageRole
 import com.wattson.domain.model.RepairConversation
 import com.wattson.ui.i18n.UiText
 import com.wattson.ui.i18n.UserFacingException
+import java.time.Instant
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Singleton
-
-// Last Edit : 20/03/2026 -- Victorio Garcia
-// Resume : ---------------------------------
-// Step 1 : Remplacement de Room (local) par Retrofit (backend) pour les conversations
-// Step 2 : Remplacement de MockRepairAssistantService par appel API reel vers Ollama
-// Step 3 : Gestion des erreurs HTTP (403 Premium, 500 serveur, timeout)
-// Step 4 : StateFlow pour observer les conversations (au lieu de Room Flow)
-// Explication Total : Repository pour le chat de reparation IA. Communique avec le
-//   backend recommendation-service via Retrofit. Les conversations et messages sont
-//   stockes cote serveur (MongoDB). Le backend appelle Ollama (Mistral 7B) pour les
-//   reponses IA. La verification premium est faite cote serveur via X-Subscription.
-// Historique : 17/03/2026 -- Creation initiale (Room + MockRepairAssistantService)
-//              20/03/2026 -- Migration vers API backend (Retrofit + Ollama)
 
 /**
- * Repository for repair chat operations.
- * Communicates with the backend recommendation-service via Retrofit.
- * Conversations and messages are stored server-side in MongoDB.
+ * Repository for repair-chat conversations and messages persisted by the backend.
  */
 @Singleton
 class RepairChatRepository @Inject constructor(
@@ -47,63 +32,81 @@ class RepairChatRepository @Inject constructor(
         private const val TAG = "RepairChatRepository"
     }
 
-    private val _conversations = MutableStateFlow<List<RepairConversation>>(emptyList())
+    private val conversations = MutableStateFlow<List<RepairConversation>>(emptyList())
 
     /**
-     * Observe all conversations for a user.
-     * Call [refreshConversations] to fetch latest from server.
+     * Returns the cached list of conversations.
+     *
+     * Call [refreshConversations] to fetch the latest server state.
      */
-    fun getConversations(userId: String): Flow<List<RepairConversation>> {
-        return _conversations.asStateFlow()
+    fun getConversations(): Flow<List<RepairConversation>> = conversations.asStateFlow()
+
+    /**
+     * Loads all messages for a conversation as a one-shot request.
+     */
+    suspend fun getMessagesList(
+        conversationId: String,
+        userId: String
+    ): Result<List<ChatMessage>> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getRepairMessages(userId, conversationId)
+            if (response.isSuccessful) {
+                val messages = response.body() ?: emptyList()
+                Log.d(TAG, "Loaded ${messages.size} messages for conversation $conversationId")
+                Result.success(messages.map { it.toDomain(conversationId) })
+            } else {
+                Log.e(TAG, "Failed to load messages: ${response.code()} - ${response.message()}")
+                Result.failure(
+                    UserFacingException(
+                        UiText.StringResource(R.string.error_loading_generic)
+                    )
+                )
+            }
+        } catch (exception: Exception) {
+            Log.e(TAG, "Error loading messages: ${exception.message}", exception)
+            Result.failure(
+                UserFacingException(
+                    UiText.StringResource(R.string.error_loading_generic),
+                    exception
+                )
+            )
+        }
     }
 
     /**
-     * Observe all messages for a conversation.
-     * Returns a one-shot list (not reactive — call again to refresh).
-     */
-    suspend fun getMessagesList(conversationId: String, userId: String): List<ChatMessage> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = api.getRepairMessages(userId, conversationId)
-                if (response.isSuccessful) {
-                    val messages = response.body() ?: emptyList()
-                    Log.d(TAG, "Loaded ${messages.size} messages for conversation $conversationId")
-                    messages.map { it.toDomain(conversationId) }
-                } else {
-                    Log.e(TAG, "Failed to load messages: ${response.code()} - ${response.message()}")
-                    emptyList()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error loading messages: ${e.message}", e)
-                emptyList()
-            }
-        }
-
-    /**
-     * Refresh conversations list from the server.
+     * Refreshes the cached conversation list from the backend.
      */
     suspend fun refreshConversations(userId: String) = withContext(Dispatchers.IO) {
         try {
             val response = api.getRepairConversations(userId)
             if (response.isSuccessful) {
-                val conversations = response.body() ?: emptyList()
-                _conversations.value = conversations.map { it.toDomain() }
-                Log.d(TAG, "Refreshed ${conversations.size} conversations for user $userId")
+                val serverConversations = response.body() ?: emptyList()
+                conversations.value = serverConversations.map { it.toDomain() }
+                Log.d(
+                    TAG,
+                    "Refreshed ${serverConversations.size} conversations for user $userId"
+                )
             } else {
-                Log.e(TAG, "Failed to refresh conversations: ${response.code()} - ${response.message()}")
+                Log.e(
+                    TAG,
+                    "Failed to refresh conversations: ${response.code()} - ${response.message()}"
+                )
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error refreshing conversations: ${e.message}", e)
+        } catch (exception: Exception) {
+            Log.e(TAG, "Error refreshing conversations: ${exception.message}", exception)
         }
     }
 
     /**
-     * Create a new conversation and return the domain model.
+     * Creates a new conversation and refreshes the cached list.
      */
     suspend fun createConversation(userId: String, title: String): RepairConversation =
         withContext(Dispatchers.IO) {
             try {
-                val response = api.createRepairConversation(userId, CreateConversationRequest(title))
+                val response = api.createRepairConversation(
+                    userId,
+                    CreateConversationRequest(title)
+                )
                 if (response.isSuccessful) {
                     val conversation = response.body()!!.toDomain()
                     Log.d(TAG, "Created conversation: ${conversation.id}")
@@ -113,17 +116,17 @@ class RepairChatRepository @Inject constructor(
                     Log.e(TAG, "Failed to create conversation: ${response.code()}")
                     throw UserFacingException(UiText.StringResource(R.string.error_create_generic))
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error creating conversation: ${e.message}", e)
-                throw e
+            } catch (exception: Exception) {
+                Log.e(TAG, "Error creating conversation: ${exception.message}", exception)
+                throw exception
             }
         }
 
     /**
-     * Send a user message and get the AI assistant response.
+     * Sends a user message and returns the assistant response.
      *
-     * @throws PremiumRequiredException if the user is on FREE plan (403 from server).
-     * @throws RuntimeException on other errors.
+     * @throws UserFacingException when the backend returns a message that should be surfaced
+     * directly to the UI layer.
      */
     suspend fun sendMessageAndGetResponse(
         conversationId: String,
@@ -161,7 +164,7 @@ class RepairChatRepository @Inject constructor(
     }
 
     /**
-     * Delete a conversation and all its messages.
+     * Deletes a conversation and refreshes the cached list.
      */
     suspend fun deleteConversation(conversationId: String, userId: String) =
         withContext(Dispatchers.IO) {
@@ -173,12 +176,10 @@ class RepairChatRepository @Inject constructor(
                 } else {
                     Log.e(TAG, "Failed to delete conversation: ${response.code()}")
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error deleting conversation: ${e.message}", e)
+            } catch (exception: Exception) {
+                Log.e(TAG, "Error deleting conversation: ${exception.message}", exception)
             }
         }
-
-    // ===== Mappers =====
 
     private fun ConversationResponse.toDomain(): RepairConversation {
         return RepairConversation(
@@ -195,7 +196,11 @@ class RepairChatRepository @Inject constructor(
         return ChatMessage(
             id = id,
             conversationId = conversationId,
-            role = try { MessageRole.valueOf(role) } catch (e: Exception) { MessageRole.ASSISTANT },
+            role = try {
+                MessageRole.valueOf(role)
+            } catch (_: Exception) {
+                MessageRole.ASSISTANT
+            },
             content = content,
             timestamp = parseInstant(createdAt)
         )
@@ -204,10 +209,9 @@ class RepairChatRepository @Inject constructor(
     private fun parseInstant(isoString: String): Instant {
         return try {
             Instant.parse(isoString)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Instant.now()
         }
     }
 
-    class PremiumRequiredException : RuntimeException()
 }

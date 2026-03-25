@@ -23,8 +23,6 @@ data class AuthUiState(
     val confirmPassword: String = "",
     val fullName: String = "",
     val isLoading: Boolean = false,
-    val isPasswordVisible: Boolean = false,
-    val isConfirmPasswordVisible: Boolean = false,
     val emailError: UiText? = null,
     val passwordError: UiText? = null,
     val confirmPasswordError: UiText? = null,
@@ -46,7 +44,6 @@ sealed interface AuthIntent {
     data class UpdatePassword(val password: String) : AuthIntent
     data class UpdateConfirmPassword(val confirmPassword: String) : AuthIntent
     data class UpdateFullName(val fullName: String) : AuthIntent
-    data class TogglePasswordVisibility(val isConfirmField: Boolean = false) : AuthIntent
     data class ToggleRememberMe(val checked: Boolean) : AuthIntent
     data object Login : AuthIntent
     data object Register : AuthIntent
@@ -74,7 +71,6 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.isLoggedIn.collect { isLoggedIn ->
                 if (isLoggedIn) {
-                    android.util.Log.d("AuthViewModel", "User already logged in, navigating to main")
                     _events.emit(AuthEvent.NavigateToMain)
                 }
             }
@@ -87,7 +83,6 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.UpdatePassword -> updatePassword(intent.password)
             is AuthIntent.UpdateConfirmPassword -> updateConfirmPassword(intent.confirmPassword)
             is AuthIntent.UpdateFullName -> updateFullName(intent.fullName)
-            is AuthIntent.TogglePasswordVisibility -> togglePasswordVisibility(intent.isConfirmField)
             is AuthIntent.ToggleRememberMe -> toggleRememberMe(intent.checked)
             is AuthIntent.Login -> performLogin()
             is AuthIntent.Register -> performRegister()
@@ -105,16 +100,17 @@ class AuthViewModel @Inject constructor(
         _uiState.update { state ->
             val emailError = when {
                 email.isBlank() -> null
-                email.length > MAX_EMAIL_LENGTH -> UiText.StringResource(
-                    R.string.validation_email_too_long,
-                    MAX_EMAIL_LENGTH
-                )
+                email.length > MAX_EMAIL_LENGTH -> {
+                    UiText.StringResource(R.string.validation_email_too_long, MAX_EMAIL_LENGTH)
+                }
 
-                email.contains("@") && email.contains(".") && !EMAIL_REGEX.matches(email) ->
+                email.contains("@") && email.contains(".") && !EMAIL_REGEX.matches(email) -> {
                     UiText.StringResource(R.string.validation_email_format_example)
+                }
 
                 else -> null
             }
+
             state.copy(email = email, emailError = emailError)
         }
     }
@@ -125,7 +121,8 @@ class AuthViewModel @Inject constructor(
                 password = password,
                 passwordError = null,
                 confirmPasswordError = if (
-                    state.confirmPassword.isNotBlank() && state.confirmPassword != password
+                    state.confirmPassword.isNotBlank() &&
+                    state.confirmPassword != password
                 ) {
                     UiText.StringResource(R.string.validation_passwords_do_not_match)
                 } else {
@@ -137,29 +134,24 @@ class AuthViewModel @Inject constructor(
 
     private fun updateConfirmPassword(confirmPassword: String) {
         _uiState.update { state ->
-            val confirmError = when {
+            val confirmPasswordError = when {
                 confirmPassword.isBlank() -> null
-                confirmPassword != state.password ->
+                confirmPassword != state.password -> {
                     UiText.StringResource(R.string.validation_passwords_do_not_match)
+                }
 
                 else -> null
             }
-            state.copy(confirmPassword = confirmPassword, confirmPasswordError = confirmError)
+
+            state.copy(
+                confirmPassword = confirmPassword,
+                confirmPasswordError = confirmPasswordError
+            )
         }
     }
 
     private fun updateFullName(fullName: String) {
         _uiState.update { it.copy(fullName = fullName) }
-    }
-
-    private fun togglePasswordVisibility(isConfirmField: Boolean) {
-        _uiState.update { state ->
-            if (isConfirmField) {
-                state.copy(isConfirmPasswordVisible = !state.isConfirmPasswordVisible)
-            } else {
-                state.copy(isPasswordVisible = !state.isPasswordVisible)
-            }
-        }
     }
 
     private fun toggleRememberMe(checked: Boolean) {
@@ -168,11 +160,16 @@ class AuthViewModel @Inject constructor(
 
     fun performLogin() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
+        val emailError = validateEmailForSubmit(currentState.email)
         val passwordError = validateLoginPassword(currentState.password)
 
         if (emailError != null || passwordError != null) {
-            _uiState.update { it.copy(emailError = emailError, passwordError = passwordError) }
+            _uiState.update {
+                it.copy(
+                    emailError = emailError,
+                    passwordError = passwordError
+                )
+            }
             return
         }
 
@@ -183,6 +180,7 @@ class AuthViewModel @Inject constructor(
                 password = currentState.password,
                 rememberMe = currentState.rememberMe
             )
+
             result.fold(
                 onSuccess = { user ->
                     _uiState.update { it.copy(isLoading = false) }
@@ -200,7 +198,9 @@ class AuthViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            passwordError = UiText.StringResource(R.string.auth_email_or_password_incorrect)
+                            passwordError = UiText.StringResource(
+                                R.string.auth_email_or_password_incorrect
+                            )
                         )
                     }
                 }
@@ -210,11 +210,11 @@ class AuthViewModel @Inject constructor(
 
     fun performRegister() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
-        val passwordError = validatePassword(currentState.password)
+        val emailError = validateEmailForSubmit(currentState.email)
+        val passwordError = validateRegistrationPassword(currentState.password)
         val confirmPasswordError = validateConfirmPassword(
-            currentState.password,
-            currentState.confirmPassword
+            password = currentState.password,
+            confirmPassword = currentState.confirmPassword
         )
 
         if (emailError != null || passwordError != null || confirmPasswordError != null) {
@@ -235,6 +235,7 @@ class AuthViewModel @Inject constructor(
                 password = currentState.password,
                 fullName = currentState.fullName.takeIf { it.isNotBlank() }
             )
+
             result.fold(
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
@@ -249,7 +250,9 @@ class AuthViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(
                         AuthEvent.ShowError(
-                            error.toUiTextOr(UiText.StringResource(R.string.error_registration_generic))
+                            error.toUiTextOr(
+                                UiText.StringResource(R.string.error_registration_generic)
+                            )
                         )
                     )
                 }
@@ -277,6 +280,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val result = authRepository.loginWithGoogle(idToken)
+
             result.fold(
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
@@ -291,7 +295,9 @@ class AuthViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(
                         AuthEvent.ShowError(
-                            error.toUiTextOr(UiText.StringResource(R.string.error_google_sign_in_generic))
+                            error.toUiTextOr(
+                                UiText.StringResource(R.string.error_google_sign_in_generic)
+                            )
                         )
                     )
                 }
@@ -301,7 +307,7 @@ class AuthViewModel @Inject constructor(
 
     fun handleForgotPassword() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
+        val emailError = validateEmailForSubmit(currentState.email)
 
         if (emailError != null) {
             _uiState.update {
@@ -313,6 +319,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val result = authRepository.forgotPassword(currentState.email)
+
             result.fold(
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
@@ -336,7 +343,11 @@ class AuthViewModel @Inject constructor(
 
     private fun clearErrors() {
         _uiState.update {
-            it.copy(emailError = null, passwordError = null, confirmPasswordError = null)
+            it.copy(
+                emailError = null,
+                passwordError = null,
+                confirmPasswordError = null
+            )
         }
     }
 
@@ -344,14 +355,16 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch { _events.emit(event) }
     }
 
-    private fun validateEmail(email: String): UiText? = when {
+    private fun validateEmailForSubmit(email: String): UiText? = when {
         email.isBlank() -> UiText.StringResource(R.string.validation_email_required)
         !email.contains("@") -> UiText.StringResource(R.string.validation_email_format_example)
-        !EMAIL_REGEX.matches(email) ->
+        !EMAIL_REGEX.matches(email) -> {
             UiText.StringResource(R.string.validation_email_format_invalid)
+        }
 
-        email.length > MAX_EMAIL_LENGTH ->
+        email.length > MAX_EMAIL_LENGTH -> {
             UiText.StringResource(R.string.validation_email_too_long, MAX_EMAIL_LENGTH)
+        }
 
         else -> null
     }
@@ -361,29 +374,38 @@ class AuthViewModel @Inject constructor(
         else -> null
     }
 
-    private fun validatePassword(password: String): UiText? = when {
+    private fun validateRegistrationPassword(password: String): UiText? = when {
         password.isBlank() -> UiText.StringResource(R.string.validation_password_required)
-        password.length < MIN_PASSWORD_LENGTH ->
-            UiText.StringResource(R.string.validation_password_min_length, MIN_PASSWORD_LENGTH)
+        password.length < MIN_PASSWORD_LENGTH -> {
+            UiText.StringResource(
+                R.string.validation_password_min_length,
+                MIN_PASSWORD_LENGTH
+            )
+        }
 
-        !password.any { it.isUpperCase() } ->
+        !password.any { it.isUpperCase() } -> {
             UiText.StringResource(R.string.validation_password_uppercase_required)
+        }
 
-        !password.any { it.isDigit() } ->
+        !password.any { it.isDigit() } -> {
             UiText.StringResource(R.string.validation_password_digit_required)
+        }
 
-        !password.any { !it.isLetterOrDigit() } ->
+        !password.any { !it.isLetterOrDigit() } -> {
             UiText.StringResource(R.string.validation_password_special_required)
+        }
 
         else -> null
     }
 
     private fun validateConfirmPassword(password: String, confirmPassword: String): UiText? = when {
-        confirmPassword.isBlank() ->
+        confirmPassword.isBlank() -> {
             UiText.StringResource(R.string.validation_confirm_password_required)
+        }
 
-        confirmPassword != password ->
+        confirmPassword != password -> {
             UiText.StringResource(R.string.validation_passwords_do_not_match)
+        }
 
         else -> null
     }

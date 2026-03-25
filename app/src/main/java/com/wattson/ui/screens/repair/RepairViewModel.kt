@@ -72,7 +72,7 @@ class RepairViewModel @Inject constructor(
             try {
                 val userId = authRepository.getCurrentUserId()
                 repairChatRepository.refreshConversations(userId)
-                repairChatRepository.getConversations(userId).collect { conversations ->
+                repairChatRepository.getConversations().collect { conversations ->
                     _uiState.update {
                         it.copy(isLoading = false, conversations = conversations)
                     }

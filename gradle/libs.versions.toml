@@ -24,6 +24,7 @@ credentialsManager = "1.5.0-beta01"
 googleId = "1.1.1"
 stripeAndroid = "21.5.1"
 tesseract4android = "4.9.0"
+junit4 = "4.13.2"
 
 [libraries]
 # AndroidX Core
@@ -94,6 +95,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 # Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

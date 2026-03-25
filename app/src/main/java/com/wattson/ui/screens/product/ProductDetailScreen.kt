@@ -33,9 +33,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,19 +115,31 @@ fun ProductDetailScreen(
     modifier: Modifier = Modifier
 ) {
     // Handle events
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val favoriteAddedMessage = stringResource(R.string.favorite_added)
+    val favoriteRemovedMessage = stringResource(R.string.favorite_removed)
+
     LaunchedEffect(Unit) {
         events.collectLatest { event ->
             when (event) {
                 is ProductDetailEvent.NavigateBack -> onNavigateBack()
                 is ProductDetailEvent.NavigateToRepair -> onNavigateToRepair()
-                is ProductDetailEvent.AddedToFavorites -> { /* Show snackbar */ }
-                is ProductDetailEvent.RemovedFromFavorites -> { /* Show snackbar */ }
-                is ProductDetailEvent.ShowError -> { /* Show snackbar */ }
+                is ProductDetailEvent.AddedToFavorites -> {
+                    snackbarHostState.showSnackbar(favoriteAddedMessage)
+                }
+                is ProductDetailEvent.RemovedFromFavorites -> {
+                    snackbarHostState.showSnackbar(favoriteRemovedMessage)
+                }
+                is ProductDetailEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message.asString(context))
+                }
             }
         }
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.product_details)) },
