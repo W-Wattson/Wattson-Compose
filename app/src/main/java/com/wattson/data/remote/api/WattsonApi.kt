@@ -1,6 +1,4 @@
 package com.wattson.data.remote.api
-
-import com.wattson.BuildConfig
 import com.wattson.data.remote.dto.AuthResponse
 import com.wattson.data.remote.dto.UserDto
 import com.wattson.data.remote.dto.DeleteAccountResponse
@@ -224,10 +222,6 @@ interface WattsonApi {
         @Header("X-User-Id") userId: String,
         @Path("conversationId") conversationId: String
     ): Response<Unit>
-
-    companion object {
-        val BASE_URL_DEFAULT = com.wattson.BuildConfig.API_BASE_URL
-    }
 }
 
 // =====================

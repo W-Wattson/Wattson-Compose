@@ -19,20 +19,6 @@ import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
-// Last Edit : 20/03/2026 -- Victorio Garcia
-// Resume : ---------------------------------
-// Step 1 : Chargement des messages depuis le backend (GET /conversations/{id}/messages)
-// Step 2 : Envoi de message user + reception reponse IA (POST /conversations/{id}/messages)
-// Step 3 : Ajout optimiste du message user dans la liste (avant la reponse serveur)
-// Step 4 : Gestion du typing indicator pendant l'appel Ollama (~3-8s)
-// Step 5 : Gestion erreur 403 PremiumRequired (afficher prompt upgrade)
-// Explication Total : ViewModel pour l'ecran de chat reparation. Envoie les messages
-//   au backend recommendation-service qui appelle Ollama (Mistral 7B) sur Hetzner.
-//   Le message user est ajoute optimistiquement a la liste pour une UX reactive,
-//   puis la reponse IA est ajoutee quand elle arrive du serveur.
-// Historique : 17/03/2026 -- Creation initiale (Room + MockRepairAssistantService)
-//              20/03/2026 -- Migration vers API backend (Retrofit + Ollama)
-
 /**
  * UI State for the Repair Chat screen.
  */

@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * UI State for authentication screens.
- * Represents all possible states during the authentication flow.
+ * UI state for the authentication flow.
  */
 data class AuthUiState(
     val email: String = "",
@@ -33,8 +32,7 @@ data class AuthUiState(
 )
 
 /**
- * One-shot events for authentication flow.
- * These events are consumed once and trigger navigation or UI feedback.
+ * One-shot events emitted by the authentication flow.
  */
 sealed interface AuthEvent {
     data object NavigateToMain : AuthEvent
@@ -47,7 +45,7 @@ sealed interface AuthEvent {
 }
 
 /**
- * User actions/intents from the authentication screens.
+ * User intents dispatched from the authentication screens.
  */
 sealed interface AuthIntent {
     data class UpdateEmail(val email: String) : AuthIntent
@@ -69,8 +67,7 @@ sealed interface AuthIntent {
 }
 
 /**
- * ViewModel for authentication screens (Auth, Login, Register).
- * Follows UDF pattern: Intent -> State -> UI.
+ * ViewModel for the authentication entry, login, and registration screens.
  */
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -84,11 +81,13 @@ class AuthViewModel @Inject constructor(
     val events = _events.asSharedFlow()
 
     init {
-        // Check if already logged in
         viewModelScope.launch {
             authRepository.isLoggedIn.collect { isLoggedIn ->
                 if (isLoggedIn) {
-                    android.util.Log.d("AuthViewModel", "User already logged in, navigating to main")
+                    android.util.Log.d(
+                        "AuthViewModel",
+                        "User already logged in, navigating to main"
+                    )
                     _events.emit(AuthEvent.NavigateToMain)
                 }
             }
@@ -96,8 +95,7 @@ class AuthViewModel @Inject constructor(
     }
 
     /**
-     * Process user intents and update state accordingly.
-     * Single entry point for all user actions.
+     * Processes all user intents through a single entry point.
      */
     fun onIntent(intent: AuthIntent) {
         when (intent) {
@@ -133,14 +131,10 @@ class AuthViewModel @Inject constructor(
 
     private fun updateEmail(email: String) {
         _uiState.update { state ->
-            val emailError = when {
-                email.isBlank() -> null
-                email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
-                email.contains("@") && email.contains(".") && !EMAIL_REGEX.matches(email) ->
-                    "Format invalide — ex : nom@domaine.com"
-                else -> null
-            }
-            state.copy(email = email, emailError = emailError)
+            state.copy(
+                email = email,
+                emailError = AuthInputValidator.validateEmailForEditing(email)
+            )
         }
     }
 
@@ -149,21 +143,31 @@ class AuthViewModel @Inject constructor(
             state.copy(
                 password = password,
                 passwordError = null,
-                confirmPasswordError = if (state.confirmPassword.isNotBlank() && state.confirmPassword != password) {
+                confirmPasswordError = if (
+                    state.confirmPassword.isNotBlank() &&
+                    state.confirmPassword != password
+                ) {
                     "Les mots de passe ne correspondent pas"
-                } else null
+                } else {
+                    null
+                }
             )
         }
     }
 
     private fun updateConfirmPassword(confirmPassword: String) {
         _uiState.update { state ->
-            val confirmError = when {
-                confirmPassword.isBlank() -> null
-                confirmPassword != state.password -> "Les mots de passe ne correspondent pas"
-                else -> null
-            }
-            state.copy(confirmPassword = confirmPassword, confirmPasswordError = confirmError)
+            state.copy(
+                confirmPassword = confirmPassword,
+                confirmPasswordError = if (
+                    confirmPassword.isBlank() ||
+                    confirmPassword == state.password
+                ) {
+                    null
+                } else {
+                    "Les mots de passe ne correspondent pas"
+                }
+            )
         }
     }
 
@@ -173,8 +177,15 @@ class AuthViewModel @Inject constructor(
 
     private fun togglePasswordVisibility(isConfirmField: Boolean) {
         _uiState.update { state ->
-            if (isConfirmField) state.copy(isConfirmPasswordVisible = !state.isConfirmPasswordVisible)
-            else state.copy(isPasswordVisible = !state.isPasswordVisible)
+            if (isConfirmField) {
+                state.copy(
+                    isConfirmPasswordVisible = !state.isConfirmPasswordVisible
+                )
+            } else {
+                state.copy(
+                    isPasswordVisible = !state.isPasswordVisible
+                )
+            }
         }
     }
 
@@ -184,11 +195,16 @@ class AuthViewModel @Inject constructor(
 
     fun performLogin() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
-        val passwordError = validateLoginPassword(currentState.password)
+        val emailError = AuthInputValidator.validateEmailForSubmit(currentState.email)
+        val passwordError = AuthInputValidator.validateLoginPassword(currentState.password)
 
         if (emailError != null || passwordError != null) {
-            _uiState.update { it.copy(emailError = emailError, passwordError = passwordError) }
+            _uiState.update {
+                it.copy(
+                    emailError = emailError,
+                    passwordError = passwordError
+                )
+            }
             return
         }
 
@@ -199,14 +215,20 @@ class AuthViewModel @Inject constructor(
                 password = currentState.password,
                 rememberMe = currentState.rememberMe
             )
+
             result.fold(
                 onSuccess = { user ->
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowSnackbar("Bienvenue ${user.fullName}!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, passwordError = "Email ou mot de passe incorrect") }
+                onFailure = {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            passwordError = "Email ou mot de passe incorrect"
+                        )
+                    }
                 }
             )
         }
@@ -214,12 +236,21 @@ class AuthViewModel @Inject constructor(
 
     fun performRegister() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
-        val passwordError = validatePassword(currentState.password)
-        val confirmPasswordError = validateConfirmPassword(currentState.password, currentState.confirmPassword)
+        val emailError = AuthInputValidator.validateEmailForSubmit(currentState.email)
+        val passwordError = AuthInputValidator.validateRegistrationPassword(currentState.password)
+        val confirmPasswordError = AuthInputValidator.validateConfirmPassword(
+            password = currentState.password,
+            confirmPassword = currentState.confirmPassword
+        )
 
         if (emailError != null || passwordError != null || confirmPasswordError != null) {
-            _uiState.update { it.copy(emailError = emailError, passwordError = passwordError, confirmPasswordError = confirmPasswordError) }
+            _uiState.update {
+                it.copy(
+                    emailError = emailError,
+                    passwordError = passwordError,
+                    confirmPasswordError = confirmPasswordError
+                )
+            }
             return
         }
 
@@ -230,34 +261,39 @@ class AuthViewModel @Inject constructor(
                 password = currentState.password,
                 fullName = currentState.fullName.takeIf { it.isNotBlank() }
             )
+
             result.fold(
-                onSuccess = { user ->
+                onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowSnackbar("Compte cree avec succes!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur d'inscription"))
+                    _events.emit(
+                        AuthEvent.ShowError(
+                            error.message ?: "Erreur d'inscription"
+                        )
+                    )
                 }
             )
         }
     }
 
     /**
-     * Triggers Google Sign-In flow.
-     * Emits [AuthEvent.RequestGoogleSignIn] so the UI layer can launch
-     * the Credential Manager prompt (which requires an Activity context).
+     * Triggers a third-party login flow from the UI layer.
      */
     fun loginWithProvider(provider: AuthProvider) {
         when (provider) {
             AuthProvider.GOOGLE -> emitEvent(AuthEvent.RequestGoogleSignIn)
-            else -> emitEvent(AuthEvent.ShowError("Ce fournisseur n'est pas encore disponible"))
+            else -> emitEvent(
+                AuthEvent.ShowError("Ce fournisseur n'est pas encore disponible")
+            )
         }
     }
 
     /**
-     * Called by the UI layer when Google Sign-In fails (e.g. missing config, cancellation).
+     * Updates state after a Google Sign-In failure surfaced by the UI layer.
      */
     fun handleGoogleSignInError(message: String) {
         _uiState.update { it.copy(isLoading = false) }
@@ -265,34 +301,37 @@ class AuthViewModel @Inject constructor(
     }
 
     /**
-     * Called by the UI layer after Google Sign-In returns an ID token.
-     * Sends the token to the backend for verification.
+     * Sends the Google ID token returned by Credential Manager to the backend.
      */
     fun handleGoogleIdToken(idToken: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val result = authRepository.loginWithGoogle(idToken)
+
             result.fold(
-                onSuccess = { user ->
+                onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
                     _events.emit(AuthEvent.ShowSnackbar("Connexion Google reussie!"))
                     _events.emit(AuthEvent.NavigateToMain)
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur de connexion Google"))
+                    _events.emit(
+                        AuthEvent.ShowError(
+                            error.message ?: "Erreur de connexion Google"
+                        )
+                    )
                 }
             )
         }
     }
 
     /**
-     * Sends a forgot-password request to the backend API.
-     * Always shows a success message (backend never reveals if email exists).
+     * Requests a password reset without revealing whether the email exists.
      */
     fun handleForgotPassword() {
         val currentState = _uiState.value
-        val emailError = validateEmail(currentState.email)
+        val emailError = AuthInputValidator.validateEmailForSubmit(currentState.email)
 
         if (emailError != null) {
             _uiState.update { it.copy(emailError = "Entrez d'abord un email valide") }
@@ -302,62 +341,39 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val result = authRepository.forgotPassword(currentState.email)
+
             result.fold(
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowSnackbar(
-                        "Si un compte existe avec cet email, un lien de reinitialisation a ete envoye."
-                    ))
+                    _events.emit(
+                        AuthEvent.ShowSnackbar(
+                            "Si un compte existe avec cet email, un lien de reinitialisation a ete envoye."
+                        )
+                    )
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.ShowError(error.message ?: "Erreur lors de l'envoi"))
+                    _events.emit(
+                        AuthEvent.ShowError(
+                            error.message ?: "Erreur lors de l'envoi"
+                        )
+                    )
                 }
             )
         }
     }
 
     private fun clearErrors() {
-        _uiState.update { it.copy(emailError = null, passwordError = null, confirmPasswordError = null) }
+        _uiState.update {
+            it.copy(
+                emailError = null,
+                passwordError = null,
+                confirmPasswordError = null
+            )
+        }
     }
 
     private fun emitEvent(event: AuthEvent) {
         viewModelScope.launch { _events.emit(event) }
-    }
-
-    // ===== Validation helpers =====
-
-    private fun validateEmail(email: String): String? = when {
-        email.isBlank() -> "Email requis"
-        !email.contains("@") -> "Format invalide — ex : nom@domaine.com"
-        !EMAIL_REGEX.matches(email) -> "Format d'email invalide — ex : nom@domaine.com"
-        email.length > MAX_EMAIL_LENGTH -> "Email trop long (max $MAX_EMAIL_LENGTH caracteres)"
-        else -> null
-    }
-
-    private fun validateLoginPassword(password: String): String? = when {
-        password.isBlank() -> "Mot de passe requis"
-        else -> null
-    }
-
-    private fun validatePassword(password: String): String? = when {
-        password.isBlank() -> "Mot de passe requis"
-        password.length < MIN_PASSWORD_LENGTH -> "$MIN_PASSWORD_LENGTH caracteres minimum"
-        !password.any { it.isUpperCase() } -> "Une majuscule est requise"
-        !password.any { it.isDigit() } -> "Un chiffre est requis"
-        !password.any { !it.isLetterOrDigit() } -> "Un caractere special est requis (!@#\$%...)"
-        else -> null
-    }
-
-    private fun validateConfirmPassword(password: String, confirmPassword: String): String? = when {
-        confirmPassword.isBlank() -> "Confirmez votre mot de passe"
-        confirmPassword != password -> "Les mots de passe ne correspondent pas"
-        else -> null
-    }
-
-    companion object {
-        private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
-        private const val MAX_EMAIL_LENGTH = 255
-        const val MIN_PASSWORD_LENGTH = 8
     }
 }

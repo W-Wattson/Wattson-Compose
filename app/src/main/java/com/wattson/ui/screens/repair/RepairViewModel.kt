@@ -81,9 +81,8 @@ class RepairViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val userId = authRepository.getCurrentUserId()
-                // Fetch from server then observe the StateFlow
                 repairChatRepository.refreshConversations(userId)
-                repairChatRepository.getConversations(userId).collect { conversations ->
+                repairChatRepository.getConversations().collect { conversations ->
                     _uiState.update {
                         it.copy(isLoading = false, conversations = conversations)
                     }

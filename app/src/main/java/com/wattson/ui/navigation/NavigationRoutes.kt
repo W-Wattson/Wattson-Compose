@@ -11,147 +11,124 @@ import kotlinx.serialization.Serializable
  * - Level 2: Detail screens (ProductDetail, Premium)
  */
 sealed interface WattsonRoute {
-    
+
     // ===== AUTHENTICATION (Level 0) =====
-    
+
     /**
-     * Initial authentication screen with options
+     * Initial authentication screen with options.
      */
     @Serializable
     data object Auth : WattsonRoute
-    
+
     /**
-     * Login screen with email/password
+     * Login screen with email/password.
      */
     @Serializable
     data object Login : WattsonRoute
-    
+
     /**
-     * Registration screen
+     * Registration screen.
      */
     @Serializable
     data object Register : WattsonRoute
-    
+
     // ===== MAIN TABS (Level 1) =====
-    
+
     /**
-     * History tab - List of scanned products
+     * History tab showing scanned products.
      */
     @Serializable
     data object History : WattsonRoute
-    
+
     /**
-     * Repair tab - Repair assistance
+     * Repair tab for the repair assistant entry point.
      */
     @Serializable
     data object Repair : WattsonRoute
-    
+
     /**
-     * Scan screen - Camera barcode scanner
+     * Camera-based scan screen.
      */
     @Serializable
     data object Scan : WattsonRoute
-    
+
     /**
-     * Documents tab - Conciergerie
+     * Documents tab for the concierge feature.
      */
     @Serializable
     data object Documents : WattsonRoute
-    
+
     /**
-     * Account tab - User profile and settings
+     * Account tab for user profile and settings.
      */
     @Serializable
     data object Account : WattsonRoute
-    
+
     // ===== DETAIL SCREENS (Level 2) =====
-    
+
     /**
-     * Product detail screen
-     * @param productId The product ID or GTIN
+     * Product detail screen.
+     *
+     * @param productId Product identifier or GTIN.
      */
     @Serializable
     data class ProductDetail(val productId: String) : WattsonRoute
-    
+
     /**
-     * Premium subscription screen
+     * Premium subscription screen.
      */
     @Serializable
     data object Premium : WattsonRoute
-    
+
     /**
-     * Document detail/viewer screen
-     * @param documentId The document ID
+     * Document detail and preview screen.
+     *
+     * @param documentId Document identifier.
      */
     @Serializable
     data class DocumentDetail(val documentId: String) : WattsonRoute
 
     /**
-     * Repair chat screen - Conversation with AI repair assistant
-     * @param conversationId The conversation ID
+     * Repair chat screen.
+     *
+     * @param conversationId Conversation identifier.
      */
     @Serializable
     data class RepairChat(val conversationId: String) : WattsonRoute
 }
 
 /**
- * Bottom navigation items for the main tab bar.
+ * Maps the current generated route string to the bottom bar destination it represents.
+ *
+ * Typed navigation encodes destinations as generated route strings. The UI only needs marker-based
+ * matching for top-level tabs, so this helper centralizes the mapping instead of repeating
+ * `contains(...)` checks across multiple files.
  */
-enum class BottomNavItem(
-    val route: WattsonRoute,
-    val labelRes: Int, // String resource ID
-    val iconRes: Int,  // Drawable resource ID
-    val contentDescription: String
-) {
-    HISTORY(
-        route = WattsonRoute.History,
-        labelRes = 0, // Will be replaced with actual resource
-        iconRes = 0,
-        contentDescription = "Historique"
-    ),
-    REPAIR(
-        route = WattsonRoute.Repair,
-        labelRes = 0,
-        iconRes = 0,
-        contentDescription = "Réparation"
-    ),
-    DOCUMENTS(
-        route = WattsonRoute.Documents,
-        labelRes = 0,
-        iconRes = 0,
-        contentDescription = "Documents"
-    ),
-    ACCOUNT(
-        route = WattsonRoute.Account,
-        labelRes = 0,
-        iconRes = 0,
-        contentDescription = "Compte"
-    )
+fun String?.toBottomBarRoute(): WattsonRoute? {
+    if (this == null) {
+        return null
+    }
+
+    return when {
+        contains("History") -> WattsonRoute.History
+        contains("Repair") -> WattsonRoute.Repair
+        contains("Documents") -> WattsonRoute.Documents
+        contains("Account") -> WattsonRoute.Account
+        else -> null
+    }
 }
 
 /**
- * Navigation graph names
+ * Returns `true` when the current route belongs to the public authentication flow.
  */
-object NavGraphs {
-    const val AUTH = "auth_graph"
-    const val MAIN = "main_graph"
-}
+fun String?.isPublicAuthRoute(): Boolean =
+    this != null && (
+        contains("Auth") ||
+            contains("Login") ||
+            contains("Register")
+        )
 
 /**
- * Check if route is a main tab route
+ * Returns `true` when the current route should be protected behind authentication.
  */
-fun WattsonRoute.isMainTab(): Boolean {
-    return this is WattsonRoute.History ||
-            this is WattsonRoute.Repair ||
-            this is WattsonRoute.Documents ||
-            this is WattsonRoute.Account
-}
-
-/**
- * Check if route requires authentication
- */
-fun WattsonRoute.requiresAuth(): Boolean {
-    return this !is WattsonRoute.Auth &&
-            this !is WattsonRoute.Login &&
-            this !is WattsonRoute.Register
-}
+fun String?.isProtectedRoute(): Boolean = this != null && !isPublicAuthRoute()

@@ -49,14 +49,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.wattson.R
 import com.wattson.ui.navigation.WattsonRoute
+import com.wattson.ui.navigation.toBottomBarRoute
 import com.wattson.ui.theme.WattsonColors
 import com.wattson.ui.theme.WattsonCorners
 import com.wattson.ui.theme.WattsonPreviewTheme
 
 /**
- * Navigation item data class
+ * Navigation item model for the bottom bar.
  */
-data class NavItem(
+private data class NavItem(
     val route: WattsonRoute,
     val labelResId: Int,
     val selectedIcon: ImageVector,
@@ -64,11 +65,7 @@ data class NavItem(
     val contentDescriptionResId: Int
 )
 
-/**
- * Bottom navigation items used across the main tabs.
- */
-@Composable
-fun getBottomNavItems() = listOf(
+private val bottomNavItems = listOf(
     NavItem(
         route = WattsonRoute.History,
         labelResId = R.string.nav_history,
@@ -109,16 +106,8 @@ fun BottomNavigationBar(
     currentRoute: String?,
     modifier: Modifier = Modifier
 ) {
-    val selectedRoute = currentRoute?.let { route ->
-        when {
-            route.contains("History") -> WattsonRoute.History
-            route.contains("Repair") -> WattsonRoute.Repair
-            route.contains("Documents") -> WattsonRoute.Documents
-            route.contains("Account") -> WattsonRoute.Account
-            else -> null
-        }
-    }
-    
+    val selectedRoute = currentRoute.toBottomBarRoute()
+
     WattsonBottomNavigationBar(
         currentRoute = selectedRoute,
         onNavigate = { destination ->
@@ -153,7 +142,6 @@ fun WattsonBottomNavigationBar(
         shadowElevation = 16.dp,
         tonalElevation = 8.dp
     ) {
-        val navItems = getBottomNavItems()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,9 +150,9 @@ fun WattsonBottomNavigationBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            navItems.forEach { item ->
+            bottomNavItems.forEach { item ->
                 val isSelected = currentRoute == item.route
-                
+
                 BottomNavItem(
                     item = item,
                     isSelected = isSelected,
@@ -186,7 +174,7 @@ private fun BottomNavItem(
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    
+
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.1f else 1f,
         animationSpec = spring(
@@ -195,13 +183,13 @@ private fun BottomNavItem(
         ),
         label = "nav_item_scale"
     )
-    
+
     val iconColor by animateColorAsState(
         targetValue = if (isSelected) WattsonColors.Primary else WattsonColors.White.copy(alpha = 0.7f),
         animationSpec = spring(stiffness = Spring.StiffnessLow),
         label = "nav_item_color"
     )
-    
+
     val textColor by animateColorAsState(
         targetValue = if (isSelected) WattsonColors.Primary else WattsonColors.White.copy(alpha = 0.7f),
         animationSpec = spring(stiffness = Spring.StiffnessLow),
@@ -254,9 +242,9 @@ private fun BottomNavItem(
                     .size(22.dp)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Text(
             text = stringResource(id = item.labelResId),
             style = MaterialTheme.typography.labelSmall,

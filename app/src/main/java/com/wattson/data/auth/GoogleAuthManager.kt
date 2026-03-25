@@ -17,20 +17,6 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Last Edit : 19/03/2026 -- Victorio Garcia
-// Resume : ---------------------------------
-// Step 1 : Construction de la requete GetGoogleIdOption avec le Web Client ID
-// Step 2 : Appel au Credential Manager pour obtenir le Google ID token
-// Step 3 : Retry automatique (1 fois, delai 500ms) en cas de NoCredentialException
-//          car Google Play Services retourne souvent BAD_AUTHENTICATION au premier essai
-//          quand le cache n'est pas encore "chaud" apres un fresh start de l'app
-// Step 4 : Extraction du Google ID token depuis la reponse Credential Manager
-// Explication Total : Gere le flux Google Sign-In via Credential Manager API.
-//   Encapsule la creation de la requete, l'appel au Credential Manager, et l'extraction
-//   du token. Inclut un mecanisme de retry pour contourner le bug connu de Google Play
-//   Services qui echoue la premiere requete apres un demarrage a froid.
-// Historique : 17/03/2026 -- Creation initiale
-//              19/03/2026 -- Ajout retry automatique sur NoCredentialException (fix cold start)
 /**
  * Manages Google Sign-In using the Credential Manager API.
  *
